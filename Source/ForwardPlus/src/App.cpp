@@ -250,9 +250,10 @@ void App::RenderWorld()
 	glUniform1i(glGetUniformLocation(mCullLightShader->GetProgramID(), "num_lights"), LightCout);
 	mCullLightShader->SetUniform("num_lights", LightCout);
 	mCullLightShader->Bind();
+
 	// Bind shader storage buffer objects for the light and indice buffers
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, mLightBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mIndexBuffer);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, mLightBuffer);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mIndexBuffer);
 
 	// Bind depth map texture
 	glActiveTexture(GL_TEXTURE0);

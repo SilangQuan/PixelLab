@@ -35,6 +35,7 @@ Source/**/*.obj
 *.log
 *.idb
 *.recipe
+*.ilk
 .vs
 
 /Source/Debug
