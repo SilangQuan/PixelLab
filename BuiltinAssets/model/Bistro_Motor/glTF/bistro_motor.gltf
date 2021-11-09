@@ -1,0 +1,331 @@
+{
+	"accessors": [
+		{
+			"bufferView": 0,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 26621,
+			"max": [
+				-397.38525390625,
+				152.17160034179688,
+				104.22303009033203
+			],
+			"min": [
+				-526.2227783203125,
+				23.42779541015625,
+				-36.97721862792969
+			],
+			"type": "VEC3"
+		},
+		{
+			"bufferView": 1,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 26621,
+			"type": "VEC3"
+		},
+		{
+			"bufferView": 2,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 26621,
+			"type": "VEC2"
+		},
+		{
+			"bufferView": 3,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 26621,
+			"type": "VEC2"
+		},
+		{
+			"bufferView": 4,
+			"byteOffset": 0,
+			"componentType": 5123,
+			"count": 109371,
+			"type": "SCALAR"
+		},
+		{
+			"bufferView": 5,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 108,
+			"max": [
+				-471.91455078125,
+				134.8658447265625,
+				15.005017280578613
+			],
+			"min": [
+				-478.987060546875,
+				131.54888916015625,
+				6.797388553619385
+			],
+			"type": "VEC3"
+		},
+		{
+			"bufferView": 6,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 108,
+			"type": "VEC3"
+		},
+		{
+			"bufferView": 7,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 108,
+			"type": "VEC2"
+		},
+		{
+			"bufferView": 8,
+			"byteOffset": 0,
+			"componentType": 5126,
+			"count": 108,
+			"type": "VEC2"
+		},
+		{
+			"bufferView": 9,
+			"byteOffset": 0,
+			"componentType": 5123,
+			"count": 492,
+			"type": "SCALAR"
+		}
+	],
+	"asset": {
+		"extras": {
+			"created": "Mon Aug  9 21:22:52 2021"
+		},
+		"generator": "Gestaltor 2021.4.2 Rye Community (dev-bdd9f55)",
+		"version": "2.0"
+	},
+	"bufferViews": [
+		{
+			"buffer": 0,
+			"byteLength": 319452,
+			"byteOffset": 0
+		},
+		{
+			"buffer": 0,
+			"byteLength": 319452,
+			"byteOffset": 319452
+		},
+		{
+			"buffer": 0,
+			"byteLength": 212968,
+			"byteOffset": 638904
+		},
+		{
+			"buffer": 0,
+			"byteLength": 212968,
+			"byteOffset": 851872
+		},
+		{
+			"buffer": 0,
+			"byteLength": 218742,
+			"byteOffset": 1064840
+		},
+		{
+			"buffer": 0,
+			"byteLength": 1296,
+			"byteOffset": 1283584
+		},
+		{
+			"buffer": 0,
+			"byteLength": 1296,
+			"byteOffset": 1284880
+		},
+		{
+			"buffer": 0,
+			"byteLength": 864,
+			"byteOffset": 1286176
+		},
+		{
+			"buffer": 0,
+			"byteLength": 864,
+			"byteOffset": 1287040
+		},
+		{
+			"buffer": 0,
+			"byteLength": 984,
+			"byteOffset": 1287904
+		}
+	],
+	"buffers": [
+		{
+			"byteLength": 1288888,
+			"uri": "bistro_motor.bin"
+		}
+	],
+	"extensionsUsed": [
+		"KHR_materials_pbrSpecularGlossiness"
+	],
+	"images": [
+		{
+			"mimeType": "image/png",
+			"name": "Vespa_Normal",
+			"uri": "Vespa_Normal.png"
+		},
+		{
+			"mimeType": "image/png",
+			"name": "Vespa_BaseColor",
+			"uri": "Vespa_BaseColor.png"
+		},
+		{
+			"mimeType": "image/png",
+			"name": "Vespa_MetalRoughness",
+			"uri": "Vespa_MetalRoughness.png"
+		},
+		{
+			"mimeType": "image/png",
+			"name": "Vespa_Odometer_Normal",
+			"uri": "Vespa_Odometer_Normal.png"
+		},
+		{
+			"mimeType": "image/png",
+			"name": "Vespa_Odometer_BaseColor",
+			"uri": "Vespa_Odometer_BaseColor.png"
+		},
+		{
+			"mimeType": "image/png",
+			"name": "Vespa_Odometer_MetalRoughness",
+			"uri": "Vespa_Odometer_MetalRoughness.png"
+		}
+	],
+	"materials": [
+		{
+			"doubleSided": true,
+			"name": "Vespa",
+			"normalTexture": {
+				"index": 0
+			},
+			"pbrMetallicRoughness": {
+				"baseColorTexture": {
+					"index": 1
+				},
+				"metallicRoughnessTexture": {
+					"index": 2
+				}
+			}
+		},
+		{
+			"doubleSided": true,
+			"extensions": {
+				"KHR_materials_pbrSpecularGlossiness": {
+					"diffuseTexture": {
+						"index": 4
+					},
+					"specularGlossinessTexture": {
+						"index": 5
+					}
+				}
+			},
+			"name": "Vespa_Odometer",
+			"normalTexture": {
+				"index": 2
+			},
+			"pbrMetallicRoughness": {
+				"roughnessFactor": 0.5527864098548889
+			}
+		}
+	],
+	"meshes": [
+		{
+			"name": "Mesh.1282",
+			"primitives": [
+				{
+					"attributes": {
+						"NORMAL": 1,
+						"POSITION": 0,
+						"TEXCOORD_0": 2,
+						"TEXCOORD_1": 3
+					},
+					"indices": 4,
+					"material": 0,
+					"mode": 4
+				},
+				{
+					"attributes": {
+						"NORMAL": 6,
+						"POSITION": 5,
+						"TEXCOORD_0": 7,
+						"TEXCOORD_1": 8
+					},
+					"indices": 9,
+					"material": 1,
+					"mode": 4
+				}
+			]
+		}
+	],
+	"nodes": [
+		{
+			"mesh": 0,
+			"name": "Bistro_Research_Exterior__lod0_Vespa_3937",
+			"rotation": [
+				-0.7071068286895752,
+				0.0,
+				0.0,
+				0.7071067094802856
+			]
+		},
+		{
+			"children": [
+				0
+			],
+			"name": "BistroExterior",
+			"rotation": [
+				0.7071068286895752,
+				0.0,
+				0.0,
+				0.7071067094802856
+			],
+			"scale": [
+				0.01600000075995922,
+				0.01600000075995922,
+				0.01600000075995922
+			]
+		}
+	],
+	"samplers": [
+		{
+			"magFilter": 9729,
+			"minFilter": 9987
+		}
+	],
+	"scene": 0,
+	"scenes": [
+		{
+			"name": "Scene",
+			"nodes": [
+				1
+			]
+		}
+	],
+	"textures": [
+		{
+			"sampler": 0,
+			"source": 0
+		},
+		{
+			"sampler": 0,
+			"source": 1
+		},
+		{
+			"name": "",
+			"sampler": 0,
+			"source": 2
+		},
+		{
+			"sampler": 0,
+			"source": 3
+		},
+		{
+			"sampler": 0,
+			"source": 4
+		},
+		{
+			"sampler": 0,
+			"source": 5
+		}
+	]
+}
