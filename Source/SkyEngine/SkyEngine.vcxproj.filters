@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\Render">
+      <UniqueIdentifier>{713c3649-9781-4fbf-b44c-001558a0678e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Render">
+      <UniqueIdentifier>{d6437098-24bd-4c47-949e-6a187054b874}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Math">
+      <UniqueIdentifier>{88146725-8983-408b-a172-b86e91fcb9f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Log">
+      <UniqueIdentifier>{c54e2703-e8b2-4a72-a2d0-242b122bb76a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Log">
+      <UniqueIdentifier>{293ae638-2eaf-404a-a939-49047c72e364}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Core">
+      <UniqueIdentifier>{1fa25c30-453e-4bfd-af11-c4890b00e9f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Core">
+      <UniqueIdentifier>{56f26c79-f675-448f-8528-240c2c8b643c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Math">
+      <UniqueIdentifier>{63f4a86f-f050-48e4-a7cf-faabe5ce7c4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Components">
+      <UniqueIdentifier>{a3053b2f-4c11-43c5-b00b-b952a86feff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Components">
+      <UniqueIdentifier>{cb2e5865-1a41-4333-9e2f-6c8554356472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Lighting">
+      <UniqueIdentifier>{8e4f8860-04f7-4ce7-b650-880f20236968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Lighting">
+      <UniqueIdentifier>{c1e3b111-11db-4b62-861e-d18d127fbccd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ImGui">
+      <UniqueIdentifier>{3fdc63e2-6039-4901-87be-e0c0835f7573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ImGui">
+      <UniqueIdentifier>{a84fd672-4d9f-4376-b913-ba1530ef9943}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\PostProcess">
+      <UniqueIdentifier>{c020d2d3-7c06-441f-8229-15f078216ed3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\PostProcess">
+      <UniqueIdentifier>{17424b50-2fdb-40a6-bf80-21bbc5801682}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Math\Mathf.cpp">
+      <Filter>源文件\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\Matrix.cpp">
+      <Filter>源文件\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\Quaternion.cpp">
+      <Filter>源文件\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\Vector2.cpp">
+      <Filter>源文件\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\Vector3.cpp">
+      <Filter>源文件\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Math\Vector4.cpp">
+      <Filter>源文件\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Log\Debug.cpp">
+      <Filter>源文件\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Log\Log.cpp">
+      <Filter>源文件\Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Color.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\ObjLoader.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\ObjMaterialReader.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\SdlWindow.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\Shader.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\Texture.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\Model.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\Material.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\ShaderProgram.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\UniformVariable.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\Mesh.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameObject.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components\MeshRenderer.cpp">
+      <Filter>源文件\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components\Transform.cpp">
+      <Filter>源文件\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components\Component.cpp">
+      <Filter>源文件\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Scene.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Camera.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lighting\Light.cpp">
+      <Filter>源文件\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lighting\LightManager.cpp">
+      <Filter>源文件\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\TextureVariable.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\ResourceManager.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\Graphics.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\GBuffer.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui_demo.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui_draw.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui_impl_opengl3.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui_impl_sdl.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui_tables.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui_widgets.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui_renderer.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\RenderTexture.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\ForwardSceneRenderer.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\DeferredSceneRenderer.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PostProcess\PostProcessing.cpp">
+      <Filter>源文件\PostProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\TextureCubemap.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\ParticleSystem.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\imgui_impl_dx12.cpp">
+      <Filter>源文件\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\RenderWindow.cpp">
+      <Filter>源文件\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Math\Mathf.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Math\Matrix.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Math\Quaternion.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Math\Vector2.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Math\Vector3.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Math\Vector4.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Log\Debug.h">
+      <Filter>头文件\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Log\Log.h">
+      <Filter>头文件\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Log\MessageLogContext.h">
+      <Filter>头文件\Log</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Color.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\ObjLoader.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\ObjMaterialReader.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\ObjParseHelper.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Base.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SkyEngine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\SdlWindow.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\Shader.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\Texture.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\Mesh.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\Model.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\Material.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\ShaderProgram.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\UniformVariable.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\GameObject.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\Component.h">
+      <Filter>头文件\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\MeshRenderer.h">
+      <Filter>头文件\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\Transform.h">
+      <Filter>头文件\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Scene.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Camera.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lighting\Light.h">
+      <Filter>头文件\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lighting\LightManager.h">
+      <Filter>头文件\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Math\Random.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\TextureVariable.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\ResourceManager.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\RenderContext.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\Graphics.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\GBuffer.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imconfig.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imgui.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imgui_impl_opengl3.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imgui_impl_sdl.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imgui_internal.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imstb_rectpack.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imstb_textedit.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imstb_truetype.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imgui_renderer.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\RenderTexture.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\SceneRendererBase.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\ForwardSceneRenderer.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\DeferredSceneRenderer.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PostProcess\PostProcessing.h">
+      <Filter>头文件\PostProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\TextureCubemap.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\ParticleSystem.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImGui\imgui_impl_dx12.h">
+      <Filter>头文件\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\RenderWindowGL.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\RenderWindow.h">
+      <Filter>头文件\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Render\tiny_gltf.h">
+      <Filter>头文件\Render</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

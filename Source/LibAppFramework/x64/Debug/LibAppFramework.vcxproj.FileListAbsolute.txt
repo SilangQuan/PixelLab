@@ -1,0 +1,2 @@
+H:\VSSpace\SkyEngine\Source\x64\Debug\AppFramework.pdb
+H:\VSSpace\SkyEngine\Source\LibAppFramework\x64\Debug\AppFramework.pdb
