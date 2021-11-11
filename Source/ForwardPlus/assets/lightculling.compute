@@ -44,7 +44,7 @@ void main() {
 		min_depth = 0xFFFFFFFF;
 		max_depth = 0x0;
 		group_light_count = 0;
-		uint index = gl_WorkGroupID.y * gl_WorkGroupID.x + gl_WorkGroupID.x;
+		uint index = gl_WorkGroupID.y * gl_NumWorkGroups.x + gl_WorkGroupID.x;
 		uint offset = index * MAX_LIGHTS_PER_TILE;
 		for (uint i = 0; i < MAX_LIGHTS_PER_TILE; i++) {
 			lights_indices[offset + i] = -1;
@@ -118,8 +118,17 @@ void main() {
 	if (gl_LocalInvocationIndex == 0) {
 		uint index = gl_WorkGroupID.y * gl_NumWorkGroups.x + gl_WorkGroupID.x;
 		uint offset = index * MAX_LIGHTS_PER_TILE;
+
+		for (uint i = 0; i < MAX_LIGHTS_PER_TILE; i++) 
+		{
+			//For debuging.
+			lights_indices[offset + i] = int(offset);
+		}
+
 		for (uint i = 0; i < group_light_count; i++) {
-			lights_indices[offset + i] = group_light_index[i];
+			//lights_indices[offset + i] = group_light_index[i];
+			//For debuging.
+			//lights_indices[offset + i] = num_lights ;
 		}
 	}
 }

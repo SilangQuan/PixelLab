@@ -252,8 +252,8 @@ void App::RenderWorld()
 	mCullLightShader->Bind();
 
 	// Bind shader storage buffer objects for the light and indice buffers
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, mLightBuffer);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, mIndexBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo_lights);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo_visible_lights);
 
 	// Bind depth map texture
 	glActiveTexture(GL_TEXTURE0);
@@ -267,14 +267,15 @@ void App::RenderWorld()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	//PushGroupMarker("Post Processing");
-	//PostProcessingInputsForward ppInputs;
-	//ppInputs.BackBufferFBO = 0;
-	//ppInputs.WorkGroupX = mWorkGroupsX;
-	//ppInputs.WorkGroupY = mWorkGroupsY;
-	//ppInputs.EnableForwardPlusDebug = true;
-	//mPostProcessor->AddPostProcessingPasses(ppInputs);
-	//PopGroupMarker();
+	PushGroupMarker("Post Processing");
+	PostProcessingInputsForward ppInputs;
+	ppInputs.BackBufferFBO = 0;
+	ppInputs.WorkGroupX = mWorkGroupsX;
+	ppInputs.WorkGroupY = mWorkGroupsY;
+	ppInputs.EnableForwardPlusDebug = true;
+	ppInputs.SSBOVisibleLight = ssbo_visible_lights;
+	mPostProcessor->AddPostProcessingPasses(ppInputs);
+	PopGroupMarker();
 
 
 	//pRenderer->Render(scene, scene->GetActiveCamera());

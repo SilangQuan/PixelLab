@@ -64,6 +64,7 @@ private:
 	ShaderProgram* clusterSetupShader;
 	ShaderProgram* clusterCullLightShader;
 	ShaderProgram* mCullLightShader;
+	ShaderProgram* mTileDebugShader;
 
 	Scene* scene;
 	GameObject* box;
