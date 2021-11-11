@@ -9,10 +9,6 @@ struct Light {
 	float intensity;
 };
 
-layout (std430, binding = 0) readonly buffer lights_data { 
-	Light lights[];
-};
-
 layout(std430, binding = 1) readonly buffer visible_lights_indices {
 	int lights_indices[];
 };
@@ -44,5 +40,7 @@ void main()
 	fragColor = vec4(max(shadeX, shadeY));
 	//fragColor = vec4(shadeX);
 
-	fragColor = vec4(shade);
+	float tmp = lights_indices[offset] - offset;
+	fragColor = vec4(tmp,0,0,1);
+	//fragColor = vec4(shade);
 }
