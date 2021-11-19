@@ -88,6 +88,7 @@ void App::InitSSBOs()
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, maxLights * sizeof(struct GPULight), NULL, GL_DYNAMIC_DRAW);
 
+
 	GLint bufMask = GL_READ_WRITE;
 
 	struct GPULight* lights = (struct GPULight*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, bufMask);
@@ -99,7 +100,7 @@ void App::InitSSBOs()
 		lights[i].position = Vector3(light->position.x, light->position.y, light->position.z);
 		lights[i].color = Vector3(light->color.r, light->color.g, light->color.b);
 		lights[i].intensity = 1.0f;
-		lights[i].radius = 65.0f;
+		lights[i].radius = 10.0f;
 	}
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightSSBO);
@@ -120,7 +121,8 @@ bool App::CreateWorld()
 	mixValue = 0.5f;
 	lampProgram = new ShaderProgram("./assets/lamp.vert", "./assets/lamp.frag");
 	lampMat = new Material(lampProgram);
-	lightingProgram = new ShaderProgram("./assets/lighting.vert", "./assets/lighting.frag");
+	mShadingProgram = new ShaderProgram("./assets/lighting.vert", "./assets/lighting.frag");
+	//mShadingProgram = new ShaderProgram("./assets/shading.vert", "./assets/shading.frag");
 
 	mDepthPreShader = new ShaderProgram("./assets/lamp.vert", "./assets/depthprepass.frag");
 	mDepthPreMat = new Material(mDepthPreShader);
@@ -129,18 +131,17 @@ bool App::CreateWorld()
 	clusterCullLightShader = new ShaderProgram("./assets/clusterCullLightShader.compute");
 	mCullLightShader = new ShaderProgram("./assets/lightculling.compute");
 	
-
 	diffuseMap = ResourceManager::GetInstance()->TryGetResource<Texture>("./assets/crate.jpg");
 	specularMap = ResourceManager::GetInstance()->TryGetResource<Texture>("./assets/crate_specular.jpg");
 
 	scene = new Scene();
 	box = new GameObject();
 
-	boxMat = new Material(lightingProgram);
+	boxMat = new Material(mShadingProgram);
 	boxMat->AddTextureVariable("material.diffuse", diffuseMap);
 	boxMat->AddTextureVariable("material.specular", specularMap);
 	boxMat->SetFloat("material.shininess", 32.0f);
-	boxMat->SetCullMode(ECullMode::CM_Front);
+	boxMat->SetCullMode(ECullMode::CM_Back);
 
 	cubeMesh = new CubeMesh();
 	sphereMesh = new SphereMesh(10, 20);
@@ -175,6 +176,10 @@ bool App::CreateWorld()
 	//mDepthPrePassTarget->Init(GetWindowWidth(), GetWindowHeight(), ColorType::RGBA16F, DepthType::Depth24S8, 0);
 	mDepthPrePassTarget->InitForDepthOnly(GetWindowWidth(), GetWindowHeight(), DepthType::Depth16);
 	mForwardRenderer = dynamic_cast<ForwardSceneRenderer*>(pRenderer);
+
+	mHdrRT = new RenderTexture();
+	mHdrRT->Init(GetWindowWidth(), GetWindowHeight(), ColorType::RGBA16F, DepthType::Depth24S8, 0);
+	//mHdrRT->SetDepth(mDepthPrePassTarget->GetDepthID());
 
 	mPostProcessor = new PostProcessor();
 	mPostProcessor->InitRenderData();
@@ -223,6 +228,7 @@ void  App::UpdateCamera()
 
 void App::RenderWorld()
 {
+	glEnable(GL_DEPTH_TEST);
 	UpdateCamera();
 
 	// Depth prepass
@@ -240,6 +246,8 @@ void App::RenderWorld()
 	glUseProgram(mCullLightShader->GetProgramID());
 	int LightCout = GetLightManager().GetPointLights().size();
 	Matrix4x4 VP = camera->GetViewMatrix() * camera->GetProjectionMatrix();
+	Matrix4x4 V = camera->GetViewMatrix();
+	Matrix4x4 P =  camera->GetProjectionMatrix();
 	Matrix4x4 InvP =  camera->GetProjectionMatrix().inverted();
 	Vector4 ScreenSizeAndInv(GetWindowWidth(), GetWindowHeight(), 1.0f / GetWindowWidth(), 1.0f / GetWindowHeight());
 	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.Projection"), 1, GL_FALSE, &(camera->projectionMaxtrix[0]));
@@ -248,11 +256,11 @@ void App::RenderWorld()
 	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ViewProjection"), 1, GL_FALSE, &(VP[0]));
 	glUniform4f(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ScreenSizeAndInv"),ScreenSizeAndInv.x,ScreenSizeAndInv.y,ScreenSizeAndInv.z,ScreenSizeAndInv.w);
 	glUniform1i(glGetUniformLocation(mCullLightShader->GetProgramID(), "num_lights"), LightCout);
-	mCullLightShader->SetUniform("num_lights", LightCout);
-	mCullLightShader->Bind();
+	//mCullLightShader->SetUniform("num_lights", LightCout);
+	//mCullLightShader->Bind();
 
 	// Bind shader storage buffer objects for the light and indice buffers
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo_lights);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightSSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo_visible_lights);
 
 	// Bind depth map texture
@@ -260,6 +268,14 @@ void App::RenderWorld()
 	glUniform1i(glGetUniformLocation(mCullLightShader->GetProgramID(), "depthMap"), 0);
 	glBindTexture(GL_TEXTURE_2D, mDepthPrePassTarget->GetDepthID());
 
+	//Vector4 ScreenSizeAndInv(window->GetWidth(), window->GetHeight(), 1.0 / window->GetWidth(), 1.0 / window->GetHeight());
+	//
+	//mCullLightShader->SetUniform("ViewInfo.ScreenSizeAndInv", ScreenSizeAndInv);
+	//mCullLightShader->SetUniform("ViewInfo.View", mForwardRenderer->GetRenderContext()->viewMatrix);
+	//mCullLightShader->SetUniform("ViewInfo.Projection", mForwardRenderer->GetRenderContext()->projectionMatrix);
+	//mCullLightShader->SetUniform("ViewInfo.InvProjection", mForwardRenderer->GetRenderContext()->invProjectionMatrix);
+	//
+	//mCullLightShader->Bind();
 	// Dispatch the compute shader, using the workgroup values calculated earlier
 	mCullLightShader->Dispatch(mWorkGroupsX, mWorkGroupsY, 1);
 
@@ -267,18 +283,33 @@ void App::RenderWorld()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	PushGroupMarker("Post Processing");
-	PostProcessingInputsForward ppInputs;
-	ppInputs.BackBufferFBO = 0;
-	ppInputs.WorkGroupX = mWorkGroupsX;
-	ppInputs.WorkGroupY = mWorkGroupsY;
-	ppInputs.EnableForwardPlusDebug = true;
-	ppInputs.SSBOVisibleLight = ssbo_visible_lights;
-	mPostProcessor->AddPostProcessingPasses(ppInputs);
-	PopGroupMarker();
 
+	if (mForwardRenderer != NULL)
+	{
+		mForwardRenderer->SetRenderTarget(mHdrRT);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightSSBO);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo_visible_lights);
+		glUniform1i(glGetUniformLocation(boxMat->GetShaderProgram()->GetProgramID(), "workgroup_x"), mWorkGroupsX);
+		glUniform1i(glGetUniformLocation(boxMat->GetShaderProgram()->GetProgramID(), "workgroup_y"), mWorkGroupsY);
 
-	//pRenderer->Render(scene, scene->GetActiveCamera());
+	}
+
+	pRenderer->Render(scene, scene->GetActiveCamera());
+
+	//PushGroupMarker("Post Processing");
+	//PostProcessingInputsForward ppInputs;
+	//ppInputs.SceneColorTex = mHdrRT;
+	//ppInputs.BackBufferFBO = 0;
+	//ppInputs.WorkGroupX = mWorkGroupsX;
+	//ppInputs.WorkGroupY = mWorkGroupsY;
+	//ppInputs.EnableForwardPlusDebug = false;
+	//ppInputs.SSBOVisibleLight = ssbo_visible_lights;
+	//ppInputs.BloomActive = false;
+	//ppInputs.Exposure = 1;
+	//mPostProcessor->AddPostProcessingPasses(ppInputs);
+	//PopGroupMarker();
+	
+	mPostProcessor->BlitToBackBuffer(mHdrRT, 0, window->GetWidth(), window->GetHeight());
 }
 
 void App::DestroyWorld()

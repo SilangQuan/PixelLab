@@ -276,113 +276,53 @@ void Mesh::CreateBufferData()
 
 CubeMesh::CubeMesh()
 {
-	GLfloat verticesData[] = {
-		// back face
-				-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-				 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-				 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-				 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-				-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-				-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-				// front face
-				-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-				 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-				 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-				 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-				-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-				-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-				// left face
-				-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-				-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-				-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-				-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-				-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-				-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-				// right face
-				 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-				 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-				 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-				 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-				 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-				 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
-				// bottom face
-				-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-				 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-				 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-				 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-				-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-				-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-				// top face
-				-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-				 1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-				 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-				 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-				-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-				-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left    
-
+	GLfloat verticesData0[] = {
+		0.5, -0.5, 0.5,0.0, 0.0, 1.0,0.0, 0.0,
+		-0.5, -0.5, 0.5,0.0, 0.0, 1.0,1.0, 0.0,
+		0.5, 0.5, 0.5,0.0, 0.0, 1.0,0.0, 1.0,
+		-0.5, 0.5, 0.5,0.0, 0.0, 1.0,1.0, 1.0,
+		0.5, 0.5, -0.5,0.0, 1.0, 0.0,0.0, 1.0,
+		-0.5, 0.5, -0.5,0.0, 1.0, 0.0,1.0, 1.0,
+		0.5, -0.5, -0.5,0.0, 0.0, -1.0,0.0, 1.0,
+		-0.5, -0.5, -0.5,0.0, 0.0, -1.0,1.0, 1.0,
+		0.5, 0.5, 0.5,0.0, 1.0, 0.0,0.0, 0.0,
+		-0.5, 0.5, 0.5,0.0, 1.0, 0.0,1.0, 0.0,
+		0.5, 0.5, -0.5,0.0, 0.0, -1.0,0.0, 0.0,
+		-0.5, 0.5, -0.5,0.0, 0.0, -1.0,1.0, 0.0,
+		0.5, -0.5, -0.5,0.0, -1.0, 0.0,0.0, 0.0,
+		0.5, -0.5, 0.5,0.0, -1.0, 0.0,0.0, 1.0,
+		-0.5, -0.5, 0.5,0.0, -1.0, 0.0,1.0, 1.0,
+		-0.5, -0.5, -0.5,0.0, -1.0, 0.0,1.0, 0.0,
+		-0.5, -0.5, 0.5,-1.0, 0.0, 0.0,0.0, 0.0,
+		-0.5, 0.5, 0.5,-1.0, 0.0, 0.0,0.0, 1.0,
+		-0.5, 0.5, -0.5,-1.0, 0.0, 0.0,1.0, 1.0,
+		-0.5, -0.5, -0.5,-1.0, 0.0, 0.0,1.0, 0.0,
+		0.5, -0.5, -0.5,1.0, 0.0, 0.0,0.0, 0.0,
+		0.5, 0.5, -0.5,1.0, 0.0, 0.0,0.0, 1.0,
+		0.5, 0.5, 0.5,1.0, 0.0, 0.0,1.0, 1.0,
+		0.5, -0.5, 0.5,1.0, 0.0, 0.0,1.0, 0.0,
 	};
-	// Set up vertex data (and buffer(s)) and attribute pointers
-	GLfloat verticesData1[] = {
-		// Positions      // Normals     // Texture Coords
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-		0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-		0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-		0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-		0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-		0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-		0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+	int indexes[] = { 0,3,2,0,1,3, 8,5,4,8,9,5, 10,7,6,10,11,7, 12,14,13,12,15,14, 16,18,17, 16,19,18,  
+		20,22,21,20,23, 22};
 
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-		0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-		0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-		0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-		0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
-	};
-	vector<Color> colors;
-	colors.push_back(Color(1.0f, 0.0f, 0.0f, 1.0f));
-	colors.push_back(Color(0.0f, 1.0f, 0.0f, 1.0f));
-	colors.push_back(Color(0.0f, 0.0f, 1.0f, 1.0f));
-	colors.push_back(Color(1.0f, 1.0f, 0.0f, 1.0f));
-
-	int vertexLength = 36;
+	int vertexLength = 24;
 	for (int i = 0; i < vertexLength; i++)
 	{
-		positions.push_back(Vector3(verticesData[8 * i + 0], verticesData[8 * i + 1], verticesData[8 * i + 2]));
-		normals.push_back(Vector3(verticesData[8 * i + 3], verticesData[8 * i + 4], verticesData[8 * i + 5]));
-		uvs.push_back(Vector2(verticesData[8 * i + 6], verticesData[8 * i + 7]));
+		positions.push_back(Vector3(verticesData0[8 * i + 0], verticesData0[8 * i + 1], verticesData0[8 * i + 2]));
+		normals.push_back(Vector3(verticesData0[8 * i + 3], verticesData0[8 * i + 4], verticesData0[8 * i + 5]));
+		uvs.push_back(Vector2(verticesData0[8 * i + 6], verticesData0[8 * i + 7]));
 	}
 
-
+	int indexCount = 36;
+	for (int i = 0; i < indexCount; i++)
+	{
+		triangles.push_back(indexes[i]);
+	}
 
 	CreateBufferData();
+
 }
 
 QuadMesh::QuadMesh()

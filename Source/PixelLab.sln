@@ -14,6 +14,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderTest", "ShaderTest\Sh
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureMapping", "TextureMapping\TextureMapping.vcxproj", "{E5D99F15-B8BA-4DBA-AA78-88CF2CE44906}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6DAB4501-FCEA-485B-8D64-5A3C908E5BD5} = {6DAB4501-FCEA-485B-8D64-5A3C908E5BD5}
+		{8C363924-5B03-4CEB-B0C1-6A814FE56EAE} = {8C363924-5B03-4CEB-B0C1-6A814FE56EAE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LightingBoxes", "Lighting\Lighting.vcxproj", "{01317F95-BF62-490D-B6E8-3173C80A2217}"
 	ProjectSection(ProjectDependencies) = postProject

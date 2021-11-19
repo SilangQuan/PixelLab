@@ -33,6 +33,8 @@ struct PostProcessingInputsForward
     bool EnableForwardPlusDebug;
     int WorkGroupX;
     int WorkGroupY;
+
+    GLuint SSBOVisibleLight;
 };
 
 class PostProcessor

@@ -2,14 +2,14 @@
 
 #include "../../SkyEngine/include/SkyEngine.h"
 
-
-
 class RenderTexture : public Texture {
 public:
 	RenderTexture();
 	~RenderTexture();
 	bool Init(int width, int height, ColorType color, DepthType depth, int msaaSamples = 0);
 	bool InitForDepthOnly(int inWidth, int inHeight, DepthType depth);
+
+	void SetDepth(unsigned int DepthBufferId);
 
 	void ActivateFB();
 	//void DeactivateFB();
@@ -20,8 +20,6 @@ public:
 	GLuint GetTextureID() override { return mColorBufferId; }
 
 	GLuint GetDepthID() { return mDepthBufferId; }
-
-
 
 	void BindForRead() { glBindFramebuffer(GL_READ_FRAMEBUFFER, mFboId); }
 	
@@ -35,6 +33,4 @@ private:
 
 	unsigned int mDepthBufferId;
 	unsigned int mColorBufferId;
-
-
 };

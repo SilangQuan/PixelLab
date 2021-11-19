@@ -4,6 +4,17 @@
 #include "Lighting/Light.h"
 #include "UniformVariable.h"
 class RenderContext;
+
+/*
+class ViewInfo
+{
+public:
+	Vector3 View;
+	Matrix4x4 Projection;
+	Matrix4x4 InvProjection;
+	Vector4 ScreenSizeAndInv;
+};*/
+
 class ShaderProgram
 {
 
@@ -37,6 +48,8 @@ public:
 	UniformVariable<Matrix4x4>* projectionUniform;
 	UniformVariable<Matrix4x4>* viewProjectionUniform;
 
+
+
 protected:
 	virtual void init(const std::string& vsFile, const std::string& fsFile);
 	void init(const std::string& csFile);
@@ -62,6 +75,8 @@ private:
 	bool hasViewProjectionUniform;
 	
 	string mFilePath;
+
+	//ViewInfo mViewInfo;
 };
 
 

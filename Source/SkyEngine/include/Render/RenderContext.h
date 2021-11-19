@@ -16,6 +16,7 @@ public:
 	Matrix4x4 modelMatrix;
 	Matrix4x4 viewMatrix;
 	Matrix4x4 projectionMatrix;
+	Matrix4x4 invProjectionMatrix;
 	Matrix4x4 viewProjectionMatrix;
 
 	TextureCubemap* SpecCubeMap;

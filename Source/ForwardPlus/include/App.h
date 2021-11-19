@@ -58,7 +58,7 @@ private:
 	void ClusterSetUp();
 
 	ShaderProgram* lampProgram;
-	ShaderProgram* lightingProgram;
+	ShaderProgram* mShadingProgram;
 	ShaderProgram* mDepthPreShader;
 
 	ShaderProgram* clusterSetupShader;
@@ -101,6 +101,7 @@ private:
 	unsigned int lightSSBO, lightIndexListSSBO, lightGridSSBO, lightIndexGlobalCountSSBO;
 
 	RenderTexture* mDepthPrePassTarget;
+	RenderTexture* mHdrRT;
 	PostProcessor* mPostProcessor;
 	ForwardSceneRenderer* mForwardRenderer;
 

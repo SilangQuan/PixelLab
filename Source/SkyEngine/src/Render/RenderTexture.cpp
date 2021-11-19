@@ -166,8 +166,22 @@ bool RenderTexture::Init(int inWidth, int inHeight, ColorType color, DepthType d
 	return true;
 }
 
+
 void RenderTexture::ActivateFB()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, mFboId);
 	glViewport(0, 0, mWidth, mHeight);
+}
+
+
+//Need to Check this function is ok.
+void RenderTexture::SetDepth(unsigned int DepthBufferId)
+{
+	mDepthBufferId = DepthBufferId;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, mFboId);
+	glBindRenderbuffer(GL_RENDERBUFFER, mDepthBufferId);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepthBufferId);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

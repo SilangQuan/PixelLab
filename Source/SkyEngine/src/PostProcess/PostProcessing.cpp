@@ -82,6 +82,8 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
         glUniform1i(glGetUniformLocation(mForwardPlusDebugShader->GetProgramID(), "workgroup_x"), Inputs.WorkGroupX);
         glUniform1i(glGetUniformLocation(mForwardPlusDebugShader->GetProgramID(), "workgroup_y"), Inputs.WorkGroupY);
 
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, Inputs.SSBOVisibleLight);
+
         DrawQuard();
         return;
     }
@@ -184,7 +186,7 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
     glDisable(GL_DEPTH_TEST);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glCullFace(GL_FRONT);
+    glCullFace(GL_NONE);
 
     mToneMappingShader->Use();
 
@@ -217,7 +219,7 @@ void PostProcessor::BlitToBackBuffer(RenderTexture* rt, GLuint backBufferFBO, in
     glDisable(GL_DEPTH_TEST);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glCullFace(GL_FRONT);
+    glCullFace(GL_NONE);
 
     mSimpleBlitShader->Use();
     glUniform1i(glGetUniformLocation(mSimpleBlitShader->GetProgramID(), "sourceRT"), 0);

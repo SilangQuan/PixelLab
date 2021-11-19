@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	creationFlags.height = height;
 	creationFlags.title = "Texture Mapping";
 	creationFlags.isWindowed = true;
-	creationFlags.renderPass = RenderingPath::Forward;
+	creationFlags.renderPath = RenderingPath::Forward;
 	qDebug() << "Begin App";
 	App triangleApp;
 

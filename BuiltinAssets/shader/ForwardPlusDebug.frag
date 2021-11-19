@@ -35,12 +35,15 @@ void main()
 	//float shade = float(count) / float(MAX_LIGHTS_PER_TILE * 2); 
 	float shade = float(count) / MAX_LIGHTS_PER_TILE; 
 
-	float shadeX = float(tileID.x)/workgroup_x;
-	float shadeY = float(tileID.y)/workgroup_y;
-	fragColor = vec4(max(shadeX, shadeY));
-	//fragColor = vec4(shadeX);
+	//float shadeX = float(tileID.x)/workgroup_x;
+	//float shadeY = float(tileID.y)/workgroup_y;
+	//fragColor = vec4(shadeX, shadeY,0,1);
 
-	float tmp = lights_indices[offset] - offset;
-	fragColor = vec4(tmp,0,0,1);
+
+	fragColor = vec4(shade);
+
+	//float tmp = 1.0 * lights_indices[offset]/MAX_LIGHTS_PER_TILE/workgroup_x;
+
+	//fragColor = vec4(shade,0,0,1);
 	//fragColor = vec4(shade);
 }

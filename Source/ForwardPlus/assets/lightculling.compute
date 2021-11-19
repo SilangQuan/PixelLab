@@ -59,7 +59,7 @@ void main() {
 
 	uint depth_uint = floatBitsToUint(depth);
 	atomicMin(min_depth, depth_uint);
-	atomicMax(min_depth, depth_uint);
+	atomicMax(max_depth, depth_uint);
 
 	barrier();
 
@@ -122,11 +122,11 @@ void main() {
 		for (uint i = 0; i < MAX_LIGHTS_PER_TILE; i++) 
 		{
 			//For debuging.
-			lights_indices[offset + i] = int(offset);
+			//lights_indices[offset + i] = int(offset);
 		}
 
 		for (uint i = 0; i < group_light_count; i++) {
-			//lights_indices[offset + i] = group_light_index[i];
+			lights_indices[offset + i] = group_light_index[i];
 			//For debuging.
 			//lights_indices[offset + i] = num_lights ;
 		}
