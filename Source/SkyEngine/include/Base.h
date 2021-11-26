@@ -171,8 +171,11 @@ enum ETextureVariableType
 struct ViewInfo
 {
 public:
-	int WindowWidth;
-	int WindowHeight;
+	Matrix4x4 View;
+	Matrix4x4 Projection;
+	Matrix4x4 InvProject;
+	Matrix4x4 ViewPorject;
+	Vector4 ScreenSizeAndInv;
 };
 
 class Base

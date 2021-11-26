@@ -22,6 +22,8 @@ public:
 	void RenderGameObject(GameObject* gameObject, RenderContext* renderContext);
 
 	void SetRenderTarget(RenderTexture* RT);
+	void SetTileShadingInfo(unsigned int LightInfoBuffer, unsigned int VisibleLightsBuffer, int WorkGroupsX, int WorkGroupsY);
+
 	void SetReplacementShader(ShaderProgram* shader) { mReplaceShader = shader; };
 	RenderContext* GetRenderContext() { return renderContext; };
 

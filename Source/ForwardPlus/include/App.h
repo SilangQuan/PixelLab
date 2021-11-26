@@ -107,4 +107,6 @@ private:
 
 	unsigned int mWorkGroupsX;
 	unsigned int mWorkGroupsY;
+
+	ViewInfo mMainViewInfo;
 };

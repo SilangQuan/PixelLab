@@ -54,6 +54,15 @@ void ForwardSceneRenderer::SetRenderTarget(RenderTexture* RT)
 	mRenderTarget = RT;
 }
 
+void ForwardSceneRenderer::SetTileShadingInfo(unsigned int LightInfoBuffer,unsigned int VisibleLightsBuffer,int WorkGroupsX,int WorkGroupsY)
+{
+	renderContext->bEnableTileShading = true;
+	renderContext->LightInfoBuffer = LightInfoBuffer;
+	renderContext->VisibleLightsBuffer = VisibleLightsBuffer;
+	renderContext->WorkGroupsX = WorkGroupsX;
+	renderContext->WorkGroupsY = WorkGroupsY;
+}
+
 
 void ForwardSceneRenderer::Render(Scene* scene, Camera* camera)
 {

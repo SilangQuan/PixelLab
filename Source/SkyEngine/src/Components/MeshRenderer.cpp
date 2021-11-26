@@ -48,6 +48,14 @@ void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceSh
 		material->Bind(renderContext);
 	}
 
+	if (renderContext->bEnableTileShading)
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, renderContext->LightInfoBuffer);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, renderContext->VisibleLightsBuffer);
+		glUniform1i(glGetUniformLocation(shaderProgram->GetProgramID(), "workgroup_x"), renderContext->WorkGroupsX);
+		glUniform1i(glGetUniformLocation(shaderProgram->GetProgramID(), "workgroup_y"), renderContext->WorkGroupsY);
+	}
+
 	//Bind the Vertex Array
 	GLuint vao = mesh->GetVAO();
 	glBindVertexArray(vao);

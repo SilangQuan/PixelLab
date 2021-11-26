@@ -100,7 +100,7 @@ void App::InitSSBOs()
 		lights[i].position = Vector3(light->position.x, light->position.y, light->position.z);
 		lights[i].color = Vector3(light->color.r, light->color.g, light->color.b);
 		lights[i].intensity = 1.0f;
-		lights[i].radius = 10.0f;
+		lights[i].radius = 3.0f;
 	}
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightSSBO);
@@ -117,7 +117,7 @@ void App::InitSSBOs()
 
 bool App::CreateWorld()
 {
-	Random::SetSeed(2);
+	Random::SetSeed(7);
 	mixValue = 0.5f;
 	lampProgram = new ShaderProgram("./assets/lamp.vert", "./assets/lamp.frag");
 	lampMat = new Material(lampProgram);
@@ -158,7 +158,7 @@ bool App::CreateWorld()
 	{
 		MeshRenderer* box2MeshRenderer = new MeshRenderer(cubeMesh, boxMat);
 		boxes[i].transform.Translate(Vector3(Random::Range(-6.0f, 6.0f), Random::Range(-6.0f, 6.0f), Random::Range(-6.0f, 6.0f)));
-		boxes[i].transform.Scale(Random::Range(0.1f, 2.0f) * Vector3::one);
+		boxes[i].transform.Scale(Random::Range(0.2f, 4.0f) * Vector3::one);
 		boxes[i].transform.Rotate(Random::Range(0, 360), Random::Range(0, 360), Random::Range(0, 360));
 		boxes[i].AddComponent(box2MeshRenderer);
 		scene->AddGameObject(&boxes[i]);
@@ -245,16 +245,19 @@ void App::RenderWorld()
 
 	glUseProgram(mCullLightShader->GetProgramID());
 	int LightCout = GetLightManager().GetPointLights().size();
-	Matrix4x4 VP = camera->GetViewMatrix() * camera->GetProjectionMatrix();
-	Matrix4x4 V = camera->GetViewMatrix();
-	Matrix4x4 P =  camera->GetProjectionMatrix();
-	Matrix4x4 InvP =  camera->GetProjectionMatrix().inverted();
-	Vector4 ScreenSizeAndInv(GetWindowWidth(), GetWindowHeight(), 1.0f / GetWindowWidth(), 1.0f / GetWindowHeight());
+	mMainViewInfo.ViewPorject = camera->GetViewMatrix() * camera->GetProjectionMatrix();
+	mMainViewInfo.View  = camera->GetViewMatrix();
+	mMainViewInfo.Projection=  camera->GetProjectionMatrix();
+	mMainViewInfo.InvProject =  camera->GetProjectionMatrix().inverted();
+	mMainViewInfo.ScreenSizeAndInv = Vector4(GetWindowWidth(), GetWindowHeight(), 1.0f / GetWindowWidth(), 1.0f / GetWindowHeight());
+	
+	float* p = &(mMainViewInfo.Projection[0]);
+
 	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.Projection"), 1, GL_FALSE, &(camera->projectionMaxtrix[0]));
 	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.View"), 1, GL_FALSE, &(camera->viewMatrix[0]));
-	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.InvProjection"), 1, GL_FALSE, &(InvP[0]));
-	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ViewProjection"), 1, GL_FALSE, &(VP[0]));
-	glUniform4f(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ScreenSizeAndInv"),ScreenSizeAndInv.x,ScreenSizeAndInv.y,ScreenSizeAndInv.z,ScreenSizeAndInv.w);
+	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.InvProjection"), 1, GL_FALSE, &(mMainViewInfo.InvProject[0]));
+	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ViewProjection"), 1, GL_FALSE, &(mMainViewInfo.ViewPorject[0]));
+	glUniform4f(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ScreenSizeAndInv"), mMainViewInfo.ScreenSizeAndInv.x, mMainViewInfo.ScreenSizeAndInv.y, mMainViewInfo.ScreenSizeAndInv.z, mMainViewInfo.ScreenSizeAndInv.w);
 	glUniform1i(glGetUniformLocation(mCullLightShader->GetProgramID(), "num_lights"), LightCout);
 	//mCullLightShader->SetUniform("num_lights", LightCout);
 	//mCullLightShader->Bind();
@@ -283,33 +286,30 @@ void App::RenderWorld()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-
 	if (mForwardRenderer != NULL)
 	{
 		mForwardRenderer->SetRenderTarget(mHdrRT);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightSSBO);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo_visible_lights);
-		glUniform1i(glGetUniformLocation(boxMat->GetShaderProgram()->GetProgramID(), "workgroup_x"), mWorkGroupsX);
-		glUniform1i(glGetUniformLocation(boxMat->GetShaderProgram()->GetProgramID(), "workgroup_y"), mWorkGroupsY);
-
+		mForwardRenderer->SetTileShadingInfo(lightSSBO, ssbo_visible_lights, mWorkGroupsX, mWorkGroupsY);
 	}
-
 	pRenderer->Render(scene, scene->GetActiveCamera());
 
-	//PushGroupMarker("Post Processing");
-	//PostProcessingInputsForward ppInputs;
-	//ppInputs.SceneColorTex = mHdrRT;
-	//ppInputs.BackBufferFBO = 0;
-	//ppInputs.WorkGroupX = mWorkGroupsX;
-	//ppInputs.WorkGroupY = mWorkGroupsY;
-	//ppInputs.EnableForwardPlusDebug = false;
-	//ppInputs.SSBOVisibleLight = ssbo_visible_lights;
-	//ppInputs.BloomActive = false;
-	//ppInputs.Exposure = 1;
-	//mPostProcessor->AddPostProcessingPasses(ppInputs);
-	//PopGroupMarker();
+	PushGroupMarker("Post Processing");
+	PostProcessingInputsForward ppInputs;
+	ppInputs.SceneColorTex = mHdrRT;
+	ppInputs.DepthTex = mDepthPrePassTarget;
+	ppInputs.BackBufferFBO = 0;
+	ppInputs.WorkGroupX = mWorkGroupsX;
+	ppInputs.WorkGroupY = mWorkGroupsY;
+	ppInputs.EnableForwardPlusDebug = false;
+	ppInputs.EnableDepthDebug = true;
+	ppInputs.SSBOVisibleLight = ssbo_visible_lights;
+	ppInputs.BloomActive = false;
+	ppInputs.Exposure = 1;
+	ppInputs.MainViewInfo = mMainViewInfo;
+	mPostProcessor->AddPostProcessingPasses(ppInputs);
+	PopGroupMarker();
 	
-	mPostProcessor->BlitToBackBuffer(mHdrRT, 0, window->GetWidth(), window->GetHeight());
+	//mPostProcessor->BlitToBackBuffer(mHdrRT, 0, window->GetWidth(), window->GetHeight());
 }
 
 void App::DestroyWorld()

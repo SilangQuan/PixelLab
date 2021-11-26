@@ -22,4 +22,12 @@ public:
 	TextureCubemap* SpecCubeMap;
 	TextureCubemap* DiffuseCubeMap;
 	Texture* BrdfLut;
+
+	//Forward plus info
+	bool bEnableTileShading;
+	unsigned int LightInfoBuffer;
+	unsigned int VisibleLightsBuffer;
+	int WorkGroupsX;
+	int WorkGroupsY;
+
 };

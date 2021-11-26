@@ -18,6 +18,7 @@ void PostProcessor::InitRenderData()
     mSimpleBlitShader = new ShaderProgram("../../BuiltinAssets/shader/Tonemap.vert", "../../BuiltinAssets/shader/SimpleBlit.frag");
         
     mForwardPlusDebugShader = new ShaderProgram("../../BuiltinAssets/shader/ScreenQuad.vert", "../../BuiltinAssets/shader/ForwardPlusDebug.frag");
+    mDepthDebugShader = new ShaderProgram("../../BuiltinAssets/shader/ScreenQuad.vert", "../../BuiltinAssets/shader/DepthDebug.frag");
    
     // configure VAO/VBO
     unsigned int VBO;
@@ -65,6 +66,7 @@ void PostProcessor::AddPass(ShaderProgram* prog, RenderTexture* target)
     DrawQuard();
 }
 
+
 void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& Inputs)
 {
     if (Inputs.EnableForwardPlusDebug)
@@ -83,6 +85,33 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
         glUniform1i(glGetUniformLocation(mForwardPlusDebugShader->GetProgramID(), "workgroup_y"), Inputs.WorkGroupY);
 
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, Inputs.SSBOVisibleLight);
+
+        DrawQuard();
+        return;
+    }
+    else if (Inputs.EnableDepthDebug)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, Inputs.BackBufferFBO);
+        glViewport(0, 0, Inputs.Width, Inputs.Height);
+
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glCullFace(GL_NONE);
+
+        mDepthDebugShader->Use();
+
+        glUniform1i(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "DepthRT"), 0);
+
+        glActiveTexture(GL_TEXTURE0);
+       // glBindTexture(GL_TEXTURE_2D, Inputs.DepthTex->GetDepthID());
+        glBindTexture(GL_TEXTURE_2D, Inputs.DepthTex->GetDepthID());
+
+        glUniformMatrix4fv(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.Projection"), 1, GL_FALSE, Inputs.MainViewInfo.Projection.get());
+        glUniformMatrix4fv(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.View"), 1, GL_FALSE, Inputs.MainViewInfo.View.get());
+        glUniformMatrix4fv(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.InvProjection"), 1, GL_FALSE, Inputs.MainViewInfo.InvProject.get());
+        glUniformMatrix4fv(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.ViewProjection"), 1, GL_FALSE, Inputs.MainViewInfo.ViewPorject.get());
+        glUniform4f(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.ScreenSizeAndInv"), Inputs.MainViewInfo.ScreenSizeAndInv.x, Inputs.MainViewInfo.ScreenSizeAndInv.y, Inputs.MainViewInfo.ScreenSizeAndInv.z, Inputs.MainViewInfo.ScreenSizeAndInv.w);
 
         DrawQuard();
         return;

@@ -36,6 +36,17 @@ shared vec4 frustum_planes[6];
 shared uint group_light_count;
 shared int group_light_index[MAX_LIGHTS_PER_TILE];
 
+// convert a depth value from post-projection space into view space
+float ConvertProjDepthToView(float z)
+{
+//	return -ViewInfo.InvProjection[3][2] /(ViewInfo.InvProjection[2][2] + (2 * z - 1));
+	
+	
+	z = 1.f / (z * ViewInfo.InvProjection[2][3] + ViewInfo.InvProjection[3][3]);
+	return z;
+}
+
+
 layout(local_size_x = TILE_SIZE, local_size_y = TILE_SIZE) in;
 void main() {
 	ivec2 tile_id = ivec2(gl_WorkGroupID.xy);
@@ -56,8 +67,20 @@ void main() {
 	vec2 screen_uv = gl_GlobalInvocationID.xy / ViewInfo.ScreenSizeAndInv.xy;
 
 	float depth = texture(depthmap, screen_uv).r;
+	// We are only interested in the depth here
+	vec4 ndcCoords = vec4(0, 0, 2 * depth - 1.0f, 1.0f);
 
-	uint depth_uint = floatBitsToUint(depth);
+	// Unproject the vector into (homogenous) view-space vector
+	vec4 viewCoords =  ndcCoords * ViewInfo.InvProjection;
+
+	// Divide by w, which results in actual view-space z value
+	//float linearDepth = viewCoords.z / viewCoords.w;
+	
+	
+	float viewPosZ = ConvertProjDepthToView(depth);
+	
+	//depth = (0.5 * ViewInfo.Projection[3][2]) / (depth + 0.5 * ViewInfo.Projection[2][2] - 0.5);
+	uint depth_uint = floatBitsToUint(viewPosZ);
 	atomicMin(min_depth, depth_uint);
 	atomicMax(max_depth, depth_uint);
 

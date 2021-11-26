@@ -16,6 +16,7 @@ enum BUFFER_PYRAMID {
 
 struct PostProcessingInputsForward
 {
+public:
 	RenderTexture* SceneColorTex;
     RenderTexture* DepthTex;
 	GLuint BackBufferFBO;
@@ -35,6 +36,11 @@ struct PostProcessingInputsForward
     int WorkGroupY;
 
     GLuint SSBOVisibleLight;
+
+    bool EnableDepthDebug;
+
+    ViewInfo MainViewInfo;
+
 };
 
 class PostProcessor
@@ -58,6 +64,7 @@ private:
     ShaderProgram* mSimpleBlitShader;
 
     ShaderProgram* mForwardPlusDebugShader;
+    ShaderProgram* mDepthDebugShader;
 
     Texture mBlackDummy;
     Texture mWhiteDummy;
