@@ -176,6 +176,7 @@ public:
 	Matrix4x4 InvProject;
 	Matrix4x4 ViewPorject;
 	Vector4 ScreenSizeAndInv;
+	Vector4 ZParams;
 };
 
 class Base

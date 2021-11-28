@@ -100,7 +100,7 @@ void App::InitSSBOs()
 		lights[i].position = Vector3(light->position.x, light->position.y, light->position.z);
 		lights[i].color = Vector3(light->color.r, light->color.g, light->color.b);
 		lights[i].intensity = 1.0f;
-		lights[i].radius = 3.0f;
+		lights[i].radius = 7.0f;
 	}
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightSSBO);
@@ -129,6 +129,7 @@ bool App::CreateWorld()
 
 	clusterSetupShader = new ShaderProgram("./assets/clusterShader.compute");
 	clusterCullLightShader = new ShaderProgram("./assets/clusterCullLightShader.compute");
+	//mCullLightShader = new ShaderProgram("./assets/lightculling2.compute");
 	mCullLightShader = new ShaderProgram("./assets/lightculling.compute");
 	
 	diffuseMap = ResourceManager::GetInstance()->TryGetResource<Texture>("./assets/crate.jpg");
@@ -250,14 +251,17 @@ void App::RenderWorld()
 	mMainViewInfo.Projection=  camera->GetProjectionMatrix();
 	mMainViewInfo.InvProject =  camera->GetProjectionMatrix().inverted();
 	mMainViewInfo.ScreenSizeAndInv = Vector4(GetWindowWidth(), GetWindowHeight(), 1.0f / GetWindowWidth(), 1.0f / GetWindowHeight());
-	
+	mMainViewInfo.ZParams = Vector4((camera->zFar - camera->zNear) / camera->zFar * camera->zNear, 1 / camera->zNear, 0, 0);
+
 	float* p = &(mMainViewInfo.Projection[0]);
 
 	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.Projection"), 1, GL_FALSE, &(camera->projectionMaxtrix[0]));
 	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.View"), 1, GL_FALSE, &(camera->viewMatrix[0]));
+	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ViewProjection"), 1, GL_FALSE, mMainViewInfo.ViewPorject.get());
 	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.InvProjection"), 1, GL_FALSE, &(mMainViewInfo.InvProject[0]));
-	glUniformMatrix4fv(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ViewProjection"), 1, GL_FALSE, &(mMainViewInfo.ViewPorject[0]));
 	glUniform4f(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ScreenSizeAndInv"), mMainViewInfo.ScreenSizeAndInv.x, mMainViewInfo.ScreenSizeAndInv.y, mMainViewInfo.ScreenSizeAndInv.z, mMainViewInfo.ScreenSizeAndInv.w);
+	glUniform4f(glGetUniformLocation(mCullLightShader->GetProgramID(), "ViewInfo.ZParams"), mMainViewInfo.ZParams.x, mMainViewInfo.ZParams.y, mMainViewInfo.ZParams.z, mMainViewInfo.ZParams.w);
+
 	glUniform1i(glGetUniformLocation(mCullLightShader->GetProgramID(), "num_lights"), LightCout);
 	//mCullLightShader->SetUniform("num_lights", LightCout);
 	//mCullLightShader->Bind();
@@ -300,8 +304,8 @@ void App::RenderWorld()
 	ppInputs.BackBufferFBO = 0;
 	ppInputs.WorkGroupX = mWorkGroupsX;
 	ppInputs.WorkGroupY = mWorkGroupsY;
-	ppInputs.EnableForwardPlusDebug = false;
-	ppInputs.EnableDepthDebug = true;
+	ppInputs.EnableForwardPlusDebug = mEnableTileDebug;
+	ppInputs.EnableDepthDebug = false;
 	ppInputs.SSBOVisibleLight = ssbo_visible_lights;
 	ppInputs.BloomActive = false;
 	ppInputs.Exposure = 1;
@@ -323,4 +327,34 @@ void App::DestroyWorld()
 void App::FrameMove()
 {
 
+}
+
+void App::RenderUI()
+{
+	PushGroupMarker("IMGui");
+
+	pImGuiRenderer->BeginFrame(window);
+	int uiWidth = 250;
+	int uiHeight = 300;
+
+	// position the controls widget in the top-right corner with some margin
+	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
+	// here we set the calculated width and also make the height to be
+	// be the height of the main window also with some margin
+	ImGui::SetNextWindowSize(
+		ImVec2(static_cast<float>(uiWidth), static_cast<float>(uiHeight - 20)),
+		ImGuiCond_Always
+	);
+	ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoResize);
+
+	bool bTestCheckBox = false;
+
+
+	ImGui::Text("Debug:");
+	ImGui::Checkbox("TileDebug", &mEnableTileDebug);
+	ImGui::NewLine();
+
+	ImGui::End();
+	pImGuiRenderer->EndFrame(window);
+	PopGroupMarker();
 }

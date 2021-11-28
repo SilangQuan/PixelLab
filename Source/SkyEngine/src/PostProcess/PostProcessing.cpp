@@ -112,6 +112,7 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
         glUniformMatrix4fv(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.InvProjection"), 1, GL_FALSE, Inputs.MainViewInfo.InvProject.get());
         glUniformMatrix4fv(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.ViewProjection"), 1, GL_FALSE, Inputs.MainViewInfo.ViewPorject.get());
         glUniform4f(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.ScreenSizeAndInv"), Inputs.MainViewInfo.ScreenSizeAndInv.x, Inputs.MainViewInfo.ScreenSizeAndInv.y, Inputs.MainViewInfo.ScreenSizeAndInv.z, Inputs.MainViewInfo.ScreenSizeAndInv.w);
+        glUniform4f(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "ViewInfo.ZParams"), Inputs.MainViewInfo.ZParams.x, Inputs.MainViewInfo.ZParams.y, Inputs.MainViewInfo.ZParams.z, Inputs.MainViewInfo.ZParams.w);
 
         DrawQuard();
         return;

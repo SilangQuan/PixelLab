@@ -33,6 +33,7 @@ public:
 	void FrameMove();
 	void RenderWorld();
 
+	void RenderUI();
 private:
 	GLuint boxVBO, boxVAO;
 
@@ -109,4 +110,6 @@ private:
 	unsigned int mWorkGroupsY;
 
 	ViewInfo mMainViewInfo;
+
+	bool mEnableTileDebug = false;
 };
