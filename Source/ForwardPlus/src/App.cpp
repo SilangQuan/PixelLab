@@ -28,30 +28,34 @@ void App::InitLights()
 	delete(light);
 
 	int pointLightCount = MAX_LIGHTS_PER_TILE;
+	//int pointLightCount = 1;
 
 	lightObjs = new GameObject[pointLightCount];
 
 	Color pointColors[]{ Color::red, Color::green, Color::white, Color::blue };
-	
+	//Vector3 poses[]{ Vector3(-1,1,-4), Vector3(-1,-1,-4), Vector3(1,1,-4), Vector3(1,-1,-4) };
+	Vector3 poses[]{ Vector3(0,0,-4), Vector3(-1,-1,-4), Vector3(1,1,-4), Vector3(1,-1,-4)};
 	for (int i = 0; i < pointLightCount; i++)
 	{
-		Vector3 randomPos(Random::Range(-3.0f, 3.0f), Random::Range(-3.0f, 3.0f), Random::Range(-3.0f, 3.0f));
-	
 		light = new Light(kLightPoint);
-		light->position = 3 * randomPos;
+		//Vector3 randomPos(Random::Range(-3.0f, 3.0f), Random::Range(-3.0f, 3.0f), Random::Range(-3.0f, 3.0f));
+		//light->position = 3 * randomPos;
+
+		//light->position = Vector3(i, i, -2);
+		light->position = poses[i % 4];
 		light->constant = 1.0f;
 		light->linear = 0.9f;
 		light->quadratic = 0.32;
 		light->color = pointColors[i%4];
 		light->AddToManager();
 
-		//Material* tmp = new Material(lampProgram);
-		//MeshRenderer * lampMeshRenderer = new MeshRenderer(sphereMesh, tmp);
-		//tmp->SetColor("lampColor", light->color);
-		//lightObjs[i].AddComponent(lampMeshRenderer);
-		//lightObjs[i].transform.Translate(light->position);
-		//lightObjs[i].transform.scale = 0.1f * Vector3::one;
-		//scene->AddGameObject(&lightObjs[i]);
+		Material* tmp = new Material(lampProgram);
+		MeshRenderer * lampMeshRenderer = new MeshRenderer(sphereMesh, tmp);
+		tmp->SetColor("lampColor", light->color);
+		lightObjs[i].AddComponent(lampMeshRenderer);
+		lightObjs[i].transform.Translate(light->position);
+		lightObjs[i].transform.scale = 0.1f * Vector3::one;
+		scene->AddGameObject(&lightObjs[i]);
 	}
 }
 GLuint FramebufferName = 0;
@@ -100,7 +104,7 @@ void App::InitSSBOs()
 		lights[i].position = Vector3(light->position.x, light->position.y, light->position.z);
 		lights[i].color = Vector3(light->color.r, light->color.g, light->color.b);
 		lights[i].intensity = 1.0f;
-		lights[i].radius = 7.0f;
+		lights[i].radius = 1.0f;
 	}
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightSSBO);
@@ -143,7 +147,9 @@ bool App::CreateWorld()
 	boxMat->AddTextureVariable("material.specular", specularMap);
 	boxMat->SetFloat("material.shininess", 32.0f);
 	boxMat->SetCullMode(ECullMode::CM_Back);
-
+	box->transform.Translate(Vector3(0, 0, -3));
+	box->transform.Rotate(40, 30, 40);
+	box->transform.Scale( 1.3 * Vector3::one);
 	cubeMesh = new CubeMesh();
 	sphereMesh = new SphereMesh(10, 20);
 
@@ -153,23 +159,25 @@ bool App::CreateWorld()
 
 	scene->AddGameObject(box);
 
-	boxes = new GameObject[10];
+	//
+	//boxes = new GameObject[10];
+	//
+	//for (int i = 0; i < 10; i++)
+	//{
+	//	MeshRenderer* box2MeshRenderer = new MeshRenderer(cubeMesh, boxMat);
+	//	boxes[i].transform.Translate(Vector3(Random::Range(-6.0f, 6.0f), Random::Range(-6.0f, 6.0f), Random::Range(-6.0f, 6.0f)));
+	//	boxes[i].transform.Scale(Random::Range(0.2f, 4.0f) * Vector3::one);
+	//	boxes[i].transform.Rotate(Random::Range(0, 360), Random::Range(0, 360), Random::Range(0, 360));
+	//	boxes[i].AddComponent(box2MeshRenderer);
+	//	scene->AddGameObject(&boxes[i]);
+	//} 
 
-	for (int i = 0; i < 10; i++)
-	{
-		MeshRenderer* box2MeshRenderer = new MeshRenderer(cubeMesh, boxMat);
-		boxes[i].transform.Translate(Vector3(Random::Range(-6.0f, 6.0f), Random::Range(-6.0f, 6.0f), Random::Range(-6.0f, 6.0f)));
-		boxes[i].transform.Scale(Random::Range(0.2f, 4.0f) * Vector3::one);
-		boxes[i].transform.Rotate(Random::Range(0, 360), Random::Range(0, 360), Random::Range(0, 360));
-		boxes[i].AddComponent(box2MeshRenderer);
-		scene->AddGameObject(&boxes[i]);
-	} 
 	InitLights();
 
 	boxMat->SetDirectionLight(*GetLightManager().GetDirectionLight());
 	boxMat->SetPointLight(GetLightManager().GetPointLights());
 
-	camera = new Camera(Vector3(0, 0, -9), Vector3::zero, Vector3::up);
+	camera = new Camera(Vector3(0, 0, -5), Vector3::zero, Vector3::up);
 	camera->SetFrustrum(-1.778f, 1.778f, -1.0f, 1.0f, 1, 2000, true);
 	scene->SetActiveCamera(camera);
 

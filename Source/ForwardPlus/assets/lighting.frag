@@ -71,13 +71,14 @@ void main()
             int indices = lights_indices[offset + i];
 	        //vec3 ts_light_pos = vs_in.TBN * lights[indices].position;
             vec3 light_pos = lights[indices].position;
+            float radius = lights[indices].radius;
             vec3 lightDir = normalize(light_pos - FragPos);
             // Diffuse shadingcolor
             float diff = max(dot(norm, lightDir), 0.0);
             // Attenuation
             float distance = length(light_pos - FragPos);
-            float attenuation = 3.0f /  (distance );    
-            vec3 diffuse = lights[indices].color.rgb * diff * vec3(texture(material.diffuse, TexCoords).rgb);
+            float attenuation = max(0,(radius - distance )/radius);    
+            vec3 diffuse = attenuation * lights[indices].color.rgb * diff * vec3(texture(material.diffuse, TexCoords).rgb);
             result += diffuse;
         }
     }

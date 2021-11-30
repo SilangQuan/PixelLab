@@ -1,6 +1,7 @@
 #version 430 core
 #define TILE_SIZE 16
 #define MAX_LIGHTS_PER_TILE 4
+#define FLT_MAX 3.402823466e+38F
 
 struct Light {
 	vec3 position;
@@ -44,10 +45,62 @@ float ConvertProjDepthToView(float z)
 	return Zv;
 }
 
+// point-plane distance, simplified for the case where 
+// the plane passes through the origin
+float GetSignedDistanceFromPlane(in vec4 p, in vec4 eqn)
+{
+    // dot( eqn.xyz, p.xyz ) + eqn.w, , except we know eqn.w is zero 
+    // (see CreatePlaneEquation above)
+	return dot(eqn.xyz, p.xyz);
+}
+
+// this creates the standard Hessian-normal-form plane equation from three points, 
+// except it is simplified for the case where the first point is the origin
+vec4 CreatePlaneEquation(vec4 b, vec4 c)
+{
+	vec4 n;
+
+    // normalize(cross( b.xyz-a.xyz, c.xyz-a.xyz )), except we know "a" is the origin
+	n.xyz = normalize(cross(b.xyz, c.xyz));
+
+    // -(n dot a), except we know "a" is the origin
+	n.w = 0;
+
+	return n;
+}
+
+vec3 CreatePlaneEqu(vec3 b, vec3 c)
+{
+	vec3 n;
+
+    // normalize(cross( b.xyz-a.xyz, c.xyz-a.xyz )), except we know "a" is the origin
+	n.xyz = normalize(cross(b.xyz, c.xyz));
+
+	return n;
+}
+
+float GetSignedDistanceFromPlane(in vec4 p, in vec3 eqn)
+{
+    // dot( eqn.xyz, p.xyz ) + eqn.w, , except we know eqn.w is zero 
+    // (see CreatePlaneEquation above)
+	return dot(eqn.xyz, p.xyz);
+}
+
+vec4 ConvertProjToView(vec4 p)
+{
+	p = ViewInfo.InvProjection * p;
+	p /= p.w;
+    // FIXME: Added the following line, not needed in D3D11 or ForwardPlus11 example. [2014-07-07]
+	//p.y = -p.y;
+	return p;
+}
+
 layout(local_size_x = TILE_SIZE, local_size_y = TILE_SIZE) in;
 void main() {
 	ivec2 tile_id = ivec2(gl_WorkGroupID.xy);
-
+	uvec3 globalIdx = gl_GlobalInvocationID;
+	uvec3 groupIdx = gl_WorkGroupID;
+	
 	if (gl_LocalInvocationIndex == 0) {
 		min_depth = 0xFFFFFFFF;
 		max_depth = 0x0;
@@ -65,63 +118,129 @@ void main() {
 
 	float depth = texture(depthmap, screen_uv).r;
 	
-	//float viewPosZ = ConvertProjDepthToView(depth);
-	
+	float viewPosZ = ConvertProjDepthToView(depth);
+	float minZ = FLT_MAX;
+	float maxZ = 0.0f;
 	//depth = (0.5 * ViewInfo.Projection[3][2]) / (depth + 0.5 * ViewInfo.Projection[2][2] - 0.5);
-	uint depth_uint = floatBitsToUint(depth);
+	uint depth_uint = floatBitsToUint(viewPosZ);
 	atomicMin(min_depth, depth_uint);
 	atomicMax(max_depth, depth_uint);
 
 	barrier();
 
-	// Compute Tile frustrum planes
-	if (gl_LocalInvocationIndex == 0) {
-		float min_group_depth = uintBitsToFloat(min_depth);
-		float max_group_depth = uintBitsToFloat(max_depth);
 
-		vec4 vs_min_depth = (ViewInfo.InvProjection * vec4(0.0, 0.0, (2.0 * min_group_depth - 1.0), 1.0));
-		vec4 vs_max_depth = (ViewInfo.InvProjection * vec4(0.0, 0.0, (2.0 * max_group_depth - 1.0), 1.0));
-		vs_min_depth /= vs_min_depth.w;
-		vs_max_depth /= vs_max_depth.w;
-		min_group_depth = vs_min_depth.z;
-		max_group_depth = vs_max_depth.z;
+	vec3 frustumEqn[4];
+    {  
+		/*
+        // construct frustum for this tile
+		uint pxm = TILE_SIZE * groupIdx.x;
+		uint pym = TILE_SIZE * groupIdx.y;
+		uint pxp = TILE_SIZE * (groupIdx.x + 1);
+		uint pyp = TILE_SIZE * (groupIdx.y + 1);
 
-		vec2 tile_scale = vec2(ViewInfo.ScreenSizeAndInv.xy) * (1.0 / float(2 * TILE_SIZE));
-		vec2 tile_bias = tile_scale - vec2(gl_WorkGroupID.xy);
+		uint uWindowWidthEvenlyDivisibleByTileRes = TILE_SIZE * gl_WorkGroupID.x;
+		uint uWindowHeightEvenlyDivisibleByTileRes = TILE_SIZE * gl_WorkGroupID.y;
 
-		vec4 col1 = vec4(-ViewInfo.Projection[0][0] * tile_scale.x, ViewInfo.Projection[0][1], tile_bias.x, ViewInfo.Projection[0][3]);
-		vec4 col2 = vec4(ViewInfo.Projection[1][0], -ViewInfo.Projection[1][1] * tile_scale.y, tile_bias.y, ViewInfo.Projection[1][3]);
-		vec4 col4 = vec4(ViewInfo.Projection[3][0], ViewInfo.Projection[3][1], -1.0, ViewInfo.Projection[3][3]);
+        // four corners of the tile, clockwise from top-left
+		vec4 frustum[4];
+		frustum[0] = ConvertProjToView(vec4(pxm / float(uWindowWidthEvenlyDivisibleByTileRes) * 2.0f - 1.0f, (uWindowHeightEvenlyDivisibleByTileRes - pym) / float(uWindowHeightEvenlyDivisibleByTileRes) * 2.0f - 1.0f, 0.0f, 1.0f));
+		frustum[1] = ConvertProjToView(vec4(pxp / float(uWindowWidthEvenlyDivisibleByTileRes) * 2.0f - 1.0f, (uWindowHeightEvenlyDivisibleByTileRes - pym) / float(uWindowHeightEvenlyDivisibleByTileRes) * 2.0f - 1.0f, 0.0f, 1.0f));
+		frustum[2] = ConvertProjToView(vec4(pxp / float(uWindowWidthEvenlyDivisibleByTileRes) * 2.0f - 1.0f, (uWindowHeightEvenlyDivisibleByTileRes - pyp) / float(uWindowHeightEvenlyDivisibleByTileRes) * 2.0f - 1.0f, 0.0f, 1.0f));
+		frustum[3] = ConvertProjToView(vec4(pxm / float(uWindowWidthEvenlyDivisibleByTileRes) * 2.0f - 1.0f, (uWindowHeightEvenlyDivisibleByTileRes - pyp) / float(uWindowHeightEvenlyDivisibleByTileRes) * 2.0f - 1.0f, 0.0f, 1.0f));
 
-		frustum_planes[0] = col4 + col1;
-		frustum_planes[1] = col4 - col1;
-		frustum_planes[2] = col4 - col2;
-		frustum_planes[3] = col4 + col2;
-		frustum_planes[4] = vec4(0.0, 0.0, 1.0, -min_group_depth);
-		frustum_planes[5] = vec4(0.0, 0.0, -1.0, max_group_depth);
-		for (uint i = 0; i < 4; i++) {
-			frustum_planes[i] *= 1.0f / length(frustum_planes[i].xyz);
+        // create plane equations for the four sides of the frustum, 
+        // with the positive half-space outside the frustum (and remember, 
+        // view space is left handed, so use the left-hand rule to determine 
+        // cross product direction)
+		for (int i = 0; i < 4; i++)
+		{
+			frustumEqn[i] = CreatePlaneEquation(frustum[i], frustum[(i + 1) & 3]);
 		}
+		*/
+		uint rast_xt = TILE_SIZE * gl_WorkGroupID.x;
+		uint rast_yt = TILE_SIZE * gl_WorkGroupID.y;
+		uint rast_xb = TILE_SIZE * (gl_WorkGroupID.x + 1);
+		uint rast_yb = TILE_SIZE * (gl_WorkGroupID.y + 1);
+    
+
+    // Calculate position of the corners of this group's tile in NDC space
+    // Different from the AMD DX 11 sample because Vulkan's NDC space has
+    // the Y axis pointing downwards
+		vec4 top_left = vec4(
+      float(rast_xt) / float(ViewInfo.ScreenSizeAndInv.x) * 2.f - 1.f,
+      float(rast_yt) / float(ViewInfo.ScreenSizeAndInv.y) * 2.f - 1.f,
+      1.f,
+      1.f);
+		vec4 bottom_left = vec4(
+      top_left.x,
+      float(rast_yb) / float(ViewInfo.ScreenSizeAndInv.y) * 2.f - 1.f,
+      1.f,
+      1.f);
+		vec4 bottom_right = vec4(
+      float(rast_xb) / float(ViewInfo.ScreenSizeAndInv.x) * 2.f - 1.f,
+      bottom_left.y,
+      1.f,
+      1.f);
+		vec4 top_right = vec4(
+      bottom_right.x,
+      top_left.y,
+      1.f,
+      1.f);
+
+    // Convert the four corners from NDC to view space
+		vec3 top_left_vs = ConvertProjToView(top_left).xyz;
+		vec3 bottom_left_vs = ConvertProjToView(bottom_left).xyz;
+		vec3 bottom_right_vs = ConvertProjToView(bottom_right).xyz;
+		vec3 top_right_vs = ConvertProjToView(top_right).xyz;
+
+    // Create plane equations for the four sides of the frustum,
+    // with the positive half space outside the frustum. Also
+    // change the handedness from left to right compared to the AMD
+    // DX 11 sample, since we chose the view space to be right handed
+		frustumEqn[0] = CreatePlaneEqu(top_right_vs, top_left_vs);
+		frustumEqn[1] = CreatePlaneEqu(top_left_vs, bottom_left_vs);
+		frustumEqn[2] = CreatePlaneEqu(bottom_left_vs, bottom_right_vs);
+		frustumEqn[3] = CreatePlaneEqu(bottom_right_vs, top_right_vs);
+		
 	}
 
 	barrier();
 
+	maxZ = uintBitsToFloat(max_depth);
+	minZ = uintBitsToFloat(min_depth);
 	// Cull lights
 	uint thread_count = TILE_SIZE * TILE_SIZE;
-	for (uint i = gl_LocalInvocationIndex; i < num_lights; i += thread_count) {
-		Light light = lights[i];
-		vec4 vs_light_pos = ViewInfo.View * vec4(light.position, 1.0);
-
-		if (group_light_count < MAX_LIGHTS_PER_TILE) {
-			bool inFrustum = true;
-			//for (uint j = 0; j < 6 && inFrustum; j++) {
-			//	float d = dot(frustum_planes[j], vs_light_pos);
-			//	inFrustum = (d >= -light.radius);
-			//}
-			if (inFrustum) {
-				uint id = atomicAdd(group_light_count, 1);
-				group_light_index[id] = int(i);
+	for (uint i = gl_LocalInvocationIndex; i < num_lights; i += thread_count)
+	{
+	
+		if (group_light_count < MAX_LIGHTS_PER_TILE)
+		{
+			//Debug depth bound
+			//uint dstIdx = atomicAdd(group_light_count, 1);
+			//group_light_index[dstIdx] = int(minZ * 1000);
+			
+			
+			Light light = lights[i];
+			
+			//Be careful about pos in view coordinate.
+			vec4 center = ViewInfo.View * vec4(light.position, 1.0);
+			float r = light.radius;
+			
+			if (-center.z < r + maxZ && minZ - r < -center.z)
+			{
+				if ((GetSignedDistanceFromPlane(center, frustumEqn[0]) < 1) &&
+                    (GetSignedDistanceFromPlane(center, frustumEqn[1]) < 1) &&
+                    (GetSignedDistanceFromPlane(center, frustumEqn[2]) < 1) &&
+                    (GetSignedDistanceFromPlane(center, frustumEqn[3]) < 1))
+				{
+                    // do a thread-safe increment of the list counter 
+                    // and put the index of this light into the list
+					uint dstIdx = atomicAdd(group_light_count, 1);
+					group_light_index[dstIdx] = int(i);
+				}
+					
 			}
+			
 		}
 	}
 

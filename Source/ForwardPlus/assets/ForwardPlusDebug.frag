@@ -45,4 +45,9 @@ void main()
 	//fragColor = vec4(shadeX);
 
 	fragColor = vec4(shade);
+
+	//shade = lights_indices[offset]/100000;
+	//shade /= 200;
+
+	fragColor = vec4(shade);
 }
