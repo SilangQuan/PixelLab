@@ -33,7 +33,7 @@ bool App::CreateWorld()
 
 	mBrdfLut = ResourceManager::GetInstance()->TryGetResource<Texture>("../../BuiltinAssets/texture/BrdfLUT.hdr");
 
-	ResourceManager::GetInstance()->LoadBuitinShaders();
+	ResourceManager::GetInstance()->LoadBuitinShaders  ();
 
 	BakeIBL();
 

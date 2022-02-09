@@ -67,7 +67,6 @@ private:
 
 	Scene* scene;
 	GameObject* box;
-	GameObject* boxes;
 	GameObject* lightObjs;
 	GameObject tmpBox;
 
@@ -95,4 +94,22 @@ private:
 	unsigned int AABBvolumeGridSSBO, screenToViewSSBO;
 	unsigned int lightSSBO, lightIndexListSSBO, lightGridSSBO, lightIndexGlobalCountSSBO;
 
+
+
+	PostProcessor* mPostProcessor;
+
+	//Diffuse IBL
+	TextureCubemap* mSpecCubeMap;
+	//Specular IBL
+	TextureCubemap* mDiffuseCubeMap;
+
+	TextureCubemap* skyCubeBarcelona;
+	TextureCubemap* skyCubeTokyo;
+	TextureCubemap* skyCubeCatwalk;
+	RenderTexture* mHdrRT;
+	RenderTexture* mHdrRTMSAA;
+	bool mEnableMsaa = false;
+	float exposure = 1;
+	float bloomThreshold = 1;
+	float bloomIntensity = 1;
 };

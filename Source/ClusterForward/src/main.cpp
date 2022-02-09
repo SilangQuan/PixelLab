@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 	int32 height = 360;
 	creationFlags.width = width;
 	creationFlags.height = height;
-	creationFlags.title = "Lighting Boxes";
+	creationFlags.title = "Sponza PBR";
 	creationFlags.isWindowed = true;
 	App triangleApp;
 

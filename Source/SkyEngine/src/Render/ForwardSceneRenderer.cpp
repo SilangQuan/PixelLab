@@ -66,7 +66,7 @@ void ForwardSceneRenderer::SetTileShadingInfo(unsigned int LightInfoBuffer,unsig
 
 void ForwardSceneRenderer::Render(Scene* scene, Camera* camera)
 {
-	glFrontFace(GL_CCW);
+	//glFrontFace(GL_CCW);
 	if (mRenderTarget != NULL)
 	{
 		mRenderTarget->ActivateFB();

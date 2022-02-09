@@ -238,7 +238,7 @@ void Model::ProcessGltfMaterial(string directory, tinygltf::Model* model, vector
 	
 		//Need to support specular workflow
 		pbrMat.workflow = METALLIC_ROUGHNESS;
-
+		
 		pbrMat.metallicFactor = material.pbrMetallicRoughness.metallicFactor;
 		pbrMat.roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
 		pbrMat.baseColorFactor = Color::MakeColor(material.pbrMetallicRoughness.baseColorFactor.data());
