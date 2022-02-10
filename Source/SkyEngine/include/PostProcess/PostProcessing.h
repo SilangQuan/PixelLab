@@ -34,6 +34,9 @@ public:
     bool EnableForwardPlusDebug;
     int WorkGroupX;
     int WorkGroupY;
+    int WorkGroupZ;
+
+    bool bEnableClusterShadingDebug;
 
     GLuint SSBOVisibleLight;
 

@@ -23,6 +23,7 @@ public:
 
 	void SetRenderTarget(RenderTexture* RT);
 	void SetTileShadingInfo(unsigned int LightInfoBuffer, unsigned int VisibleLightsBuffer, int WorkGroupsX, int WorkGroupsY);
+	void SetClusterShadingInfo(unsigned int LightInfoBuffer, unsigned int VisibleLightsBuffer, int WorkGroupsX, int WorkGroupsY, int WorkGroupsZ);
 
 	void SetReplacementShader(ShaderProgram* shader) { mReplaceShader = shader; };
 	RenderContext* GetRenderContext() { return renderContext; };

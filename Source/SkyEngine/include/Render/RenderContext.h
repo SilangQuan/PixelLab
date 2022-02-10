@@ -30,4 +30,7 @@ public:
 	int WorkGroupsX;
 	int WorkGroupsY;
 
+	//Cluster info
+	bool bEnableClusterShading;
+	int WorkGroupsZ;
 };

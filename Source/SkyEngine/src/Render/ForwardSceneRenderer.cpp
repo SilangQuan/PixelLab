@@ -63,6 +63,15 @@ void ForwardSceneRenderer::SetTileShadingInfo(unsigned int LightInfoBuffer,unsig
 	renderContext->WorkGroupsY = WorkGroupsY;
 }
 
+void ForwardSceneRenderer::SetClusterShadingInfo(unsigned int LightInfoBuffer, unsigned int VisibleLightsBuffer, int WorkGroupsX, int WorkGroupsY, int WorkGroupsZ)
+{
+	renderContext->bEnableClusterShading = true;
+	renderContext->LightInfoBuffer = LightInfoBuffer;
+	renderContext->VisibleLightsBuffer = VisibleLightsBuffer;
+	renderContext->WorkGroupsX = WorkGroupsX;
+	renderContext->WorkGroupsY = WorkGroupsY;
+	renderContext->WorkGroupsZ = WorkGroupsZ;
+}
 
 void ForwardSceneRenderer::Render(Scene* scene, Camera* camera)
 {
