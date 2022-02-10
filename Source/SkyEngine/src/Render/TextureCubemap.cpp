@@ -86,6 +86,8 @@ bool TextureCubemap::LoadSixFaceCube()
 
 bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShader, TextureCubemap* originCube)
 {
+    glFrontFace(GL_CCW);
+
     unsigned int frameBufferID;
     unsigned int texColorBuffer, depthBuffer;
     int width = size;
@@ -240,6 +242,7 @@ bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShad
 
 bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveShader, TextureCubemap* originCube)
 {
+
     unsigned int frameBufferID;
     unsigned int texColorBuffer, depthBuffer;
     int width = size;

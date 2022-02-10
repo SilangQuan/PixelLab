@@ -92,16 +92,27 @@ Resource* ResourceManager::GetResource(const std::string &name)
 
 void ResourceManager::LoadBuitinShaders()
 {
-	ShaderProgram* tmpShader = new ShaderProgram("../../BuiltinAssets/shader/pbr_opaque.vert", "../../BuiltinAssets/shader/pbr_opaque.frag");
+	//ShaderProgram* tmpShader = new ShaderProgram("../../BuiltinAssets/shader/pbr_opaque.vert", "../../BuiltinAssets/shader/pbr_opaque.frag");
+	ShaderProgram* tmpShader = new ShaderProgram("../../BuiltinAssets/shader/pbr_opaque_cluster.vert", "../../BuiltinAssets/shader/pbr_opaque_cluster.frag");
 	mShaderResources.insert(std::pair<string, ShaderProgram*>("PbrOpaque", tmpShader));
+
+	ShaderProgram* ConvolveShader = new ShaderProgram("../../BuiltinAssets/shader/cubeMapShader.vert", "../../BuiltinAssets/shader/convolveCubemapShader.frag");
+	ShaderProgram* PrefilterShader = new ShaderProgram("../../BuiltinAssets/shader/cubeMapShader.vert", "../../BuiltinAssets/shader/preFilteringShader.frag");
+	
+	mShaderResources.insert(std::pair<string, ShaderProgram*>("ConvolveShader", ConvolveShader));
+	mShaderResources.insert(std::pair<string, ShaderProgram*>("PrefilterShader", PrefilterShader));
 
 	Texture* whiteDummy = new Texture("../../BuiltinAssets/texture/WhiteDummy.png");
 	Texture* blackDummy = new Texture("../../BuiltinAssets/texture/BlackDummy.png");
 	Texture* defaultNormal = new Texture("../../BuiltinAssets/texture/DefaultNormal.png");
 
+	Texture* brdfLut = new Texture("../../BuiltinAssets/texture/BrdfLUT.hdr");
+
 	mTextureResources.insert(std::pair<string, Texture*>("WhiteDummy", whiteDummy));
 	mTextureResources.insert(std::pair<string, Texture*>("BlackDummy", blackDummy));
 	mTextureResources.insert(std::pair<string, Texture*>("DefaultNormal", defaultNormal));
+
+	mTextureResources.insert(std::pair<string, Texture*>("BrdfLut", brdfLut));
 }
 
 void ResourceManager::RemoveResource(Resource &resource)

@@ -75,7 +75,7 @@ void ForwardSceneRenderer::SetClusterShadingInfo(unsigned int LightInfoBuffer, u
 
 void ForwardSceneRenderer::Render(Scene* scene, Camera* camera)
 {
-	glFrontFace(GL_CCW);
+	//glFrontFace(GL_CCW);
 	if (mRenderTarget != NULL)
 	{
 		mRenderTarget->ActivateFB();

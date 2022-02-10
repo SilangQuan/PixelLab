@@ -31,7 +31,7 @@ public:
     //UberPost
     float Exposure;
 
-    bool EnableForwardPlusDebug;
+    bool EnableForwardPlusDebug = false;
     int WorkGroupX;
     int WorkGroupY;
     int WorkGroupZ;
@@ -40,7 +40,7 @@ public:
 
     GLuint SSBOVisibleLight;
 
-    bool EnableDepthDebug;
+    bool EnableDepthDebug = false;
 
     ViewInfo MainViewInfo;
 

@@ -239,6 +239,8 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
 	glUniform1f(glGetUniformLocation(mToneMappingShader->GetProgramID(), "exposure"), Inputs.Exposure);
 
     DrawQuard();
+
+    glCullFace(GL_BACK);
 }
 
 void PostProcessor::BlitToBackBuffer(RenderTexture* rt, GLuint backBufferFBO, int width, int height)
@@ -258,6 +260,8 @@ void PostProcessor::BlitToBackBuffer(RenderTexture* rt, GLuint backBufferFBO, in
     glBindTexture(GL_TEXTURE_2D, rt->GetTextureID());
 
     DrawQuard();
+    glCullFace(GL_BACK);
+
 }
 
 void PostProcessor::DrawQuard()

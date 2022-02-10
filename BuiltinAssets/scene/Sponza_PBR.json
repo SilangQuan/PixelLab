@@ -1,0 +1,25 @@
+{
+    "sceneID": "Sponza_PBR",
+    "skybox": {"source": "../../BuiltinAssets/texture/skyboxes/barcelona"
+    },
+    "camera":{
+		"left":-1.778,
+		"right":1.778,
+		"bottom":-1,
+		"top":1,
+        "nearPlane": 0.1,
+        "farPlane": 100.0,
+        "position": [0.0, 0.0, -4.0],
+        "target": [0.0, 0.0, 0.0]
+    },
+	"gameobjs": [
+		{
+			"name": "Center",
+			"position": [ 0.0, -2.5, 0.0 ],
+			"rotation": [ 0.0, 0.0, 0.0, 0.0 ],
+			"scaling": [ 0.012, 0.012, 0.012 ],
+			"model": "../../BuiltinAssets/model/Sponza/Sponza.gltf",
+			"material": "refraction"
+		}
+	]
+}

@@ -22,7 +22,6 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceShader)
 {
-	//glCullFace(GL_FRONT);
 	if (material->GetCullMode() == ECullMode::CM_None)
 	{
 		glCullFace(GL_NONE);
