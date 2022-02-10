@@ -203,10 +203,10 @@ bool App::CreateWorld()
 	specularMap = ResourceManager::GetInstance()->TryGetResource<Texture>("./assets/crate_specular.jpg");
 
 
-	ForwardSceneRenderer* pForwardRenderer = dynamic_cast<ForwardSceneRenderer*>(pRenderer);
-	pForwardRenderer->GetRenderContext()->BrdfLut = ResourceManager::GetInstance()->FindTexture("BrdfLut");
-	pForwardRenderer->GetRenderContext()->DiffuseCubeMap = mDiffuseCubeMap;
-	pForwardRenderer->GetRenderContext()->SpecCubeMap = mSpecCubeMap;
+	mForwardRenderer = dynamic_cast<ForwardSceneRenderer*>(pRenderer);
+	mForwardRenderer->GetRenderContext()->BrdfLut = ResourceManager::GetInstance()->FindTexture("BrdfLut");
+	mForwardRenderer->GetRenderContext()->DiffuseCubeMap = mDiffuseCubeMap;
+	mForwardRenderer->GetRenderContext()->SpecCubeMap = mSpecCubeMap;
 
 	mHdrRT = new RenderTexture();
 	mHdrRT->Init(GetWindowWidth(), GetWindowHeight(), ColorType::RGBA16F, DepthType::Depth24S8, 0);
@@ -221,16 +221,16 @@ bool App::CreateWorld()
 		//mHdrRTMSAA->Init(GetWindowWidth(), GetWindowHeight(), ColorType::RGB565, DepthType::Depth24S8, msaaX);
 		mHdrRTMSAA->Init(GetWindowWidth(), GetWindowHeight(), ColorType::RGBA16F, DepthType::Depth24S8, msaaX);
 
-		if (pForwardRenderer != NULL)
+		if (mForwardRenderer != NULL)
 		{
-			pForwardRenderer->SetRenderTarget(mHdrRTMSAA);
+			mForwardRenderer->SetRenderTarget(mHdrRTMSAA);
 		}
 	}
 	else
 	{
-		if (pForwardRenderer != NULL)
+		if (mForwardRenderer != NULL)
 		{
-			pForwardRenderer->SetRenderTarget(mHdrRT);
+			mForwardRenderer->SetRenderTarget(mHdrRT);
 		}
 	}
 
@@ -244,30 +244,13 @@ bool App::CreateWorld()
 	camera = scene->GetActiveCamera();
 
 
-	box = new GameObject();
-
-	boxMat = new Material(lightingProgram);
-	boxMat->AddTextureVariable("material.diffuse", diffuseMap);
-	boxMat->AddTextureVariable("material.specular", specularMap);
-	boxMat->SetFloat("material.shininess", 32.0f);
-	boxMat->SetCullMode(ECullMode::CM_Back);
-
 	cubeMesh = new CubeMesh();
 	sphereMesh = new SphereMesh(10, 20);
 
-	MeshRenderer* boxMeshRenderer = new MeshRenderer(cubeMesh, boxMat);
-
-	box->AddComponent(boxMeshRenderer);
-
-	scene->AddGameObject(box);
-
 	InitLights();
 
-	boxMat->SetDirectionLight(*GetLightManager().GetDirectionLight());
-	boxMat->SetPointLight(GetLightManager().GetPointLights());
 	//camera = scene->GetActiveCamera()
-	camera = new Camera(Vector3(0, 0, -9), Vector3::zero, Vector3::up);
-	//camera->SetFrustrum(-1.778f, 1.778f, -1.0f, 1.0f, 1, 2000, true);
+	camera = new Camera(Vector3(0, 5, 0), Vector3(0, 0, 10), Vector3::up);
 	camera->fov = 90;
 	camera->aspect = 16.0 / 9;
 	camera->zNear = 0.1;
@@ -337,7 +320,15 @@ void App::RenderWorld()
 	clusterCullLightShader->Use();
 	glUniformMatrix4fv(glGetUniformLocation(clusterCullLightShader->GetProgramID(), "viewMatrix"), 1, GL_FALSE, &(camera->viewMatrix[0]));
 	//glUniform1f(glGetUniformLocation(clusterCullLightShader->GetProgramID(), "viewMatrix"), camera->viewMatrix);
-	clusterCullLightShader->Dispatch(1, 1, 6);
+	clusterCullLightShader->Dispatch(1, 1, 6); 
+	
+	mMainViewInfo.ViewPorject = camera->GetViewMatrix() * camera->GetProjectionMatrix();
+	mMainViewInfo.View = camera->GetViewMatrix();
+	mMainViewInfo.Projection = camera->GetProjectionMatrix();
+	mMainViewInfo.InvProject = camera->GetProjectionMatrix().inverted();
+	mMainViewInfo.ScreenSizeAndInv = Vector4(GetWindowWidth(), GetWindowHeight(), 1.0f / GetWindowWidth(), 1.0f / GetWindowHeight());
+	mMainViewInfo.ZParams = Vector4((camera->zFar - camera->zNear) / camera->zFar * camera->zNear, 1 / camera->zNear, 0, 0);
+
 
 	pRenderer->Render(scene, scene->GetActiveCamera());
 
@@ -362,6 +353,13 @@ void App::RenderWorld()
 	ppInputs.BloomThreshold = bloomThreshold;
 	ppInputs.BloomIntensity = bloomIntensity;
 
+	ppInputs.WorkGroupX = mWorkGroupsX;
+	ppInputs.WorkGroupY = mWorkGroupsY;
+	ppInputs.WorkGroupZ = mWorkGroupsZ;
+	ppInputs.bEnableClusterShadingDebug = mEnableClusterDebug;
+	ppInputs.EnableDepthDebug = false;
+	ppInputs.Exposure = 1;
+	ppInputs.MainViewInfo = mMainViewInfo;
 	mPostProcessor->AddPostProcessingPasses(ppInputs);
 	PopGroupMarker();
 

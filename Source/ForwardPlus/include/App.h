@@ -56,14 +56,11 @@ private:
 	void UpdateCamera();
 	void InitLights();
 	void InitSSBOs();
-	void ClusterSetUp();
 
 	ShaderProgram* lampProgram;
 	ShaderProgram* mShadingProgram;
 	ShaderProgram* mDepthPreShader;
 
-	ShaderProgram* clusterSetupShader;
-	ShaderProgram* clusterCullLightShader;
 	ShaderProgram* mCullLightShader;
 	ShaderProgram* mTileDebugShader;
 
@@ -91,8 +88,6 @@ private:
 	 //presentation.
 	const unsigned int gridSizeX = 16;
 	const unsigned int gridSizeY = 9;
-	const unsigned int gridSizeZ = 24;
-	const unsigned int numClusters = gridSizeX * gridSizeY * gridSizeZ;
 	unsigned int sizeX, sizeY;
 
 	const unsigned int maxLights = 1000; // pretty overkill for sponza, but ok for testing

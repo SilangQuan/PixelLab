@@ -66,11 +66,9 @@ private:
 	ShaderProgram* clusterCullLightShader;
 
 	Scene* scene;
-	GameObject* box;
 	GameObject* lightObjs;
 	GameObject tmpBox;
 
-	Material* boxMat;
 	Material* lampMat;
 
 	CubeMesh* cubeMesh;
@@ -95,7 +93,7 @@ private:
 	unsigned int lightSSBO, lightIndexListSSBO, lightGridSSBO, lightIndexGlobalCountSSBO;
 
 
-
+	ForwardSceneRenderer* mForwardRenderer;
 	PostProcessor* mPostProcessor;
 
 	//Diffuse IBL
@@ -112,4 +110,13 @@ private:
 	float exposure = 1;
 	float bloomThreshold = 1;
 	float bloomIntensity = 1;
+
+	unsigned int mWorkGroupsX;
+	unsigned int mWorkGroupsY;
+	unsigned int mWorkGroupsZ;
+
+	bool mEnableClusterDebug = false;
+
+	ViewInfo mMainViewInfo;
+
 };

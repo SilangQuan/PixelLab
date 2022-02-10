@@ -60,13 +60,6 @@ void App::InitLights()
 }
 GLuint FramebufferName = 0;
 
-void  App::ClusterSetUp()
-{
-	clusterSetupShader->Use();
-	glUniform1f(glGetUniformLocation(clusterSetupShader->GetProgramID(), "zNear"), camera->zNear);
-	glUniform1f(glGetUniformLocation(clusterSetupShader->GetProgramID(), "zFar"), camera->zFar);
-	clusterSetupShader->Dispatch(gridSizeX, gridSizeY, gridSizeZ);
-}
 
 void App::InitSSBOs()
 {
@@ -82,11 +75,6 @@ void App::InitSSBOs()
 	mWorkGroupsY = (windowHeight + (windowHeight % TILE_SIZE)) / TILE_SIZE;
 
 	// Lights SSBO
-	//glGenBuffers(1, &ssbo_lights);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo_lights);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Lights), &uniforms.lights, GL_DYNAMIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo_lights);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	glGenBuffers(1, &lightSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightSSBO);
@@ -131,8 +119,6 @@ bool App::CreateWorld()
 	mDepthPreShader = new ShaderProgram("./assets/lamp.vert", "./assets/depthprepass.frag");
 	mDepthPreMat = new Material(mDepthPreShader);
 
-	clusterSetupShader = new ShaderProgram("./assets/clusterShader.compute");
-	clusterCullLightShader = new ShaderProgram("./assets/clusterCullLightShader.compute");
 	//mCullLightShader = new ShaderProgram("./assets/lightculling2.compute");
 	mCullLightShader = new ShaderProgram("./assets/lightculling.compute");
 	
@@ -194,7 +180,6 @@ bool App::CreateWorld()
 	mPostProcessor->InitRenderData();
 
 	InitSSBOs();
-	//ClusterSetUp();
 	return true;
 }
 
