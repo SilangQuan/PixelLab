@@ -293,9 +293,6 @@
     <ClInclude Include="include\Core\Camera.h">
       <Filter>头文件\Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\GLShader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="include\Lighting\Light.h">
       <Filter>头文件\Lighting</Filter>
     </ClInclude>

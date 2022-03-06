@@ -4,29 +4,6 @@
 
 class TextureVariable;
 
-//All primitives share a very simple interface and only vary by their setup implementation
-struct Primitive {
-	Primitive(unsigned int numVertex) : numVertices(numVertex) {};
-	void Draw(const unsigned int readTex1 = 0, const unsigned int readTex2 = 0, const unsigned int readTex3 = 0);
-	virtual void Setup() = 0;
-	unsigned int VAO, VBO;
-	const unsigned int numVertices;
-};
-
-//Mostly used for screen space or render to texture stuff
-struct Quad : public Primitive {
-	Quad() : Primitive(6) {};
-	void Draw(const unsigned int readTex1 = 0, const unsigned int readTex2 = 0, const unsigned int readTex3 = 0);
-	void Setup();
-};
-
-//Used in cubemap rendering
-struct Cube : public Primitive {
-	Cube() : Primitive(36) {};
-	void Setup();
-};
-
-
 class Mesh
 {
 public:
@@ -44,19 +21,15 @@ public:
 	vector<Color> colors;
 	vector<Vector2> uvs;
 	vector<uint32> triangles;
-	vector<TextureVariable*> textures;
-	int DefaultMaterialIndex;
 	string Name;
 
 protected:
-
-	
 	uint32 vaoID;									//Vertex Array Object
 	uint32 vboIDs[Mesh::NUM_VERTEX_ATTRIBUTES];		//Vertex Buffer Object (One per vertex attribute)
 	uint32 iboID;
 
 public:
-	Mesh(vector<Vector3> positions, vector<Vector3> normals, vector<Vector2> uv, vector<uint32> triangles, vector<TextureVariable*> textures);
+	Mesh(vector<Vector3> positions, vector<Vector3> normals, vector<Vector2> uv, vector<uint32> triangles);
 	Mesh();
 	virtual ~Mesh() {}
 

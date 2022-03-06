@@ -1,13 +1,13 @@
 #pragma once
 #include <cmath>
 #include <cfloat>
+#include <math.h>
 
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
-#include "Quaternion.h"
-#include "Matrix.h"
-#include "Random.h"
+//#include "Vector2.h"
+//#include "Vector4.h"
+//#include "Quaternion.h"
+//#include "Matrix.h"
+//#include "Random.h"
 
 class Mathf
 {
@@ -62,6 +62,7 @@ public:
 	{
 		return v < 0.0F ? -v : v;
 	}
+
 	// Returns true if the distance between f0 and f1 is smaller than epsilon
 	inline static bool CompareApproximately(float f0, float f1, float epsilon = 0.000001F)
 	{
@@ -78,8 +79,6 @@ public:
 	template <typename T>  static int Sign(T val) {
 		return (T(0) < val) - (val < T(0));
 	}
-
-	
 };
 
 

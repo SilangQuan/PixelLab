@@ -1,8 +1,6 @@
 #pragma once
 #include "../../LibAppFramework/include/application.h"
 
-class GLShader;
-
 class App : public Application
 {
 public:

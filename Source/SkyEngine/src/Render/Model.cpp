@@ -169,7 +169,6 @@ Mesh Model::ProcessMesh(tinyobj::ObjMesh* mesh, vector<tinyobj::ObjMaterial>& ma
 	vector<Vector3> normals;
 	vector<Vector2> uvs;
 	vector<GLuint> indices = mesh->indices;
-	vector<TextureVariable*> textures;
 
 	positions.reserve(mesh->positions.size() / 3);
 	normals.reserve(mesh->positions.size() / 3);
@@ -207,7 +206,7 @@ Mesh Model::ProcessMesh(tinyobj::ObjMesh* mesh, vector<tinyobj::ObjMaterial>& ma
 */
 
 	// Return a mesh object created from the extracted mesh data
-	return Mesh(positions, normals, uvs, indices, textures);
+	return Mesh(positions, normals, uvs, indices);
 }
 
 
@@ -439,7 +438,7 @@ void Model::ProcessGltfMesh(tinygltf::Model* model)
 			}
 			TfMeshPrimitive meshPrimitive;
 
-			meshPrimitive.MeshData = new Mesh(positions, normals, uvs, indices, textures);
+			meshPrimitive.MeshData = new Mesh(positions, normals, uvs, indices);
 			meshPrimitive.MaterialIndex = primitive.material;
 			//tempMesh.Name = mesh.name;
 			mTfMeshes[i].Primitives[j] = meshPrimitive;
@@ -635,7 +634,7 @@ Mesh Model::ProcessMeshByAssimp(aiMesh* mesh, const aiScene* scene)
 	}
 
 	// Return a mesh object created from the extracted mesh data
-	return Mesh(positions, normals, uvs, indices, textures);
+	return Mesh(positions, normals, uvs, indices);
 }
 
 void Model::ProcessNodeByAssimp(aiNode* node, const aiScene* scene)

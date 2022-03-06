@@ -1,7 +1,6 @@
 #pragma once
 #include "../../LibAppFramework/include/application.h"
 
-class GLShader;
 class PostProcessor;
 
 struct SphereData

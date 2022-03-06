@@ -290,7 +290,6 @@
     <ClInclude Include="include\Core\ResourceManager.h" />
     <ClInclude Include="include\Core\Scene.h" />
     <ClInclude Include="include\Core\SdlWindow.h" />
-    <ClInclude Include="include\GLShader.h" />
     <ClInclude Include="include\ImGui\imconfig.h" />
     <ClInclude Include="include\ImGui\imgui.h" />
     <ClInclude Include="include\ImGui\imgui_impl_dx12.h" />

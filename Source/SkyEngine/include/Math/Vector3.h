@@ -1,8 +1,9 @@
 #pragma once
 
-#include <math.h>
 #include <assert.h>
 #include <iostream>
+#include "Mathf.h"
+
 
 #define PI 3.14159265
 using namespace std;
@@ -110,6 +111,16 @@ public:
 	static inline Vector3 Lerp(const Vector3 &v1, const Vector3 &v2, float factor)
 	{
 		return v1 + (v2 - v1) * factor;
+	}
+
+	static inline Vector3 Min(const Vector3& v1, const Vector3& v2)
+	{
+		return Vector3(Mathf::Min(v1.x, v2.x), Mathf::Min(v1.y, v2.y), Mathf::Min(v1.z, v2.z));
+	}
+
+	static inline Vector3 Max(const Vector3& v1, const Vector3& v2)
+	{
+		return Vector3(Mathf::Max(v1.x, v2.x), Mathf::Max(v1.y, v2.y), Mathf::Max(v1.z, v2.z));
 	}
 
 	//static Vector3 OrthoNormalize();
