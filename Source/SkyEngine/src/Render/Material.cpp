@@ -4,31 +4,91 @@
 #include "Render/TextureVariable.h"
 #include "Lighting/Light.h"
 
+const static string CShaderPath = "../../BuiltinAssets/shader/";
+const static string CLibraryPath = "../../Library/";
+
+
 Material::Material(ShaderProgram* _shaderProgram):CullMode(ECullMode::CM_Back),FillMode(EFillMode::FM_Solid),ZWriteMode(EZWriteMode::WM_ON),ZTestMode(EZTestMode::TM_LEQUAL)
 {
-	shaderProgram = new ShaderProgram(*_shaderProgram);
+	mShaderProgram = new ShaderProgram(*_shaderProgram);
 }
+
+Material::Material(const MaterialDescription& description, string sceneName)
+{
+	mShaderProgram = new ShaderProgram(CShaderPath + description.shader +".vert", CShaderPath + description.shader + ".frag");
+	SetVector4("albedoColor", description.albedoColor);
+	SetVector4("emissiveColor", description.emissiveColor);
+	SetFloat("roughness", description.roughness.x);
+
+	//Load from library folder.
+	string texPath = CLibraryPath  + sceneName + "/Texture/";
+	Texture* texture = NULL;
+	TextureVariable* textureVariable = NULL;
+	uint32 texunit = 0;
+
+	Texture* whiteDummyTex = ResourceManager::GetInstance()->FindTexture("WhiteDummy");
+	Texture* DefaultNormalTex = ResourceManager::GetInstance()->FindTexture("DefaultNormal");
+	Texture* BlackDummyTex = ResourceManager::GetInstance()->FindTexture("BlackDummy");
+
+	texture = description.albedoMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.albedoMap);
+	textureVariable = new TextureVariable(texture, texunit, "albedoMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description.metallicRoughnessMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.metallicRoughnessMap);
+	textureVariable = new TextureVariable(texture, texunit, "metallicRoughnessMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description.normalMap.length()== 0 ? DefaultNormalTex: ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.normalMap);
+	textureVariable = new TextureVariable(texture, texunit, "normalMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description.metallicRoughnessMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.metallicRoughnessMap);
+	textureVariable = new TextureVariable(texture, texunit, "metallicRoughnessMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description.ambientOcclusionMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.ambientOcclusionMap);
+	textureVariable = new TextureVariable(texture, texunit, "ambientOcclusionMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description.opacityMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.opacityMap);
+	textureVariable = new TextureVariable(texture, texunit, "opacityMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	name = description.name;
+	
+	CullMode = (ECullMode)description.cullMode;
+	ZTestMode =	(EZTestMode)description.zTest;
+	FillMode =	(EFillMode)description.fillMode;
+	ZWriteMode = (EZWriteMode)description.zWrite;
+}
+
 
 void Material::Bind(RenderContext* renderContext)
 {
-	if (shaderProgram != 0)
+	if (mShaderProgram != 0)
 	{
-		shaderProgram->Bind(renderContext);
+		mShaderProgram->Bind(renderContext);
 	}
 }
 
 void Material::Bind()
 {
-	if (shaderProgram != 0)
+	if (mShaderProgram != 0)
 	{
-		shaderProgram->Bind();
+		mShaderProgram->Bind();
 	}
 }
 
 
 ShaderProgram* Material::GetShaderProgram()
 {
-	return shaderProgram;
+	return mShaderProgram;
 }
 
 /*
@@ -45,9 +105,9 @@ void Material::SetShader(ShaderProgram* shader)
 
 void Material::AddTextureVariable(TextureVariable* textureVariable)
 {
-	if (shaderProgram->HasUniform(textureVariable->GetUniformName()))
+	if (mShaderProgram->HasUniform(textureVariable->GetUniformName()))
 	{
-		shaderProgram->SetUniform(textureVariable->GetUniformName(), *textureVariable);
+		mShaderProgram->SetUniform(textureVariable->GetUniformName(), *textureVariable);
 	}
 	else
 	{
@@ -57,10 +117,10 @@ void Material::AddTextureVariable(TextureVariable* textureVariable)
 
 void Material::AddTextureVariable(string shaderRefName, Texture* texture, ETextureVariableType tvType, int textureUnit)
 {
-	if (shaderProgram->HasUniform(shaderRefName))
+	if (mShaderProgram->HasUniform(shaderRefName))
 	{
 		TextureVariable* tmpTextureVariable = new TextureVariable(texture, textureUnit, shaderRefName, tvType);
-		shaderProgram->SetUniform(shaderRefName, *tmpTextureVariable);
+		mShaderProgram->SetUniform(shaderRefName, *tmpTextureVariable);
 	}else
 	{
 		qDebug() << "No such shaderRefName " << shaderRefName;
@@ -69,9 +129,9 @@ void Material::AddTextureVariable(string shaderRefName, Texture* texture, ETextu
 
 void Material::SetFloat(string shaderRefName, float value)
 {
-	if (shaderProgram->HasUniform(shaderRefName))
+	if (mShaderProgram->HasUniform(shaderRefName))
 	{
-		shaderProgram->SetUniform(shaderRefName, value);
+		mShaderProgram->SetUniform(shaderRefName, value);
 	}
 	else
 	{
@@ -80,9 +140,9 @@ void Material::SetFloat(string shaderRefName, float value)
 }
 void Material::SetVector3(string shaderRefName, Vector3 value)
 {
-	if (shaderProgram->HasUniform(shaderRefName))
+	if (mShaderProgram->HasUniform(shaderRefName))
 	{
-		shaderProgram->SetUniform(shaderRefName, value);
+		mShaderProgram->SetUniform(shaderRefName, value);
 	}
 	else
 	{
@@ -92,9 +152,9 @@ void Material::SetVector3(string shaderRefName, Vector3 value)
 
 void Material::SetVector4(string shaderRefName, Vector4 value)
 {
-	if (shaderProgram->HasUniform(shaderRefName))
+	if (mShaderProgram->HasUniform(shaderRefName))
 	{
-		shaderProgram->SetUniform(shaderRefName, value);
+		mShaderProgram->SetUniform(shaderRefName, value);
 	}
 	else
 	{
@@ -104,9 +164,9 @@ void Material::SetVector4(string shaderRefName, Vector4 value)
 
 void Material::SetColor(string shaderRefName, Color& c)
 {
-	if (shaderProgram->HasUniform(shaderRefName))
+	if (mShaderProgram->HasUniform(shaderRefName))
 	{
-		shaderProgram->SetUniform(shaderRefName, Vector4(c.r, c.g, c.b, c.a));
+		mShaderProgram->SetUniform(shaderRefName, Vector4(c.r, c.g, c.b, c.a));
 	}
 	else
 	{
@@ -122,18 +182,18 @@ void Material::SetDirectionLight(Light& light)
 		qDebug() << "Cannot Set DirectionLight. Wrong light type. ";
 	}
 
-	if (shaderProgram->HasUniform("dirLight.direction"))
+	if (mShaderProgram->HasUniform("dirLight.direction"))
 	{
-		shaderProgram->SetUniform("dirLight.direction", light.direction);
+		mShaderProgram->SetUniform("dirLight.direction", light.direction);
 	}
 	else
 	{
 		qDebug() << "No such shaderRefName dirLight.direction";
 	}
 
-	if (shaderProgram->HasUniform("dirLight.color"))
+	if (mShaderProgram->HasUniform("dirLight.color"))
 	{
-		shaderProgram->SetUniform("dirLight.color", Vector4(light.color.r, light.color.g, light.color.b, light.color.a));
+		mShaderProgram->SetUniform("dirLight.color", Vector4(light.color.r, light.color.g, light.color.b, light.color.a));
 	}
 	else
 	{
@@ -173,18 +233,18 @@ void Material::SetPointLight(vector<Light*>& lights)
 			lightName += "[" + std::to_string(count++) + "]";
 		}
 
-		if (shaderProgram->HasUniform(lightName + ".position"))
+		if (mShaderProgram->HasUniform(lightName + ".position"))
 		{
-			shaderProgram->SetUniform(lightName + ".position", (*lightIter)->position);
+			mShaderProgram->SetUniform(lightName + ".position", (*lightIter)->position);
 		}
 		else
 		{
 			qDebug() << "No such position "<< lightName;
 		}
 
-		if (shaderProgram->HasUniform(lightName + ".color"))
+		if (mShaderProgram->HasUniform(lightName + ".color"))
 		{
-			shaderProgram->SetUniform(lightName + ".color", Vector4((*lightIter)->color.r, (*lightIter)->color.g, (*lightIter)->color.b, (*lightIter)->color.a));
+			mShaderProgram->SetUniform(lightName + ".color", Vector4((*lightIter)->color.r, (*lightIter)->color.g, (*lightIter)->color.b, (*lightIter)->color.a));
 		}
 		else
 		{
@@ -215,27 +275,27 @@ void Material::SetSpotLight(vector<Light*>& lights)
 			lightName += "[" + std::to_string(count++) +"]";
 
 
-		if (shaderProgram->HasUniform(lightName + ".position"))
+		if (mShaderProgram->HasUniform(lightName + ".position"))
 		{
-			shaderProgram->SetUniform(lightName + ".position", (*lightIter)->position);
+			mShaderProgram->SetUniform(lightName + ".position", (*lightIter)->position);
 		}
 		else
 		{
 			qDebug() << "No such position " << lightName;
 		}
 
-		if (shaderProgram->HasUniform(lightName + ".direction"))
+		if (mShaderProgram->HasUniform(lightName + ".direction"))
 		{
-			shaderProgram->SetUniform(lightName + ".direction", (*lightIter)->position);
+			mShaderProgram->SetUniform(lightName + ".direction", (*lightIter)->position);
 		}
 		else
 		{
 			qDebug() << "No such direction " << lightName;
 		}
 
-		if (shaderProgram->HasUniform(lightName + ".color"))
+		if (mShaderProgram->HasUniform(lightName + ".color"))
 		{
-			shaderProgram->SetUniform(lightName + ".color", (*lightIter)->color);
+			mShaderProgram->SetUniform(lightName + ".color", (*lightIter)->color);
 		}
 		else
 		{
@@ -243,45 +303,45 @@ void Material::SetSpotLight(vector<Light*>& lights)
 		}
 
 
-		if (shaderProgram->HasUniform(lightName + ".cutOff"))
+		if (mShaderProgram->HasUniform(lightName + ".cutOff"))
 		{
-			shaderProgram->SetUniform(lightName + ".cutOff", (*lightIter)->cutOff);
+			mShaderProgram->SetUniform(lightName + ".cutOff", (*lightIter)->cutOff);
 		}
 		else
 		{
 			qDebug() << "No such cutOff" << lightName;
 		}
 
-		if (shaderProgram->HasUniform(lightName + ".outerCutOff"))
+		if (mShaderProgram->HasUniform(lightName + ".outerCutOff"))
 		{
-			shaderProgram->SetUniform(lightName + ".outerCutOff", (*lightIter)->outerCutOff);
+			mShaderProgram->SetUniform(lightName + ".outerCutOff", (*lightIter)->outerCutOff);
 		}
 		else
 		{
 			qDebug() << "No such outerCutOff" << lightName;
 		}
 
-		if (shaderProgram->HasUniform(lightName + ".constant"))
+		if (mShaderProgram->HasUniform(lightName + ".constant"))
 		{
-			shaderProgram->SetUniform(lightName + ".constant", (*lightIter)->constant);
+			mShaderProgram->SetUniform(lightName + ".constant", (*lightIter)->constant);
 		}
 		else
 		{
 			qDebug() << "No such constant" << lightName;
 		}
 
-		if (shaderProgram->HasUniform(lightName + ".linear"))
+		if (mShaderProgram->HasUniform(lightName + ".linear"))
 		{
-			shaderProgram->SetUniform(lightName + ".linear", (*lightIter)->linear);
+			mShaderProgram->SetUniform(lightName + ".linear", (*lightIter)->linear);
 		}
 		else
 		{
 			qDebug() << "No such linear" << lightName;
 		}
 
-		if (shaderProgram->HasUniform(lightName + ".quadratic"))
+		if (mShaderProgram->HasUniform(lightName + ".quadratic"))
 		{
-			shaderProgram->SetUniform(lightName + ".quadratic", (*lightIter)->quadratic);
+			mShaderProgram->SetUniform(lightName + ".quadratic", (*lightIter)->quadratic);
 		}
 		else
 		{

@@ -72,6 +72,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ForwardPlus", "ForwardPlus\
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshConvertor", "MeshConvertor\MeshConvertor.vcxproj", "{FBE1BD7C-05BF-4022-87AA-57DD49A0A67B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6DAB4501-FCEA-485B-8D64-5A3C908E5BD5} = {6DAB4501-FCEA-485B-8D64-5A3C908E5BD5}
+		{8C363924-5B03-4CEB-B0C1-6A814FE56EAE} = {8C363924-5B03-4CEB-B0C1-6A814FE56EAE}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

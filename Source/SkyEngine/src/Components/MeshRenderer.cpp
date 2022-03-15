@@ -22,6 +22,7 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceShader)
 {
+	//glCullFace(GL_NONE);
 	if (material->GetCullMode() == ECullMode::CM_None)
 	{
 		glCullFace(GL_NONE);
@@ -60,18 +61,17 @@ void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceSh
 	glBindVertexArray(vao);
 
 	//DrawElements
-	if(mesh->GetIndices().size() > 0)
+	if(mesh->indiceCount > 0)
 	{
 		glDrawElements(
 			GL_TRIANGLES,
-			mesh->GetIndices().size(),
+			mesh->indiceCount,
 			GL_UNSIGNED_INT,
 			0);
 	}
 	else
 	{
-		int size = mesh->GetPositions().size();
-		glDrawArrays(GL_TRIANGLES, 0, size);
+		glDrawArrays(GL_TRIANGLES, 0, mesh->vertexCount);
 	}
 
 	glCullFace(GL_BACK);

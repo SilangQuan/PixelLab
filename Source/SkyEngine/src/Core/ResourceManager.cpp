@@ -128,4 +128,4 @@ void ResourceManager::Clear()
 {
 
 }
-void ResourceManager::AddMaterial(Material* mat) { mMaterialResources[mat->Name] = mat; }
+void ResourceManager::AddMaterial(Material* mat) { mMaterialResources[mat->name] = mat; }

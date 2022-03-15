@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 class Color;
 
 class Vector4
@@ -20,6 +21,8 @@ public:
 	static Vector4 one;
 
 	static inline Vector4 MakeVec4(Color* c);
+
+	std::string ToString() const; 
 
 protected:
 private:

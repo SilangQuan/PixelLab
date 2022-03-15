@@ -11,13 +11,20 @@
         "farPlane": 100.0,
         "position": [0.0, 0.0, -4.0],
         "target": [0.0, 0.0, 0.0]
-    },
-	"gameobjs": [{
-	"name": "Center",
-	"position": [0.0, -2.5, 0.0],
-	"rotation": [0.0, 0.0, 0.0, 0.0],
-	"scaling" : [0.012, 0.012, 0.012],
-	"model":"../../BuiltinAssets/model/alucy.obj",
-	"material":"refraction"
+    }, 
+	"gameobjs": 
+	[{
+		"name": "Center",
+		"position": [0.0, -2.5, 0.0],
+		"rotation": [0.0, 0.0, 0.0, 0.0],
+		"scaling" : [0.012, 0.012, 0.012],
+		"components":
+		{
+			"meshRenderer":
+			{
+				"mesh":"../../Library/Mesh/alucy.mesh",
+				"material":"refraction.material"
+			}
+		}
 	}]
 }

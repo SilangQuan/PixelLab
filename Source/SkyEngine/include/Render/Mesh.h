@@ -1,8 +1,30 @@
 #pragma once
 #include "Base.h"
-#include "Texture.h"
 
-class TextureVariable;
+//0-position;1-normal;2-color;3-uv;4-uv2;
+#define ATTRIBUTE_POSITION            1   // 2^0, bit 0
+#define ATTRIBUTE_NORMAL				2  // 2^1, bit 1
+#define ATTRIBUTE_COLOR				4  // 2^2, bit 2
+#define ATTRIBUTE_UV_COORD1          8  // 2^3, bit 3
+#define ATTRIBUTE_UV_COORD2         16  // 2^4, bit 4
+
+struct MeshFileHeader
+{
+	/* Unique 64-bit value to check integrity of the file */
+	uint32 magicValue;
+
+	uint32 vertexDataLayoutMask;
+
+	/* The offset to combined mesh data (this is the base from which the offsets in individual meshes start) */
+	uint32 dataBlockStartOffset;
+
+	/* How much space index data takes */
+	uint32 indexDataSize;
+
+	/* How much space vertex data takes */
+	uint32 vertexDataSize;
+};
+
 
 class Mesh
 {
@@ -10,9 +32,10 @@ public:
 	enum VertexAttribute
 	{
 		POSITION_ATTRIBUTE,
-		UV_COORD_ATTRIBUTE,
 		NORMAL_ATTRIBUTE,
 		COLOR_ATTRIBUTE,
+		UV_COORD_ATTRIBUTE,
+		UV2_COORD_ATTRIBUTE,
 		NUM_VERTEX_ATTRIBUTES
 	};
 
@@ -20,8 +43,17 @@ public:
 	vector<Vector3> normals;
 	vector<Color> colors;
 	vector<Vector2> uvs;
+	vector<Vector2> uv2s;
 	vector<uint32> triangles;
-	string Name;
+	string name;
+	BoundingBox bounds;
+	
+	//0-position;1-normal;2-color;3-uv;4-uv2;
+	uint32 vertexDataLayoutMask;
+
+	uint32 GetVertexDataSize() const;
+	uint32 vertexCount;
+	uint32 indiceCount;
 
 protected:
 	uint32 vaoID;									//Vertex Array Object
@@ -29,7 +61,8 @@ protected:
 	uint32 iboID;
 
 public:
-	Mesh(vector<Vector3> positions, vector<Vector3> normals, vector<Vector2> uv, vector<uint32> triangles);
+	Mesh(vector<Vector3> positions, vector<Vector3> normals, vector<uint32> triangles);
+	Mesh(string binaryMeshPath);
 	Mesh();
 	virtual ~Mesh() {}
 
@@ -43,6 +76,8 @@ public:
 	inline uint32 GetVBO(uint32 index) const { return vboIDs[index]; }
 	inline const uint32* GetVBOs() const { return vboIDs; }
 	inline uint32 GetIBO() const { return iboID; }
+
+
 	void BindBuffer();
 
 	void CreateBufferData();

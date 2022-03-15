@@ -59,8 +59,6 @@ void Camera::SetFrustrum(float left, float right, float bottom, float top, float
 Matrix4x4 Camera::GetViewMatrix()
 {
 	return viewMatrix;
-	//return Transform::LookAt(transform.position, target, up);
-	//return Transform::FPSView(transform.position, transform.rotation);
 }
 
 Matrix4x4 Camera::GetProjectionMatrix()

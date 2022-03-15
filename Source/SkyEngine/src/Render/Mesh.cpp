@@ -8,10 +8,190 @@ Mesh::Mesh() : positions(), normals(), uvs(), triangles(), vaoID(-1), iboID(-1)
 		vboIDs[i] = -1;
 	}
 }
-Mesh::Mesh(vector<Vector3> inPositions, vector<Vector3> inNormals, vector<Vector2> inUv, vector<uint32> inTriangles): positions(inPositions), normals(inNormals), uvs(inUv), triangles(inTriangles), vaoID(-1), iboID(-1)
+Mesh::Mesh(vector<Vector3> inPositions, vector<Vector3> inNormals, vector<uint32> inTriangles): positions(inPositions), normals(inNormals), triangles(inTriangles), vaoID(-1), iboID(-1)
 {
+	//Bouding box generation.
+	Vector3 vmin(Mathf::Infinity);
+	Vector3 vmax(Mathf::NegativeInfinity);
+	for (auto i = 0; i != inPositions.size(); i++)
+	{
+		vmin = Vector3::Min(vmin, inPositions[i]);
+		vmax = Vector3::Max(vmax, inPositions[i]);
+	}
+	bounds = BoundingBox(vmin, vmax);
+	 
+	indiceCount = inTriangles.size();
+	vertexCount = inPositions.size();
 }
 
+Mesh::Mesh(string binaryMeshPath)
+{
+	MeshFileHeader header;
+
+	FILE* f = fopen(binaryMeshPath.c_str(), "rb");
+
+	assert(f); 
+
+	if (!f)
+	{
+		qDebug() << "Mesh File not found - " << binaryMeshPath;
+	}
+
+	if (fread(&header, 1, sizeof(header), f) != sizeof(header))
+	{
+		printf("Unable to read mesh file header\n");
+	}
+
+	vertexDataLayoutMask = header.vertexDataLayoutMask;
+	indiceCount = header.indexDataSize / sizeof(uint32);
+
+	vertexCount = (header.vertexDataSize / sizeof(float)) / GetVertexDataSize();
+
+	std::vector<float> vertexData;
+	std::vector<uint32> indexData;
+
+	if (fread(&bounds, sizeof(BoundingBox), 1, f) != 1)
+	{
+		printf("Could not read bounding boxes\n");
+	}
+
+	indexData.resize(header.indexDataSize / sizeof(uint32));
+	vertexData.resize(header.vertexDataSize / sizeof(float));
+
+	//fwrite(mesh.triangles.data(), header.indexDataSize, 1, f);
+	//fwrite(vertexData.data(), header.vertexDataSize, 1, f);
+
+	if ((fread(indexData.data(), header.indexDataSize, 1, f) !=1 ) ||
+		(fread(vertexData.data(),  header.vertexDataSize, 1, f) != 1))
+	{
+		printf("Unable to read index/vertex data\n");
+	}
+	
+
+
+	//Vertex data buffer
+	glGenVertexArrays(1, &vaoID);
+
+	//Only need one buffer now!
+	glGenBuffers(1, &vboIDs[0]);
+	//Index buffer
+	glGenBuffers(1, &iboID);
+
+	
+
+
+	glBindVertexArray(vaoID);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboIDs[0]);
+	//translate data to buffer
+	glBufferData(GL_ARRAY_BUFFER, header.vertexDataSize, &(vertexData[0]), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, header.indexDataSize, &(indexData[0]), GL_STATIC_DRAW);
+
+
+	//Set layout
+	glEnableVertexAttribArray(Mesh::POSITION_ATTRIBUTE);
+	uint32 strideSize = GetVertexDataSize() * sizeof(GLfloat);
+
+	//Param5 -stride size,every vertex data size
+	//Param6 - data start pos pointer in stride
+	glVertexAttribPointer(Mesh::POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)0);
+	
+	uint32 startPoint = 3;
+	if (vertexDataLayoutMask & ATTRIBUTE_NORMAL)
+	{
+		glEnableVertexAttribArray(Mesh::NORMAL_ATTRIBUTE);
+		glVertexAttribPointer(Mesh::NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
+		startPoint += 3;
+	}
+	if (vertexDataLayoutMask & ATTRIBUTE_COLOR)
+	{
+		glEnableVertexAttribArray(Mesh::COLOR_ATTRIBUTE);
+		glVertexAttribPointer(Mesh::COLOR_ATTRIBUTE, 4, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
+		startPoint += 4;
+	}
+
+	//Enable uvCoord attribute
+	if (vertexDataLayoutMask & ATTRIBUTE_UV_COORD1)
+	{
+		glVertexAttribPointer(Mesh::UV_COORD_ATTRIBUTE,2, GL_FLOAT,GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
+		glEnableVertexAttribArray(Mesh::UV_COORD_ATTRIBUTE);
+		startPoint += 2;
+	}
+
+	//Enable uv2Coord attribute
+	if (vertexDataLayoutMask & ATTRIBUTE_UV_COORD2)
+	{
+		glVertexAttribPointer(Mesh::UV_COORD_ATTRIBUTE,2, GL_FLOAT,GL_FALSE,strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
+		glEnableVertexAttribArray(Mesh::UV2_COORD_ATTRIBUTE);
+	}
+	glBindVertexArray(0);
+
+	
+
+
+
+		/*
+	GLfloat planeVertices[] = {
+		// Positions          // Normals         // Texture Coords
+		8.0f, -0.5f,  8.0f,  0.0f, 1.0f, 0.0f,  5.0f, 0.0f,
+		-8.0f, -0.5f,  8.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+		-8.0f, -0.5f, -8.0f,  0.0f, 1.0f, 0.0f,  0.0f, 5.0f,
+
+		8.0f, -0.5f,  8.0f,  0.0f, 1.0f, 0.0f,  5.0f, 0.0f,
+		-8.0f, -0.5f, -8.0f,  0.0f, 1.0f, 0.0f,  0.0f, 5.0f,
+		8.0f, -0.5f, -8.0f,  0.0f, 1.0f, 0.0f,  5.0f, 5.0f
+	};
+	// Setup plane VAO
+	glGenVertexArrays(1, &vaoID);
+	glGenBuffers(1, &vboIDs[0]);
+	glBindVertexArray(vaoID);
+	glBindBuffer(GL_ARRAY_BUFFER, vboIDs[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	glBindVertexArray(0);
+
+	*/
+ 	fclose(f);
+}
+
+
+uint32 Mesh::GetVertexDataSize() const
+{
+	int size = 0;
+	if (vertexDataLayoutMask & ATTRIBUTE_POSITION)
+	{
+		size += 3;
+	}
+
+	if (vertexDataLayoutMask & ATTRIBUTE_NORMAL)
+	{
+		size += 3;
+	}
+
+	if (vertexDataLayoutMask & ATTRIBUTE_COLOR)
+	{
+		size += 4;
+	}
+
+	if (vertexDataLayoutMask & ATTRIBUTE_UV_COORD1)
+	{
+		size += 2;
+	}
+
+	if (vertexDataLayoutMask & ATTRIBUTE_UV_COORD2)
+	{
+		size += 2;
+	}
+	return size;
+}
 
 void Mesh::BindBuffer()
 {

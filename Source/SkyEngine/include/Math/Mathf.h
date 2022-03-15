@@ -3,11 +3,6 @@
 #include <cfloat>
 #include <math.h>
 
-//#include "Vector2.h"
-//#include "Vector4.h"
-//#include "Quaternion.h"
-//#include "Matrix.h"
-//#include "Random.h"
 
 class Mathf
 {

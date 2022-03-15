@@ -265,7 +265,7 @@ void ShaderProgram::link()
 
 	if (linkStatus != GL_TRUE)
 	{
-		qDebug() << "ShaderProgram Link error";
+		qDebug() << "ShaderProgram Link error: " << mFilePath;
 	}
 }
 
@@ -278,7 +278,7 @@ void ShaderProgram::validate()
 
 	if (validateStatus != GL_TRUE)
 	{
-		qDebug() << "ShaderProgram validate error";
+		qDebug() << "ShaderProgram validate error: " << mFilePath;
 	}
 }
 

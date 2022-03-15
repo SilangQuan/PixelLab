@@ -34,6 +34,7 @@ void Scene::LoadCamera(const json& configJson)
 	float left = (float)cameraSettings["left"];
 	float right = (float)cameraSettings["right"];
 	float bottom = (float)cameraSettings["bottom"];
+	float top = (float)cameraSettings["top"];
 	float nearP = (float)cameraSettings["nearPlane"];
 	float farP = (float)cameraSettings["farPlane"];
 
@@ -45,19 +46,70 @@ void Scene::LoadCamera(const json& configJson)
 
 	activeCamera = new Camera(pos, tar, Vector3::up);
 	//camera->SetFrustrum(-1.778f, 1.778f, -1.0f, 1.0f, 1, 10, true);
-	activeCamera->SetFrustrum(left, 1.778f, -1.0f, 1.0f, 1, 2000, true);
+	activeCamera->SetFrustrum(left, right, bottom, top, nearP, farP, true);
 	
 	//mainCamera = new Camera(tar, pos, fov, speed, sens, nearP, farP);
 }
 
+vector<float> StrSplitToFloats(const string& str, const string& pattern)
+{
+	vector<float> res;
+	if (str == "")
+		return res;
+	//在字符串末尾也加入分隔符，方便截取最后一段
+	string strs = str + pattern;
+	size_t pos = strs.find(pattern);
+
+	while (pos != strs.npos)
+	{
+		string temp = strs.substr(0, pos);
+		res.push_back(std::stof(temp));
+		//去掉已分割的字符串,在剩下的字符串中进行分割
+		strs = strs.substr(pos + 1, strs.size());
+		pos = strs.find(pattern);
+	}
+
+	return res;
+}
+
+
+void ParseMaterialDescription(const json& matJson, MaterialDescription* description)
+{
+	description->name = matJson["name"];
+	description->shader = matJson["shader"];
+	description->albedoMap = matJson["albedoMap"];
+	description->emissiveMap = matJson["emissiveMap"];
+	description->metallicRoughnessMap = matJson["metallicRoughnessMap"];
+	description->normalMap = matJson["normalMap"];
+	description->opacityMap = matJson["opacityMap"];
+	description->ambientOcclusionMap = matJson["ambientOcclusionMap"];
+
+	vector<float> color = StrSplitToFloats(matJson["emissiveColor"], ",");
+	description->emissiveColor = Vector4(color[0], color[1], color[2], color[3]);
+
+	color = StrSplitToFloats(matJson["albedoColor"], ",");
+	description->albedoColor = Vector4(color[0], color[1], color[2], color[3]);
+
+	color = StrSplitToFloats(matJson["roughness"], ",");
+	description->roughness = Vector4(color[0], color[1], color[2], color[3]);
+
+	std::string::size_type sz;
+	description->flags = std::stoi(string(matJson["flags"]), &sz);
+	description->cullMode = std::stoi(string(matJson["cullMode"]), &sz);
+	description->fillMode = std::stoi(string(matJson["fillMode"]), &sz);
+	description->zTest = std::stoi(string(matJson["zTest"]), &sz);
+	description->zWrite = std::stoi(string(matJson["zWrite"]), &sz);
+}
+
 void Scene::LoadGameObjs(const json& configJson)
 {
+	const string scenePath = "../../Library/" + mSceneId;
 	//model setup
 	std::string modelMesh, modelName;
 
-	unsigned int modelCount = (unsigned int)configJson["gameobjs"].size();
+	unsigned int objCount = (unsigned int)configJson["gameobjs"].size();
 
-	for (unsigned int i = 0; i < modelCount; ++i) {
+   	for (unsigned int i = 0; i < objCount; ++i) {
 		//get model mesh and material info
 		json currentGameObj= configJson["gameobjs"][i];
 
@@ -72,9 +124,31 @@ void Scene::LoadGameObjs(const json& configJson)
 		pObj->transform.scale = Vector3((float)scaling[0], (float)scaling[1], (float)scaling[2]);
 		AddGameObject(pObj);
 
+		json components = currentGameObj["components"];
+		if (components.find("meshRenderer") != components.end())
+		{
+			json meshRendererCom = components["meshRenderer"];
+			string meshPath = scenePath + string(meshRendererCom["mesh"]);
+			string materialPath = scenePath + string(meshRendererCom["material"]);
+
+			std::ifstream fileStream(materialPath.c_str());
+			json materialJson;
+			fileStream >> materialJson;
+
+			MaterialDescription* description = new MaterialDescription();
+			ParseMaterialDescription(materialJson, description);
+			Material* pmat = new Material(*description, mSceneId);
+
+			Mesh* pmesh = new Mesh(meshPath);
+				  
+			MeshRenderer* mr = new MeshRenderer(pmesh, pmat);
+			pObj->AddComponent(mr);
+		}
+
+		/*
 		string modelPath = currentGameObj["model"];
 		Model* centerModel = new Model(modelPath.c_str(), true);
-		centerModel->CreateBufferData();
+		center Model->CreateBufferData();
 
 		string matName = currentGameObj["material"];
 
@@ -157,7 +231,7 @@ void Scene::LoadGameObjs(const json& configJson)
 
 				pObj->AddChild(childObj);
 			}
-		}
+		}*/
 	}
 }
 

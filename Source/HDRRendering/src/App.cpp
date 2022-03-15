@@ -39,12 +39,12 @@ bool App::CreateWorld()
 
 
 	mat = new Material(refractionShader);
-	mat->Name = "refraction";
+	mat->name = "refraction";
 	//mat->SetCullMode(CM_Back);
 	mat->SetCullMode(CM_None);
 
 	metalMat = new Material(reflectionShader);
-	metalMat->Name = "reflection";
+	metalMat->name = "reflection";
 	//metalMat->SetCullMode(CM_Back);
 	metalMat->SetCullMode(CM_None);
 	
@@ -59,8 +59,12 @@ bool App::CreateWorld()
 	//scene->Init("./Assets/Scenes/HDR_DamagedHelmet.json");
 	//scene->Init("./Assets/Scenes/HDR_Bistro_Motor.json");
 	//scene->Init("./Assets/Scenes/HDR_Bistro.json"); 
-	scene->Init("./Assets/Scenes/HDR_Bistro_RoadLight.json"); 
-	quad = scene->GetRoot()->GetChild(0)->GetChild(0);
+	//scene->Init("./Assets/Scenes/HDR_Bistro_RoadLight.json");
+
+	//scene->Init("./Assets/Scenes/HDR_Alucy.json");
+	scene->Init("../../Library/HDR_Alucy/HDR_Alucy.json");
+	
+	quad = scene->GetRoot()->GetChild(0);
 
 	//scene->Init("./Assets/Scenes/HDR_Sphere.json");
 	//quad = scene->FindByName("Center_child_0");
@@ -102,7 +106,7 @@ bool App::CreateWorld()
 	//skyBoxMat->ZTestMode = EZTestMode::TM_LEQUAL;
 	//skyBoxMat->ZTestMode = EZTestMode::TM_GEQUAL;
 
-	exposure = 1;
+	exposure = 2;
 
 	//pbrMat = ResourceManager::GetInstance()->FindMaterial("Mat");
 	//pbrMat->AddTextureVariable("irradianceMap", mDiffuseCubeMap, ETextureVariableType::TV_CUBE, 5);
@@ -235,9 +239,6 @@ void App::FrameMove()
 		
 		metalMat->AddTextureVariable("envMap", mSpecCubeMap, TV_CUBE);
 		skyBoxMat->AddTextureVariable("skybox", mDiffuseCubeMap, TV_CUBE);
-
-		
-
 	}
 	else if (iblIndex == 2)
 	{

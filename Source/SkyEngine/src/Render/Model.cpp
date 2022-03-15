@@ -37,17 +37,16 @@ Model::Model(const char* path, bool usingAssimp)
 		ModelType = EModelType::OBJ;
 	}
 
-
-	if (ext.compare("glb") == 0) {
-		LoadModelByGltf(input, true);
-		ModelType = EModelType::GLTF;
-		return;
-	}
-	else if (ext.compare("gltf") == 0) {
-		ModelType = EModelType::GLTF;
-		LoadModelByGltf(input, false);
-		return;
-	}
+	//if (ext.compare("glb") == 0) {
+	//	LoadModelByGltf(input, true);
+	//	ModelType = EModelType::GLTF;
+	//	return;
+	//}
+	//else if (ext.compare("gltf") == 0) {
+	//	ModelType = EModelType::GLTF;
+	//	LoadModelByGltf(input, false);
+	//	return;
+	//}
 
 	if (usingAssimp)
 	{
@@ -78,7 +77,7 @@ void Model::CreateBufferData()
 		}
 	}else
 	{
-		for (std::vector<Mesh>::iterator iter = meshes.begin(); iter != meshes.end(); ++iter)
+		for (std::vector<Mesh>::iterator iter = mMeshes.begin(); iter != mMeshes.end(); ++iter)
 		{
 			iter->CreateBufferData();
 		}
@@ -93,7 +92,7 @@ void Model::Draw(ShaderProgram* shader)
 
 void Model::DrawMesh(Material* mat, Matrix4x4* model, Camera* cam, RenderContext* contex)
 {
-	for (std::vector<Mesh>::iterator iter = meshes.begin(); iter != meshes.end(); ++iter)
+	for (std::vector<Mesh>::iterator iter = mMeshes.begin(); iter != mMeshes.end(); ++iter)
 	{
 		Graphics::DrawMesh(&(*iter), model,mat, cam, contex);
 	}
@@ -102,7 +101,7 @@ void Model::DrawMesh(Material* mat, Matrix4x4* model, Camera* cam, RenderContext
 
 vector<Mesh>* Model::GetMeshes()
 {
-	return &meshes;
+	return &mMeshes;
 }
 
 void Model::LoadModel(string path)
@@ -130,7 +129,7 @@ void Model::LoadModel(string path)
 	{
 		qDebug() << "shapes: " << shapes[i].name;
 		qDebug() << "shapes: " << (int)shapes[i].material_ids.size();
-		meshes.push_back(ProcessMesh(&shapes[i], materials));
+		mMeshes.push_back(ProcessMesh(&shapes[i], materials));
 	}
 
 	// Process materials
@@ -206,7 +205,7 @@ Mesh Model::ProcessMesh(tinyobj::ObjMesh* mesh, vector<tinyobj::ObjMaterial>& ma
 */
 
 	// Return a mesh object created from the extracted mesh data
-	return Mesh(positions, normals, uvs, indices);
+	return Mesh(positions, normals, indices);
 }
 
 
@@ -215,7 +214,8 @@ Texture* LoadTexture(string dir, string name)
 	// If texture hasn't been loaded already, load it
 	string path = dir  + name.c_str();
 
-	Texture* texture = ResourceManager::GetInstance()->TryGetResource<Texture>(path);
+	//Texture* texture = ResourceManager::GetInstance()->TryGetResource<Texture>(path);
+	Texture* texture = NULL;
 
 	return texture;
 	//TextureVariable* textureVariable = new TextureVariable(texture, textureUnit, uniformName);
@@ -314,11 +314,11 @@ void Model::ProcessGltfTexture(tinygltf::Model* model)
 {
 	int imageCount = model->images.size();
 	mTfTextures.resize(imageCount);
-	for (int i = 0; i < imageCount; i++)
-	{
-		mTfTextures[i].TexData = LoadTexture(directory, model->images[i].uri);
-		mTfTextures[i].Name = model->images[i].name;
-	}
+	//for (int i = 0; i < imageCount; i++)
+	//{
+	//	mTfTextures[i].TexData = LoadTexture(directory, model->images[i].uri);
+	//	mTfTextures[i].Name = model->images[i].name;
+	//}
 }
 
 
@@ -327,6 +327,9 @@ void Model::ProcessGltfMesh(tinygltf::Model* model)
 	int meshCount = model->meshes.size();
 	mTfMeshes.resize(meshCount);
 
+	//mMeshes.resize(meshCount);
+
+	
 	for (int i = 0; i < meshCount; i++)
 	{
 		const tinygltf::Mesh mesh = model->meshes[i];
@@ -343,7 +346,7 @@ void Model::ProcessGltfMesh(tinygltf::Model* model)
 			vector<Vector2> uvs;
 			//vector<Vertex> vertices;
 			vector<GLuint> indices;
-
+			uint32 vertexCount = 0;
 			if (primitive.indices < 0) {
 				continue;
 			}
@@ -359,7 +362,9 @@ void Model::ProcessGltfMesh(tinygltf::Model* model)
 				const tinygltf::Accessor& posAccessor = model->accessors[primitive.attributes.find("POSITION")->second];
 				const tinygltf::BufferView& posView = model->bufferViews[posAccessor.bufferView];
 				bufferPos = reinterpret_cast<const float*>(&(model->buffers[posView.buffer].data[posAccessor.byteOffset + posView.byteOffset]));
-
+				
+				vertexCount = posAccessor.count;
+				
 				if (primitive.attributes.find("NORMAL") != primitive.attributes.end()) {
 					const tinygltf::Accessor& normAccessor = model->accessors[primitive.attributes.find("NORMAL")->second];
 					const tinygltf::BufferView& normView = model->bufferViews[normAccessor.bufferView];
@@ -396,7 +401,7 @@ void Model::ProcessGltfMesh(tinygltf::Model* model)
 			}
 
 			uint32_t vertexStart = 0;
-
+			
 			// Indices
 			{
 				const tinygltf::Accessor& accessor = model->accessors[primitive.indices];
@@ -438,10 +443,40 @@ void Model::ProcessGltfMesh(tinygltf::Model* model)
 			}
 			TfMeshPrimitive meshPrimitive;
 
-			meshPrimitive.MeshData = new Mesh(positions, normals, uvs, indices);
+			meshPrimitive.MeshData = new Mesh(positions, normals, indices);
 			meshPrimitive.MaterialIndex = primitive.material;
 			//tempMesh.Name = mesh.name;
 			mTfMeshes[i].Primitives[j] = meshPrimitive;
+
+			if (indices.size() > 0)
+			{
+				Mesh outputMesh(positions, normals, indices);
+				outputMesh.name = mesh.name;
+				outputMesh.vertexCount = vertexCount;
+
+				outputMesh.vertexDataLayoutMask |= ATTRIBUTE_POSITION;
+				outputMesh.vertexDataLayoutMask |= ATTRIBUTE_NORMAL;
+
+				//if (outputMesh.colors.size() > 0)
+				//{
+				//	outputMesh.colors = colors;
+				//	outputMesh.vertexDataLayoutMask |= ATTRIBUTE_COLOR;
+				//}
+
+				if (outputMesh.uvs.size() > 0)
+				{
+					outputMesh.uvs = uvs;
+					outputMesh.vertexDataLayoutMask |= ATTRIBUTE_UV_COORD1;
+				}
+
+				//if (outputMesh.uv2s.size() > 0)
+				//{
+				//	outputMesh.uv2s = uv2s;
+				//	outputMesh.vertexDataLayoutMask |= ATTRIBUTE_UV_COORD2;
+				//}
+
+				mMeshes.push_back(outputMesh);
+			}
 		}
 	}
 }
@@ -525,9 +560,27 @@ void Model::LoadModelByGltf(const string& path, bool binary)
 
 void Model::LoadModelByAssimp(string path)
 {
+	qDebug() <<"Assimp Version: " << (int)aiGetVersionMajor() <<"." << (int)aiGetVersionMinor();
 	// Read file via ASSIMP
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder);
+	//unsigned int flags = 0 |
+	//	aiProcess_JoinIdenticalVertices |
+	//	aiProcess_Triangulate |
+	//	aiProcess_GenSmoothNormals |
+	//	aiProcess_LimitBoneWeights |
+	//	aiProcess_SplitLargeMeshes |
+	//	aiProcess_ImproveCacheLocality |
+	//	aiProcess_RemoveRedundantMaterials |
+	//	aiProcess_FindDegenerates |
+	//	aiProcess_FindInvalidData |
+	//	aiProcess_GenUVCoords;
+
+	//flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder;
+	unsigned int flags = aiProcess_Triangulate | aiProcess_FlipUVs;
+
+	const aiScene* scene = importer.ReadFile(path, flags);
+
+	//const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder);
 	// Check for errors
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
@@ -536,6 +589,9 @@ void Model::LoadModelByAssimp(string path)
 	}
 	// Retrieve the directory path of the filepath
 	this->directory = path.substr(0, path.find_last_of('/'));
+
+	//Export material
+	ProcessAIMaterials(scene);
 
 	// Process ASSIMP's root node recursively
 	this->ProcessNodeByAssimp(scene->mRootNode, scene);
@@ -547,6 +603,8 @@ Mesh Model::ProcessMeshByAssimp(aiMesh* mesh, const aiScene* scene)
 	vector<Vector3> positions;
 	vector<Vector3> normals;
 	vector<Vector2> uvs;
+	vector<Vector2> uv2s;
+	vector<Color> colors;
 	//vector<Vertex> vertices;
 	vector<GLuint> indices;
 	vector<TextureVariable*> textures;
@@ -578,6 +636,26 @@ Mesh Model::ProcessMeshByAssimp(aiMesh* mesh, const aiScene* scene)
 		}
 		uvs.push_back(tmpVec2);
 
+		Vector2 tmp2Vec2(0, 0);
+		// Texture Coordinates
+		if (mesh->mTextureCoords[1]) // Does the mesh contain texture coordinates 2?
+		{
+			// A vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
+			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
+			tmp2Vec2.x = mesh->mTextureCoords[1][i].x;
+			tmp2Vec2.y = mesh->mTextureCoords[1][i].y;
+		}
+		uv2s.push_back(tmp2Vec2);
+
+		Color tmpColor;
+		if (mesh->mColors[0])
+		{
+			tmpColor.r = mesh->mColors[0]->r;
+			tmpColor.g = mesh->mColors[0]->g;
+			tmpColor.b = mesh->mColors[0]->b;
+			tmpColor.a = mesh->mColors[0]->a;
+		}
+		colors.push_back(tmpColor);
 	}
 	// Now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
@@ -632,9 +710,160 @@ Mesh Model::ProcessMeshByAssimp(aiMesh* mesh, const aiScene* scene)
 		vector<TextureVariable*> specularMaps = this->LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
-
+	
 	// Return a mesh object created from the extracted mesh data
-	return Mesh(positions, normals, uvs, indices);
+	Mesh outputMesh(positions, normals, indices);
+	outputMesh.name = mesh->mName.C_Str();
+	outputMesh.vertexCount = mesh->mNumVertices;
+
+	outputMesh.vertexDataLayoutMask |= ATTRIBUTE_POSITION;
+	outputMesh.vertexDataLayoutMask |= ATTRIBUTE_NORMAL;
+
+	if (outputMesh.colors.size() > 0)
+	{
+		outputMesh.colors = colors;
+		outputMesh.vertexDataLayoutMask |= ATTRIBUTE_COLOR;
+	}
+
+	if (outputMesh.uvs.size() > 0)
+	{
+		outputMesh.uvs = uvs;
+		outputMesh.vertexDataLayoutMask |= ATTRIBUTE_UV_COORD1;
+	}
+
+	if (outputMesh.uv2s.size() > 0)
+	{
+		outputMesh.uv2s = uv2s;
+		outputMesh.vertexDataLayoutMask |= ATTRIBUTE_UV_COORD2;
+	}
+
+	return outputMesh;
+}
+
+void Model::ProcessAIMaterials(const aiScene* scene)
+{
+	for (int i = 0; i < scene->mNumMaterials; i++)
+	{
+		aiMaterial* M = scene->mMaterials[i];
+
+		MaterialDescription D;
+		D.name = M->GetName().C_Str();
+
+		aiColor4D Color;
+
+		if (aiGetMaterialColor(M, AI_MATKEY_COLOR_AMBIENT, &Color) == AI_SUCCESS)
+		{
+			D.emissiveColor = { Color.r, Color.g, Color.b, Color.a };
+			if (D.emissiveColor.w > 1.0f) D.emissiveColor.w = 1.0f;
+		}
+		if (aiGetMaterialColor(M, AI_MATKEY_COLOR_DIFFUSE, &Color) == AI_SUCCESS)
+		{
+			D.albedoColor = { Color.r, Color.g, Color.b, Color.a };
+			if (D.albedoColor.w > 1.0f) D.albedoColor.w = 1.0f;
+		}
+		if (aiGetMaterialColor(M, AI_MATKEY_COLOR_EMISSIVE, &Color) == AI_SUCCESS)
+		{
+			D.emissiveColor.x += Color.r;
+			D.emissiveColor.y += Color.g;
+			D.emissiveColor.z += Color.b;
+			D.emissiveColor.w += Color.a;
+			if (D.emissiveColor.w > 1.0f) D.albedoColor.w = 1.0f;
+		}
+
+		const float opaquenessThreshold = 0.05f;
+		float Opacity = 1.0f;
+
+		if (aiGetMaterialFloat(M, AI_MATKEY_OPACITY, &Opacity) == AI_SUCCESS)
+		{
+			D.transparencyFactor = Mathf::Clamp(1.0f - Opacity, 0.0f, 1.0f);
+			if (D.transparencyFactor >= 1.0f - opaquenessThreshold) D.transparencyFactor = 0.0f;
+		}
+
+		if (aiGetMaterialColor(M, AI_MATKEY_COLOR_TRANSPARENT, &Color) == AI_SUCCESS)
+		{
+			const float Opacity = std::max(std::max(Color.r, Color.g), Color.b);
+			D.transparencyFactor = Mathf::Clamp(Opacity, 0.0f, 1.0f);
+			if (D.transparencyFactor >= 1.0f - opaquenessThreshold) D.transparencyFactor = 0.0f;
+			D.alphaTest = 0.5f;
+		}
+
+		float tmp = 1.0f;
+		if (aiGetMaterialFloat(M, AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLIC_FACTOR, &tmp) == AI_SUCCESS)
+			D.metallicFactor = tmp;
+
+		if (aiGetMaterialFloat(M, AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, &tmp) == AI_SUCCESS)
+			D.roughness = { tmp, tmp, tmp, tmp };
+
+		aiString Path;
+		aiTextureMapping Mapping;
+		unsigned int UVIndex = 0;
+		float Blend = 1.0f;
+		aiTextureOp TextureOp = aiTextureOp_Add;
+		aiTextureMapMode TextureMapMode[2] = { aiTextureMapMode_Wrap, aiTextureMapMode_Wrap };
+		unsigned int TextureFlags = 0;
+
+		if (aiGetMaterialTexture(M, aiTextureType_EMISSIVE, 0, &Path, &Mapping, &UVIndex, &Blend, &TextureOp, TextureMapMode, &TextureFlags) == AI_SUCCESS)
+		{
+			//D.emissiveMap = addUnique(files, Path.C_Str());
+			D.emissiveMap = Path.C_Str();
+		}
+
+		if (aiGetMaterialTexture(M, aiTextureType_DIFFUSE, 0, &Path, &Mapping, &UVIndex, &Blend, &TextureOp, TextureMapMode, &TextureFlags) == AI_SUCCESS)
+		{
+			//D.albedoMap = addUnique(files, Path.C_Str());
+			D.albedoMap =  Path.C_Str();
+			//const std::string albedoMap = std::string(Path.C_Str());
+			//if (albedoMap.find("grey_30") != albedoMap.npos)
+			//	D.flags |= EMaterialFlags_Transparent;
+		}
+
+		// first try tangent space normal map
+		if (aiGetMaterialTexture(M, aiTextureType_NORMALS, 0, &Path, &Mapping, &UVIndex, &Blend, &TextureOp, TextureMapMode, &TextureFlags) == AI_SUCCESS)
+		{
+			//D.normalMap = addUnique(files, Path.C_Str());
+			D.normalMap = Path.C_Str();
+		}
+		// then height map
+		if (D.normalMap.size()==0)
+			if (aiGetMaterialTexture(M, aiTextureType_HEIGHT, 0, &Path, &Mapping, &UVIndex, &Blend, &TextureOp, TextureMapMode, &TextureFlags) == AI_SUCCESS)
+				D.normalMap = Path.C_Str();
+
+		if (aiGetMaterialTexture(M, aiTextureType_OPACITY, 0, &Path, &Mapping, &UVIndex, &Blend, &TextureOp, TextureMapMode, &TextureFlags) == AI_SUCCESS)
+		{
+			//D.opacityMap = addUnique(opacityMaps, Path.C_Str());
+			D.opacityMap = Path.C_Str();
+			D.alphaTest = 0.5f;
+		}
+
+		// patch materials
+		aiString Name;
+		std::string materialName;
+		if (aiGetMaterialString(M, AI_MATKEY_NAME, &Name) == AI_SUCCESS)
+		{
+			materialName = Name.C_Str();
+		}
+		// apply heuristics
+		if ((materialName.find("Glass") != std::string::npos) ||
+			(materialName.find("Vespa_Headlight") != std::string::npos))
+		{
+			D.alphaTest = 0.75f;
+			D.transparencyFactor = 0.1f;
+			D.flags |= EMaterialFlags_Transparent;
+		}
+		else if (materialName.find("Bottle") != std::string::npos)
+		{
+			D.alphaTest = 0.54f;
+			D.transparencyFactor = 0.4f;
+			D.flags |= EMaterialFlags_Transparent;
+		}
+		else if (materialName.find("Metal") != std::string::npos)
+		{
+			D.metallicFactor = 1.0f;
+			D.roughness = Vector4(0.1f, 0.1f, 0.0f, 0.0f);
+		}
+
+		mMaterialDescriptions.push_back(D);
+	}
 }
 
 void Model::ProcessNodeByAssimp(aiNode* node, const aiScene* scene)
@@ -645,8 +874,14 @@ void Model::ProcessNodeByAssimp(aiNode* node, const aiScene* scene)
 		// The node object only contains indices to index the actual objects in the scene. 
 		// The scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		this->meshes.push_back(this->ProcessMeshByAssimp(mesh, scene));
+		string nodeName(node->mName.C_Str());
+		nodeName.append(mesh->mName.C_Str());
+
+		mesh->mName = nodeName;
+		this->mMeshes.push_back(this->ProcessMeshByAssimp(mesh, scene));
 	}
+
+
 	// After we've processed all of the meshes (if any) we then recursively process each of the children nodes
 	for (GLuint i = 0; i < node->mNumChildren; i++)
 	{
@@ -657,6 +892,7 @@ void Model::ProcessNodeByAssimp(aiNode* node, const aiScene* scene)
 vector<TextureVariable*> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
 {
 	vector<TextureVariable*> tmpTextures;
+	/*
 	for (GLuint i = 0; i < mat->GetTextureCount(type); i++)
 	{
 		aiString str;
@@ -674,6 +910,6 @@ vector<TextureVariable*> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureT
 		TextureVariable* textureVariable = new TextureVariable(texture, -1, ss.str());
 
 		tmpTextures.push_back(textureVariable);
-	}
+	}*/
 	return tmpTextures;
 }

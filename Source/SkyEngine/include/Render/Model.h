@@ -3,6 +3,8 @@
 #include "../Core/ObjLoader.h"
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
+#include "assimp/version.h"
+#include "assimp/pbrmaterial.h"
 #include "assimp/postprocess.h"
 #include "Render/Material.h"
 
@@ -51,16 +53,16 @@ struct TfTexture
 	std::string Name;
 };
 
-
 class Model
 {
 public:
-	Model(const char* path, bool usingAssimp);
+	Model(const char* path, bool usingAssimp = true);
 	~Model();
 	void Draw(ShaderProgram* shader);
 	void DrawMesh(Material* mat, Matrix4x4* model, Camera* cam, RenderContext* contex);
 	void CreateBufferData();
 	vector<Mesh>* GetMeshes();
+	vector<MaterialDescription>* GetMaterialDescription() { return &mMaterialDescriptions; };
 	vector<TfNode>* GetNodes() { return &mNodes; };
 	vector<TfMesh>* GetTfMeshes() { return &mTfMeshes; };
 	vector<TfTexture>* GetTfTextures() { return &mTfTextures; };
@@ -69,7 +71,10 @@ public:
 
 
 private:
-	vector<Mesh> meshes;
+	vector<Mesh> mMeshes;
+	vector<Material> mMaterials;
+	vector<MaterialDescription> mMaterialDescriptions;
+
 	vector<TfMaterial> mTfMaterials;
 	vector<TfNode> mNodes;
 	vector<TfMesh> mTfMeshes;
@@ -86,6 +91,8 @@ private:
 	void ProcessNodeByAssimp(aiNode* node, const aiScene* scene);
 
 	Mesh ProcessMeshByAssimp(aiMesh* mesh, const aiScene* scene);
+
+	void ProcessAIMaterials(const aiScene* scene);
 
 	void LoadModelByGltf(const string& path, bool binary);
 

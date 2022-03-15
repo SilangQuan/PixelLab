@@ -47,20 +47,56 @@ struct TfMaterial {
 	} extension;
 };
 
+enum MaterialFlags
+{
+	EMaterialFlags_CastShadow = 0x1,
+	EMaterialFlags_ReceiveShadow = 0x2,
+	EMaterialFlags_Transparent = 0x4,
+};
+
+struct MaterialDescription final
+{
+	string name;
+	string shader;
+
+	Vector4 emissiveColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Vector4 albedoColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	// UV anisotropic roughness (isotropic lighting models use only the first value). ZW values are ignored
+	Vector4 roughness = { 1.0f, 1.0f, 0.0f, 0.0f };
+	float transparencyFactor = 1.0f;
+	float alphaTest = 0.0f;
+	float metallicFactor = 0.0f;
+	uint32 flags = 0;
+	uint32 cullMode = 2;
+	uint32 fillMode = 2;
+	uint32 zTest = 4;
+	uint32 zWrite = 0;
+
+	string ambientOcclusionMap;
+	string emissiveMap;
+	string albedoMap;
+
+	/// Occlusion (R), Roughness (G), Metallic (B) https://github.com/KhronosGroup/glTF/issues/857
+	string metallicRoughnessMap;
+	string normalMap;
+	string opacityMap;
+
+};
+
 
 class Material
 {
 private:
-	ShaderProgram* shaderProgram;
-
+	ShaderProgram* mShaderProgram;
+	vector<TextureVariable*> mTextures;
 public:
-
 	ECullMode CullMode;
 	EFillMode FillMode;
 	EZTestMode ZTestMode;
 	EZWriteMode ZWriteMode;
 
 	Material(ShaderProgram* shader);
+	Material(const MaterialDescription& description, string sceneName);
 	virtual ~Material();
 
 	void Bind(RenderContext* renderContext);
@@ -78,19 +114,16 @@ public:
 	void AddTextureVariable(string shaderRefName, Texture* texture, ETextureVariableType tvType = ETextureVariableType::TV_2D, int textureUnit = 0);
 	void AddTextureVariable(TextureVariable* texture);
 
-
 	void SetFloat(string shaderRefName, float value);
 	void SetVector3(string shaderRefName, Vector3 value);
 	void SetVector4(string shaderRefName, Vector4 value);
 
 	void SetColor(string shaderRefName, Color& c);
 
-
 	void SetDirectionLight(Light& light);
 	void SetPointLight(vector<Light*>& light);
 	void SetSpotLight(vector<Light*>& light);
 
-	string Name;
-
+	string name;
 };
 
