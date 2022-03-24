@@ -46,8 +46,10 @@ Texture* TextureVariable::GetTexture()
 	return texture;
 }
 
-void TextureVariable::bind()
+const void TextureVariable::bind()
 {
+	if (texture == NULL)
+		return;
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	switch (type)
 	{

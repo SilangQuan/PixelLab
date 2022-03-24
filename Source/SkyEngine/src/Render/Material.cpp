@@ -15,10 +15,18 @@ Material::Material(ShaderProgram* _shaderProgram):CullMode(ECullMode::CM_Back),F
 
 Material::Material(const MaterialDescription& description, string sceneName)
 {
+	name = description.name;
+
 	mShaderProgram = new ShaderProgram(CShaderPath + description.shader +".vert", CShaderPath + description.shader + ".frag");
-	SetVector4("albedoColor", description.albedoColor);
-	SetVector4("emissiveColor", description.emissiveColor);
-	SetFloat("roughness", description.roughness.x);
+	SetVector4("baseColorFactor", description.albedoColor);
+	SetVector4("emissiveFactor", description.emissiveColor);
+	SetFloat("roughnessFactor", description.roughness.x);
+	SetFloat("metallicFactor", description.metallicFactor);
+
+	if (mShaderProgram->HasUniform("alphaCutoff"))
+	{
+		SetFloat("alphaCutoff", description.alphaCutoff);
+	}
 
 	//Load from library folder.
 	string texPath = CLibraryPath  + sceneName + "/Texture/";
@@ -51,17 +59,40 @@ Material::Material(const MaterialDescription& description, string sceneName)
 	texunit += 1;
 
 	texture = description.ambientOcclusionMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.ambientOcclusionMap);
-	textureVariable = new TextureVariable(texture, texunit, "ambientOcclusionMap");
+	textureVariable = new TextureVariable(texture, texunit, "aoMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description.emissiveMap.length() == 0 ? BlackDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.emissiveMap);
+	textureVariable = new TextureVariable(texture, texunit, "emissiveMap");
 	mTextures.push_back(textureVariable);
 	texunit += 1;
 
 	texture = description.opacityMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description.opacityMap);
 	textureVariable = new TextureVariable(texture, texunit, "opacityMap");
 	mTextures.push_back(textureVariable);
-	texunit += 1;
 
-	name = description.name;
+	textureVariable = new TextureVariable(NULL, ++texunit, "irradianceMap", ETextureVariableType::TV_CUBE);
+	mTextures.push_back(textureVariable);
+
+	textureVariable = new TextureVariable(NULL, ++texunit, "prefilterMap", ETextureVariableType::TV_CUBE);
+	mTextures.push_back(textureVariable);
+
+	textureVariable = new TextureVariable(NULL, ++texunit, "brdfLUT");
+	mTextures.push_back(textureVariable);
+
+	//AddTextureVariable("irradianceMap", NULL, ETextureVariableType::TV_CUBE, ++texunit);
+	//AddTextureVariable("prefilterMap", NULL, ETextureVariableType::TV_CUBE, ++texunit);
+	//AddTextureVariable("brdfLUT", NULL, ETextureVariableType::TV_2D, texunit);
 	
+	for (int i = 0; i < mTextures.size(); i++)
+	{
+		if (mShaderProgram->HasUniform(mTextures[i]->GetUniformName()))
+		{
+			mShaderProgram->SetUniformHandle(mTextures[i]->GetUniformName(), mTextures[i]);
+		} 
+	}
+
 	CullMode = (ECullMode)description.cullMode;
 	ZTestMode =	(EZTestMode)description.zTest;
 	FillMode =	(EFillMode)description.fillMode;
@@ -101,6 +132,22 @@ Texture& Material::GetTexture(int index)
 void Material::SetShader(ShaderProgram* shader)
 {
 	shader = shader;
+}
+
+
+void Material::SetTexture(string shaderRefName, Texture* texture)
+{
+	for (int i = 0; i < mTextures.size(); i++)
+	{
+		if (mTextures[i]->GetUniformName().compare(shaderRefName) == 0)
+		{
+			mTextures[i]->SetTexture(texture);
+			if (mShaderProgram->HasUniform(mTextures[i]->GetUniformName()))
+			{
+				mShaderProgram->SetUniformHandle(mTextures[i]->GetUniformName(), mTextures[i]);
+			}
+		}
+	}
 }
 
 void Material::AddTextureVariable(TextureVariable* textureVariable)

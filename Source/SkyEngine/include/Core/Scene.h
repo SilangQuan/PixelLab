@@ -34,7 +34,9 @@ private:
 	Camera* activeCamera;
 	string mSceneId;
 
+	string GetScenePath();
 	void LoadCamera(const json& configJson);
 	void LoadGameObjs(const json& configJson);
+	GameObject* ParseGameObjInfo(const json& currentGameObj);
 
 };

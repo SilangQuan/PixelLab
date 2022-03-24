@@ -19,4 +19,6 @@ public:
 private:
 	//Useful in the Specular IBL component
 	unsigned int maxMipLevels;
+	unsigned int frameBufferID;
+	unsigned int depthBuffer;
 };

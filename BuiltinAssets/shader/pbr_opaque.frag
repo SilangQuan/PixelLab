@@ -14,6 +14,8 @@ uniform sampler2D metallicRoughnessMap;
 uniform sampler2D aoMap;
 uniform sampler2D emissiveMap;
 
+uniform sampler2D opacityMap;
+
 uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
@@ -200,6 +202,11 @@ void main()
     float metallic  = mrValue.r * metallicFactor;
     float roughness = mrValue.g * roughnessFactor;
     float ao        = texture(aoMap, TexCoords).r;
+
+	//metallic  = 1;
+    //roughness = 0;
+    //albedo.rgb = vec3(1,1,1);
+
 
     vec3 N = getNormalFromMap();
     vec3 V = normalize(viewPos - wPosition.xyz);

@@ -21,11 +21,11 @@ bool App::CreateWorld()
 	//glDisable(GL_CULL_FACE);
 	scene = new Scene();
 	quad = new GameObject();
-	//quad->transform.rotation = Quaternion::Euler(15, 5, 45);
+	quad->transform.rotation = Quaternion::Euler(25, 5, 45);
 	//quad->transform.position =  Vector3(1,1,0);
 	scene->AddGameObject(quad);
 
-	refractionShader = new ShaderProgram("./assets/basic3.vert", "./assets/basic3.frag");
+	refractionShader = new ShaderProgram("./assets/basic4.vert", "./assets/basic4.frag");
 	//shaderProgram->SetUniform("tex", texture1);
 	texture1 = ResourceManager::GetInstance()->TryGetResource<Texture>("./assets/crate.jpg");
 	mat = new Material(refractionShader);
@@ -33,48 +33,9 @@ bool App::CreateWorld()
 
 	//mesh = new Mesh();
 	mesh = new CubeMesh();
-
-	//vector<Vector3> vertices;
-	//vertices.push_back(Vector3(0.5f, 0.5f, -1.0f));
-	//vertices.push_back(Vector3(0.5f, -0.5f, -1.0f));
-	//vertices.push_back(Vector3(-0.5f, -0.5f, -1.0f));
-	//vertices.push_back(Vector3(-0.5f, 0.5f, -1.0f));
-	//
-	//vector<Vector3> normals;
-	//normals.push_back(Vector3(0.0f, 0.0f, -1.0f));
-	//normals.push_back(Vector3(0.0f, 0.0f, -1.0f));
-	//normals.push_back(Vector3(0.0f, 0.0f, -1.0f));
-	//normals.push_back(Vector3(0.0f, 0.0f, -1.0f));
-	//
-	//vector<Color> colors;
-	//colors.push_back(Color(1.0f, 0.0f, 0.0f, 1.0f));
-	//colors.push_back(Color(0.0f, 1.0f, 0.0f, 1.0f));
-	//colors.push_back(Color(0.0f, 0.0f, 1.0f, 1.0f));
-	//colors.push_back(Color(1.0f, 1.0f, 0.0f, 1.0f));
-	//
-	//vector<Vector2> uvs;
-	//uvs.push_back(Vector2(1.0f, 1.0f));
-	//uvs.push_back(Vector2(1.0f, 0.0f));
-	//uvs.push_back(Vector2(0.0f, 0.0f));
-	//uvs.push_back(Vector2(0.0f, 1.0f));
-	//
-	//vector<uint32> triangles;
-	//triangles.push_back(0);
-	//triangles.push_back(1);
-	//triangles.push_back(2);
-	//triangles.push_back(0);
-	//triangles.push_back(2);
-	//triangles.push_back(3);
-	//
-	//mesh->positions = vertices;
-	//mesh->colors = colors;
-	//mesh->uvs = uvs;
-	//mesh->positions = vertices;
-	//mesh->normals = normals;
-	//mesh->triangles = triangles;
-	//mesh->CreateBufferData();
-
-	//mat->SetCullMode(ECullMode::CM_None);
+	//mesh = new QuadMesh();
+	
+	mat->SetCullMode(ECullMode::CM_None);
 	MeshRenderer* mr = new MeshRenderer(mesh, mat);
 	quad->AddComponent(mr);
 

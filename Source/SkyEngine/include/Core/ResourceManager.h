@@ -41,7 +41,8 @@ public:
 	virtual bool load(const char *data, int size);
 	void unload();
 
-	const std::string &getName() { return _name; }
+	const std::string& getName() { return _name; }
+	void setName(std::string name) { _name = name; }
 	ResHandle getHandle() { return _handle; }
 	bool isLoaded() { return _loaded; }
 

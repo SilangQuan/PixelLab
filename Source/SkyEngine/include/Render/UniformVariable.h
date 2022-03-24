@@ -13,7 +13,7 @@ public:
 	IUniform(string uniformName) : m_uniformName(uniformName), m_uniformLocation(-1) {}
 	virtual ~IUniform() {}
 
-	virtual void bind() = 0;
+	const virtual void bind() = 0;
 
 	//inline void attachToShader(GLuint programID);
 
@@ -35,14 +35,18 @@ class UniformVariable : public IUniform
 {
 	T m_uniformData;
 
+	//Just for texture variables
+	const T* uniformDataHandle;
+
 public:
 	UniformVariable(string uniformName) : IUniform(uniformName), m_uniformData() {}
 	virtual ~UniformVariable() {}
 
+	inline void setDataHandle(const T* handle);
 	inline void setData(const T& data);
 	inline T& getData();
 
-	virtual void bind();
+	const virtual void bind();
 
 	bool hasBeenSettle;
 };
@@ -65,6 +69,14 @@ void UniformVariable<T>::setData(const T& data)
 }
 
 template<typename T>
+void UniformVariable<T>::setDataHandle(const T* handle)
+{
+	hasBeenSettle = true;
+	uniformDataHandle = handle;
+}
+
+
+template<typename T>
 T& UniformVariable<T>::getData()
 {
 	return m_uniformData;
@@ -72,16 +84,16 @@ T& UniformVariable<T>::getData()
 
 //Template Instantiations for bind() (instantiations only, see .cpp for definitions)
 
-template<> void UniformVariable<int>::bind();
-template<> void UniformVariable<float>::bind();
-template<> void UniformVariable<double>::bind();
-template<> void UniformVariable<unsigned int>::bind();
-template<> void UniformVariable<bool>::bind();
-template<> void UniformVariable<Vector2>::bind();
-template<> void UniformVariable<Vector3>::bind();
-template<> void UniformVariable<Vector4>::bind();
-template<> void UniformVariable<Color>::bind();
-template<> void UniformVariable<Matrix2>::bind();
-template<> void UniformVariable<Matrix3>::bind();
-template<> void UniformVariable<Matrix4x4>::bind();
-template<> void UniformVariable<TextureVariable>::bind();
+template<> const void UniformVariable<int>::bind();
+template<> const void UniformVariable<float>::bind();
+template<> const void UniformVariable<double>::bind();
+template<> const void UniformVariable<unsigned int>::bind();
+template<> const void UniformVariable<bool>::bind();
+template<> const void UniformVariable<Vector2>::bind();
+template<> const void UniformVariable<Vector3>::bind();
+template<> const void UniformVariable<Vector4>::bind();
+template<> const void UniformVariable<Color>::bind();
+template<> const void UniformVariable<Matrix2>::bind();
+template<> const void UniformVariable<Matrix3>::bind();
+template<> const void UniformVariable<Matrix4x4>::bind();
+template<> const void UniformVariable<TextureVariable>::bind();

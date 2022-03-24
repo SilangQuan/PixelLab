@@ -39,15 +39,24 @@ bool TextureCubemap::LoadSixFaceCube()
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
-   vector<std::string> faces
-   {
-       "/px.hdr",
-       "/nx.hdr",
-       "/py.hdr",
-       "/ny.hdr",
-       "/pz.hdr",
-       "/nz.hdr"
-   };
+    vector<std::string> faces
+    {
+        "/px.hdr",
+        "/nx.hdr",
+        "/py.hdr",
+        "/ny.hdr",
+        "/pz.hdr",
+        "/nz.hdr"
+    };
+    //vector<std::string> faces
+    //{
+    //    "/ny.hdr",
+    //    "/px.hdr",
+    //    "/ny.hdr",
+    //    "/py.hdr",
+    //    "/ny.hdr",
+    //    "/pz.hdr"
+    //};
     int width, height, nrChannels;
 
 
@@ -86,21 +95,13 @@ bool TextureCubemap::LoadSixFaceCube()
 
 bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShader, TextureCubemap* originCube)
 {
-    glFrontFace(GL_CCW);
+    PushGroupMarker("GeneratePrefilterMap");
 
-    unsigned int frameBufferID;
-    unsigned int texColorBuffer, depthBuffer;
-    int width = size;
-    int height = size;
-    glGenFramebuffers(1, &frameBufferID);
-    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+    glCullFace(GL_NONE);
+    glFrontFace(GL_CW);
 
-    glGenRenderbuffers(1, &depthBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
-    //glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
+    mWidth = size;
+    mHeight = size;
 
     Matrix4x4 captureProjection = Transform::Perspective(90.0f, 1.0f, 0.1f, 10.0f);
     //Matrix4x4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
@@ -117,6 +118,9 @@ bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShad
     int numSidesInCube = 6;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    qDebug() << "PrefilterMap textureID: " << (int)textureID;
+    qDebug() << this;
     
     for (unsigned int i = 0; i < numSidesInCube; ++i) {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -132,11 +136,24 @@ bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShad
 
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
+
+    glGenFramebuffers(1, &frameBufferID);
+    glGenRenderbuffers(1, &depthBuffer);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mWidth, mHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+    //glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+
+
     prefilterShader->Use();
     //convolveShader->SetUniform("environmentMap", 0);
 
     TextureVariable* tmpTextureVariable = new TextureVariable(originCube, 0, "environmentMap", ETextureVariableType::TV_CUBE);
-    prefilterShader->SetUniform("environmentMap", *tmpTextureVariable);
+    prefilterShader->SetUniformHandle("environmentMap", tmpTextureVariable);
 
     prefilterShader->SetUniform("projection", captureProjection);
 
@@ -216,43 +233,47 @@ bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShad
         unsigned int mipHeight = unsigned int(size * std::pow(0.5f, mip));
 
         //The depth component needs to be resized for each mip level too
-       glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-       glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+       //glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+      // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
         glViewport(0, 0, mipWidth, mipHeight);
         
-            for (unsigned int i = 0; i < numSidesInCube; ++i) {
-                prefilterShader->SetUniform("view", captureViews[i]);
+        for (unsigned int i = 0; i < numSidesInCube; ++i) 
+        {
+            prefilterShader->SetUniform("view", captureViews[i]);
 
-                prefilterShader->Bind();
+            prefilterShader->Bind();
 
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                    textureID, mip);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                textureID, mip);
 
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                glBindVertexArray(VAO);
-                glDrawArrays(GL_TRIANGLES, 0, numVertices);
-            }
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, 0, numVertices);
+        }
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    PopGroupMarker();
     return true;
 }
 
 
 bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveShader, TextureCubemap* originCube)
 {
-
-    unsigned int frameBufferID;
-    unsigned int texColorBuffer, depthBuffer;
-    int width = size;
-    int height = size;
+    PushGroupMarker("GenerateConvolutionMap");
+    glCullFace(GL_NONE);
+    glFrontFace(GL_CW);
+   
+    mWidth = size;
+    mHeight = size;
     glGenFramebuffers(1, &frameBufferID);
-    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
-
     glGenRenderbuffers(1, &depthBuffer);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
     glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mWidth, mHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
     Matrix4x4 captureProjection = Transform::Perspective(90.0f, 1.0f, 0.1f, 10.0f);
@@ -267,6 +288,7 @@ bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveSh
            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f))
     };
 
+
     int numSidesInCube = 6;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
@@ -276,6 +298,8 @@ bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveSh
             size, size, 0,
             GL_RGB, GL_FLOAT, NULL);
     }
+    qDebug() << "ConvolutionMap textureID: " << "" + (int)textureID;
+    qDebug() << this;
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -287,7 +311,7 @@ bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveSh
     //convolveShader->SetUniform("environmentMap", 0);
     
     TextureVariable* tmpTextureVariable = new TextureVariable(originCube, 0, "environmentMap", ETextureVariableType::TV_CUBE);
-    convolveShader->SetUniform("environmentMap", *tmpTextureVariable);
+    convolveShader->SetUniformHandle("environmentMap", tmpTextureVariable);
 
     convolveShader->SetUniform("projection", captureProjection);
 
@@ -374,6 +398,8 @@ bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveSh
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, numVertices);
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    PopGroupMarker();
     return true;
 }

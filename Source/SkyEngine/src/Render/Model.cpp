@@ -563,20 +563,20 @@ void Model::LoadModelByAssimp(string path)
 	qDebug() <<"Assimp Version: " << (int)aiGetVersionMajor() <<"." << (int)aiGetVersionMinor();
 	// Read file via ASSIMP
 	Assimp::Importer importer;
-	//unsigned int flags = 0 |
-	//	aiProcess_JoinIdenticalVertices |
-	//	aiProcess_Triangulate |
-	//	aiProcess_GenSmoothNormals |
-	//	aiProcess_LimitBoneWeights |
-	//	aiProcess_SplitLargeMeshes |
-	//	aiProcess_ImproveCacheLocality |
-	//	aiProcess_RemoveRedundantMaterials |
-	//	aiProcess_FindDegenerates |
-	//	aiProcess_FindInvalidData |
-	//	aiProcess_GenUVCoords;
+	unsigned int flags = 0 |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_Triangulate |
+		aiProcess_GenSmoothNormals |
+		aiProcess_LimitBoneWeights |
+		aiProcess_SplitLargeMeshes |
+		aiProcess_ImproveCacheLocality |
+		aiProcess_RemoveRedundantMaterials |
+		aiProcess_FindDegenerates |
+		aiProcess_FindInvalidData |
+		aiProcess_GenUVCoords | aiProcess_FlipUVs | aiProcess_FlipWindingOrder;
 
-	//flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder;
-	unsigned int flags = aiProcess_Triangulate | aiProcess_FlipUVs;
+	//unsigned int flags = aiProcess_JoinIdenticalVertices |aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder;
+	//unsigned int flags = aiProcess_Triangulate | aiProcess_FlipUVs;
 
 	const aiScene* scene = importer.ReadFile(path, flags);
 
@@ -719,19 +719,19 @@ Mesh Model::ProcessMeshByAssimp(aiMesh* mesh, const aiScene* scene)
 	outputMesh.vertexDataLayoutMask |= ATTRIBUTE_POSITION;
 	outputMesh.vertexDataLayoutMask |= ATTRIBUTE_NORMAL;
 
-	if (outputMesh.colors.size() > 0)
+	if (colors.size() > 0)
 	{
 		outputMesh.colors = colors;
 		outputMesh.vertexDataLayoutMask |= ATTRIBUTE_COLOR;
 	}
 
-	if (outputMesh.uvs.size() > 0)
+	if (uvs.size() > 0)
 	{
 		outputMesh.uvs = uvs;
 		outputMesh.vertexDataLayoutMask |= ATTRIBUTE_UV_COORD1;
 	}
 
-	if (outputMesh.uv2s.size() > 0)
+	if (uv2s.size() > 0)
 	{
 		outputMesh.uv2s = uv2s;
 		outputMesh.vertexDataLayoutMask |= ATTRIBUTE_UV_COORD2;
@@ -740,6 +740,21 @@ Mesh Model::ProcessMeshByAssimp(aiMesh* mesh, const aiScene* scene)
 	return outputMesh;
 }
 
+string GetPathAssimp(aiTextureType tex_type, aiMaterial* ai_material) {
+
+	if (ai_material->GetTextureCount(tex_type) > 0) {
+
+		aiString ai_filename;
+		string filename;
+
+		if (ai_material->GetTexture(tex_type, 0, &ai_filename) == AI_SUCCESS) {
+			return ai_filename.C_Str();
+		}
+	}
+
+	return "";
+
+}
 void Model::ProcessAIMaterials(const aiScene* scene)
 {
 	for (int i = 0; i < scene->mNumMaterials; i++)
@@ -817,6 +832,13 @@ void Model::ProcessAIMaterials(const aiScene* scene)
 			//	D.flags |= EMaterialFlags_Transparent;
 		}
 
+		//#define AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLICROUGHNESS_TEXTURE aiTextureType_UNKNOWN, 0
+		if (aiGetMaterialTexture(M, aiTextureType_UNKNOWN, 0, &Path, &Mapping, &UVIndex, &Blend, &TextureOp, TextureMapMode, &TextureFlags) == AI_SUCCESS)
+		{
+			//D.emissiveMap = addUnique(files, Path.C_Str());
+			D.metallicRoughnessMap = Path.C_Str();
+		}
+
 		// first try tangent space normal map
 		if (aiGetMaterialTexture(M, aiTextureType_NORMALS, 0, &Path, &Mapping, &UVIndex, &Blend, &TextureOp, TextureMapMode, &TextureFlags) == AI_SUCCESS)
 		{
@@ -877,7 +899,8 @@ void Model::ProcessNodeByAssimp(aiNode* node, const aiScene* scene)
 		string nodeName(node->mName.C_Str());
 		nodeName.append(mesh->mName.C_Str());
 
-		mesh->mName = nodeName;
+		//mesh->mName = nodeName;
+		mesh->mName = mesh->mName.C_Str();
 		this->mMeshes.push_back(this->ProcessMeshByAssimp(mesh, scene));
 	}
 

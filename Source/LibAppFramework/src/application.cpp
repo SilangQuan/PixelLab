@@ -117,10 +117,12 @@ int Application::Run()
 {
 	while (!pInput->QuitRequested())
 	{
+		ResetRenderState();
 		time->Update();
 		pInput->Update();
 		BeginFrame();
 		FrameMove();
+
 		RenderWorld();
 		RenderUI();
 
@@ -134,6 +136,14 @@ int Application::Run()
 	DestroyWorld();
 
 	return 0;
+}
+
+void Application::ResetRenderState()
+{
+	//Reset RenderState before render scene because of imgui!
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Application::BeginFrame()

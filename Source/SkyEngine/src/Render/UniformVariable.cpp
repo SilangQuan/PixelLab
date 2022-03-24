@@ -4,37 +4,37 @@
 #include "Render/Texture.h"
 
 template<>
-void UniformVariable<int>::bind()
+const void UniformVariable<int>::bind()
 {
 	glUniform1i(m_uniformLocation, m_uniformData);
 }
 
 template<>
-void UniformVariable<float>::bind()
+const void UniformVariable<float>::bind()
 {
 	glUniform1f(m_uniformLocation, m_uniformData);
 }
 
 template<>
-void UniformVariable<double>::bind()
+const void UniformVariable<double>::bind()
 {
 	glUniform1d(m_uniformLocation, m_uniformData);
 }
 
 template<>
-void UniformVariable<unsigned int>::bind()
+const void UniformVariable<unsigned int>::bind()
 {
 	glUniform1ui(m_uniformLocation, m_uniformData);
 }
 
 template<>
-void UniformVariable<bool>::bind()
+const void UniformVariable<bool>::bind()
 {
 	glUniform1i(m_uniformLocation, m_uniformData);
 }
 
 template<>
-void UniformVariable<Vector2>::bind()
+const void UniformVariable<Vector2>::bind()
 {
 	glUniform2f(m_uniformLocation,
 		m_uniformData.x,
@@ -42,7 +42,7 @@ void UniformVariable<Vector2>::bind()
 }
 
 template<>
-void UniformVariable<Vector3>::bind()
+const void UniformVariable<Vector3>::bind()
 {
 	glUniform3f(m_uniformLocation,
 		m_uniformData.x,
@@ -51,7 +51,7 @@ void UniformVariable<Vector3>::bind()
 }
 
 template<>
-void UniformVariable<Vector4>::bind()
+const void UniformVariable<Vector4>::bind()
 {
 	glUniform4f(m_uniformLocation,
 		m_uniformData.x,
@@ -61,7 +61,7 @@ void UniformVariable<Vector4>::bind()
 }
 
 template<>
-void UniformVariable<Color>::bind()
+const void UniformVariable<Color>::bind()
 {
 	glUniform4f(m_uniformLocation,
 		m_uniformData.r,
@@ -71,7 +71,7 @@ void UniformVariable<Color>::bind()
 }
 
 template<>
-void UniformVariable<Matrix2>::bind()
+const void UniformVariable<Matrix2>::bind()
 {
 	glUniformMatrix2fv(m_uniformLocation,
 		1, false,
@@ -79,7 +79,7 @@ void UniformVariable<Matrix2>::bind()
 }
 
 template<>
-void UniformVariable<Matrix3>::bind()
+const void UniformVariable<Matrix3>::bind()
 {
 	glUniformMatrix3fv(m_uniformLocation,
 		1, false,
@@ -87,7 +87,7 @@ void UniformVariable<Matrix3>::bind()
 }
 
 template<>
-void UniformVariable<Matrix4x4>::bind()
+const void UniformVariable<Matrix4x4>::bind()
 {
 	glUniformMatrix4fv(m_uniformLocation,
 		1, false,
@@ -95,11 +95,19 @@ void UniformVariable<Matrix4x4>::bind()
 }
 
 template<>
-void UniformVariable<TextureVariable>::bind()
+const void UniformVariable<TextureVariable>::bind()
 {
 	if (hasBeenSettle)
 	{
-		glUniform1i(m_uniformLocation, m_uniformData.GetTextureUnit());
-		m_uniformData.bind();
+		if (uniformDataHandle != NULL)
+		{
+			glUniform1i(m_uniformLocation, uniformDataHandle->GetTextureUnit());
+			const_cast<TextureVariable*>(uniformDataHandle)->bind();
+		}
+		else
+		{
+			glUniform1i(m_uniformLocation, m_uniformData.GetTextureUnit());
+			m_uniformData.bind();
+		}
 	}
 }

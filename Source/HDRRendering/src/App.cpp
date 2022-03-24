@@ -23,20 +23,19 @@ bool App::CreateWorld()
 	refractionShader = new ShaderProgram("../../BuiltinAssets/shader/refraction.vert", "../../BuiltinAssets/shader/refraction.frag");
 	reflectionShader = new ShaderProgram("../../BuiltinAssets/shader/reflection.vert", "../../BuiltinAssets/shader/reflection.frag");
 	pbrOpaqueShader = new ShaderProgram("../../BuiltinAssets/shader/pbr_opaque.vert", "../../BuiltinAssets/shader/pbr_opaque.frag");
+	pbrAlphaTestShader = new ShaderProgram("../../BuiltinAssets/shader/pbr_opaque.vert", "../../BuiltinAssets/shader/pbr_opaque_alphatest.frag");
 	
 	mConvolveShader = new ShaderProgram("../../BuiltinAssets/shader/cubeMapShader.vert", "../../BuiltinAssets/shader/convolveCubemapShader.frag");
 	mPrefilterShader = new ShaderProgram("../../BuiltinAssets/shader/cubeMapShader.vert", "../../BuiltinAssets/shader/preFilteringShader.frag");
 
-	skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/barcelona");
+	//skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/barcelona");
+	skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/forest");
 	skyCubeTokyo = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/tokyo");
 	skyCubeCatwalk = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/catwalk");
 
 	mBrdfLut = ResourceManager::GetInstance()->TryGetResource<Texture>("../../BuiltinAssets/texture/BrdfLUT.hdr");
 
-	ResourceManager::GetInstance()->LoadBuitinShaders  ();
-
-	BakeIBL();
-
+	ResourceManager::GetInstance()->LoadBuitinShaders();
 
 	mat = new Material(refractionShader);
 	mat->name = "refraction";
@@ -48,27 +47,11 @@ bool App::CreateWorld()
 	//metalMat->SetCullMode(CM_Back);
 	metalMat->SetCullMode(CM_None);
 	
-
 	ResourceManager::GetInstance()->AddMaterial(mat);
 	ResourceManager::GetInstance()->AddMaterial(metalMat);
 
 	postProcessor = new PostProcessor();
 	postProcessor->InitRenderData();
-
-	scene = new Scene();
-	//scene->Init("./Assets/Scenes/HDR_DamagedHelmet.json");
-	//scene->Init("./Assets/Scenes/HDR_Bistro_Motor.json");
-	//scene->Init("./Assets/Scenes/HDR_Bistro.json"); 
-	//scene->Init("./Assets/Scenes/HDR_Bistro_RoadLight.json");
-
-	//scene->Init("./Assets/Scenes/HDR_Alucy.json");
-	scene->Init("../../Library/HDR_Alucy/HDR_Alucy.json");
-	
-	quad = scene->GetRoot()->GetChild(0);
-
-	//scene->Init("./Assets/Scenes/HDR_Sphere.json");
-	//quad = scene->FindByName("Center_child_0");
-	camera = scene->GetActiveCamera();
 
 	mEnableMsaa = true;
 	
@@ -101,35 +84,63 @@ bool App::CreateWorld()
 	skyBoxMesh = new CubeMesh();
 	skyBoxShader = new ShaderProgram("../../BuiltinAssets/shader/skyboxShader.vert", "../../BuiltinAssets/shader/skyboxShader.frag");
 	skyBoxMat = new Material(skyBoxShader);
-	skyBoxMat->SetCullMode(ECullMode::CM_Front);
+	skyBoxMat->SetCullMode(ECullMode::CM_None);
 	//skyBoxMat->ZWriteMode = EZWriteMode::WM_OFF;
 	//skyBoxMat->ZTestMode = EZTestMode::TM_LEQUAL;
 	//skyBoxMat->ZTestMode = EZTestMode::TM_GEQUAL;
 
-	exposure = 2;
+	exposure = 3;
 
 	//pbrMat = ResourceManager::GetInstance()->FindMaterial("Mat");
 	//pbrMat->AddTextureVariable("irradianceMap", mDiffuseCubeMap, ETextureVariableType::TV_CUBE, 5);
 	//pbrMat->AddTextureVariable("prefilterMap", mSpecCubeMap, ETextureVariableType::TV_CUBE, 6);
 	//pbrMat->AddTextureVariable("brdfLUT", mBrdfLut, ETextureVariableType::TV_2D, 7);
 	
+
+	scene = new Scene();
+	//scene->Init("./Assets/Scenes/HDR_DamagedHelmet.json");
+	//scene->Init("./Assets/Scenes/HDR_Bistro_Motor.json");
+	//scene->Init("./Assets/Scenes/HDR_Bistro.json"); 
+	//scene->Init("./Assets/Scenes/HDR_Bistro_RoadLight.json");
+
+	scene->Init("../../Library/Sponza/Sponza.json");
+	//scene->Init("../../Library/HDR_Alucy/HDR_Alucy.json");
+	//scene->Init("../../Library/DamagedHelmet/DamagedHelmet.json");
+	
+	quad = scene->GetRoot()->GetChild(0);
+
+	//scene->Init("./Assets/Scenes/HDR_Sphere.json");
+	//quad = scene->FindByName("Center_child_0");
+	camera = scene->GetActiveCamera();
+
+	scene->Start();
+
+	BakeIBL();
+
+	//MeshRenderer* rc = quad->GetComponent<MeshRenderer>();
+	//
+	//if (rc != 0)
+	//{
+	//	Material* mat = rc->GetMaterial();
+	//	if (mat != NULL && mat->GetShaderProgram()->HasUniform("brdfLUT"))
+	//	{
+	//		mat->SetTexture("irradianceMap", mDiffuseCubeMap);
+	//		mat->SetTexture("prefilterMap", mSpecCubeMap);
+	//		mat->SetTexture("brdfLUT", mBrdfLut);
+	//	}
+	//}
+	//BakeIBL();
 	pForwardRenderer->GetRenderContext()->BrdfLut = mBrdfLut;
 	pForwardRenderer->GetRenderContext()->DiffuseCubeMap = mDiffuseCubeMap;
 	pForwardRenderer->GetRenderContext()->SpecCubeMap = mSpecCubeMap;
-
-	scene->Start();
 	return true;
 }
 
 
 void App::RenderWorld()
 {
-	//BakeIBL();
-	glFrontFace(GL_CCW);
-	glEnable(GL_DEPTH_TEST);
 	PushGroupMarker("SceneRender");
 	pRenderer->Render(scene, scene->GetActiveCamera());
-
 
 	Matrix4x4 transMatrix(1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -146,6 +157,7 @@ void App::RenderWorld()
 	glFrontFace(GL_CW);
 	//Matrix4x4 skyBoxModel = Matrix4x4::identity.scale(2);
 	pRenderer->DrawMesh(skyBoxMesh, &skyBoxModel, skyBoxMat, camera);
+
 	PopGroupMarker();
 
 	if (mEnableMsaa)
@@ -193,6 +205,8 @@ void App::FrameMove()
 	//float rotSpeed = 10;
 	//quad->transform.Rotate(0, Time::deltaTime * rotSpeed, 0);
 	
+	//BakeIBL();
+
 	float sensitivity = 20;
 	if (pInput->GetMouseButton(MOUSE_LEFT))
 	{
@@ -225,6 +239,7 @@ void App::FrameMove()
 		camera->viewMatrix = rotMatrix;
 	}
 
+	/*
 	if (iblIndex == 0)
 	{
 		mat->AddTextureVariable("envMap", skyCubeBarcelona, TV_CUBE);
@@ -246,7 +261,7 @@ void App::FrameMove()
 		metalMat->AddTextureVariable("envMap", skyCubeCatwalk, TV_CUBE);
 		skyBoxMat->AddTextureVariable("skybox", skyCubeCatwalk, TV_CUBE);
 	}
-
+	
 	if (materialIndex == 0)
 	{
 	}
@@ -258,7 +273,7 @@ void App::FrameMove()
 	{
 		quad->GetComponent<MeshRenderer>()->SetMaterial(metalMat);
 	}
-
+	
 	if (mEnableMsaa)
 	{
 		ForwardSceneRenderer* pForwardRenderer = dynamic_cast<ForwardSceneRenderer*>(pRenderer);
@@ -276,7 +291,7 @@ void App::FrameMove()
 		{
 			pForwardRenderer->SetRenderTarget(mHdrRT);
 		}
-	}
+	}*/
 }
 
 void App::RenderUI()
@@ -339,6 +354,8 @@ void App::BakeIBL()
 	mSpecCubeMap = new TextureCubemap();
 	mDiffuseCubeMap = new TextureCubemap();
 
+	mSpecCubeMap->setName("SpecCube");
+	mDiffuseCubeMap->setName("DiffuseCube");
 	mDiffuseCubeMap->GenerateConvolutionMap(64, mConvolveShader, skyCubeBarcelona);
 	mSpecCubeMap->GeneratePrefilterMap(256, mPrefilterShader, skyCubeBarcelona);
 }

@@ -21,18 +21,20 @@ Camera::Camera()
 }
 
 //Only for perspective camera
-Camera::Camera(const Vector3& _pos, float fov, float aspect, float _zNear, float _zFar)
+Camera::Camera(const Vector3& _target, const Vector3& _pos, float _fov, float _aspect, float _zNear, float _zFar)
 {
 	transform.position = _pos;
 	transform.rotation = Quaternion::identity;
 	transform.scale = Vector3::one;
 	up = Vector3::up;
-	target = Vector3::zero;
+	target = _target;
 	viewMatrix = Matrix4x4::LookAt(transform.position, target, up);
 	zNear = _zNear;
 	zFar = _zFar;
-
-	projectionMaxtrix = Transform::Perspective(fov, aspect, _zNear, _zFar);
+	fov = _fov;
+	aspect = _aspect;
+	projectionMaxtrix = Transform::Perspective(fov, aspect, zNear, zFar);
+	isPerspective = true;
 }
 
 

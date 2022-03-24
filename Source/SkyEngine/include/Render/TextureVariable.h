@@ -20,7 +20,8 @@ public:
 	GLuint GetTextureID() const;
 	string GetUniformName() const;
 	Texture* GetTexture();
-	void bind();
+	void SetTexture(Texture* inTexture) { texture = inTexture; }
+	const void bind();
 
 private:
 	GLenum textureUnit;

@@ -130,7 +130,7 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
 
         TextureVariable sceneColorRT(Inputs.SceneColorTex, 0, "sceneColorRT", TV_2D);
 
-        mBloomThresholdShader->SetUniform("sceneColorRT", sceneColorRT);
+        mBloomThresholdShader->SetUniformHandle("sceneColorRT", &sceneColorRT);
         mBloomThresholdShader->SetUniform("bloomThreshold", Inputs.BloomThreshold);
         mBloomThresholdShader->SetUniform("bloomIntensity", Inputs.BloomIntensity);
 
@@ -150,13 +150,13 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
             downsampledBuffer[i].Init(Inputs.Width * ratio, Inputs.Height * ratio, ColorType::RGBA16F, DepthType::NoDepth);
             if (i == 0)
             {
-                TextureVariable bloomThreshold(&bloomThreshold, 0, "bloomThreshold", TV_2D);
-                mDownsampleShader->SetUniform("sourceRT", bloomThreshold);
+                TextureVariable bloomThresholdVariable(&bloomThreshold, 0, "bloomThreshold", TV_2D);
+                mDownsampleShader->SetUniform("sourceRT", &bloomThresholdVariable);
             }
             else
             {
-                TextureVariable downsampledBuffer(&downsampledBuffer[i - 1], 0, "downsampledBuffer", TV_2D);
-                mDownsampleShader->SetUniform("sourceRT", downsampledBuffer);
+                TextureVariable downsampledBufferVariable(&downsampledBuffer[i - 1], 0, "downsampledBuffer", TV_2D);
+                mDownsampleShader->SetUniform("sourceRT", &downsampledBufferVariable);
             }
             mDownsampleShader->SetUniform("texelSize", Vector2(1.0f / targetWidth, 1.0f / targetHeight));
             AddPass(mDownsampleShader, downsampledBuffer + i);
@@ -240,6 +240,11 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
 
     DrawQuard();
 
+
+    //Reset render state
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glEnable(GL_DEPTH_TEST);
     glCullFace(GL_BACK);
 }
 

@@ -31,24 +31,26 @@ void Scene::LoadCamera(const json& configJson)
 {
 	json cameraSettings = configJson["camera"];
 
-	float left = (float)cameraSettings["left"];
-	float right = (float)cameraSettings["right"];
-	float bottom = (float)cameraSettings["bottom"];
-	float top = (float)cameraSettings["top"];
+	//float left = (float)cameraSettings["left"];
+	//float right = (float)cameraSettings["right"];
+	//float bottom = (float)cameraSettings["bottom"];
+	//float top = (float)cameraSettings["top"];
 	float nearP = (float)cameraSettings["nearPlane"];
 	float farP = (float)cameraSettings["farPlane"];
+	float fov = (float)cameraSettings["fov"];
+	float aspect = (float)cameraSettings["aspect"];
 
 	json position = cameraSettings["position"];
-	Vector3 pos = Vector3((float)position[0], (float)position[1], (float)position[2]);
+	Vector3 pos = Vector3((float)position["x"], (float)position["y"], (float)position["z"]);
 
 	json target = cameraSettings["target"];
-	Vector3 tar = Vector3((float)target[0], (float)target[1], (float)target[2]);
+	Vector3 tar = Vector3((float)target["x"], (float)target["y"], (float)target["z"]);
 
-	activeCamera = new Camera(pos, tar, Vector3::up);
+	//activeCamera = new Camera(pos, tar, Vector3::up);
 	//camera->SetFrustrum(-1.778f, 1.778f, -1.0f, 1.0f, 1, 10, true);
-	activeCamera->SetFrustrum(left, right, bottom, top, nearP, farP, true);
+	//activeCamera->SetFrustrum(left, right, bottom, top, nearP, farP, true);
 	
-	//mainCamera = new Camera(tar, pos, fov, speed, sens, nearP, farP);
+	activeCamera = new Camera(tar, pos, fov, aspect, nearP, farP);
 }
 
 vector<float> StrSplitToFloats(const string& str, const string& pattern)
@@ -84,16 +86,20 @@ void ParseMaterialDescription(const json& matJson, MaterialDescription* descript
 	description->opacityMap = matJson["opacityMap"];
 	description->ambientOcclusionMap = matJson["ambientOcclusionMap"];
 
+
 	vector<float> color = StrSplitToFloats(matJson["emissiveColor"], ",");
-	description->emissiveColor = Vector4(color[0], color[1], color[2], color[3]);
+	description->emissiveColor = Vector4(color[0], color[1], color[2], 1);
 
 	color = StrSplitToFloats(matJson["albedoColor"], ",");
-	description->albedoColor = Vector4(color[0], color[1], color[2], color[3]);
+	description->albedoColor = Vector4(color[0], color[1], color[2], 1);
 
 	color = StrSplitToFloats(matJson["roughness"], ",");
-	description->roughness = Vector4(color[0], color[1], color[2], color[3]);
+	description->roughness = Vector4(color[0], color[1], color[2], 1);
 
 	std::string::size_type sz;
+	if (description->shader.find("alphatest") != std::string::npos) {
+		description->alphaCutoff = std::stof(string(matJson["alphaCutoff"]), &sz); ;
+	}
 	description->flags = std::stoi(string(matJson["flags"]), &sz);
 	description->cullMode = std::stoi(string(matJson["cullMode"]), &sz);
 	description->fillMode = std::stoi(string(matJson["fillMode"]), &sz);
@@ -101,35 +107,32 @@ void ParseMaterialDescription(const json& matJson, MaterialDescription* descript
 	description->zWrite = std::stoi(string(matJson["zWrite"]), &sz);
 }
 
-void Scene::LoadGameObjs(const json& configJson)
+string Scene::GetScenePath()
 {
-	const string scenePath = "../../Library/" + mSceneId;
-	//model setup
-	std::string modelMesh, modelName;
+	return "../../Library/" + mSceneId + "/";
+}
 
-	unsigned int objCount = (unsigned int)configJson["gameobjs"].size();
+GameObject* Scene::ParseGameObjInfo(const json& currentGameObj)
+{
+	json position = currentGameObj["position"];
+	json rotation = currentGameObj["rotation"];
+	json scaling = currentGameObj["scaling"];
 
-   	for (unsigned int i = 0; i < objCount; ++i) {
-		//get model mesh and material info
-		json currentGameObj= configJson["gameobjs"][i];
+	GameObject* pObj = new GameObject();
+	pObj->name = currentGameObj["name"];
+	pObj->transform.rotation = Quaternion::Euler((float)rotation["x"], (float)rotation["y"], (float)rotation["z"]);
+	pObj->transform.position = Vector3((float)position["x"], (float)position["y"], (float)position["z"]);
+	pObj->transform.scale = Vector3((float)scaling["x"], (float)scaling["y"], (float)scaling["z"]);
 
-		json position = currentGameObj["position"];
-		json rotation = currentGameObj["rotation"];
-		json scaling = currentGameObj["scaling"];
-
-		GameObject* pObj = new GameObject();
-		pObj->name = currentGameObj["name"];
-		pObj->transform.rotation = Quaternion::Euler((float)rotation[0], (float)rotation[1], (float)rotation[2]);
-		pObj->transform.position = Vector3((float)position[0], (float)position[1], (float)position[2]);
-		pObj->transform.scale = Vector3((float)scaling[0], (float)scaling[1], (float)scaling[2]);
-		AddGameObject(pObj);
-
-		json components = currentGameObj["components"];
-		if (components.find("meshRenderer") != components.end())
+	json components = currentGameObj["components"];
+	for (int i = 0; i < components.size(); i++)
+	{
+		//if (components.find("meshRenderer") != components.end())
+		if (components[i]["name"] == "MeshRenderer")
 		{
-			json meshRendererCom = components["meshRenderer"];
-			string meshPath = scenePath + string(meshRendererCom["mesh"]);
-			string materialPath = scenePath + string(meshRendererCom["material"]);
+			json meshRendererProps = components[i]["properties"];
+			string meshPath = GetScenePath() + string(meshRendererProps["mesh"]);
+			string materialPath = GetScenePath() + string(meshRendererProps["material"]);
 
 			std::ifstream fileStream(materialPath.c_str());
 			json materialJson;
@@ -140,14 +143,38 @@ void Scene::LoadGameObjs(const json& configJson)
 			Material* pmat = new Material(*description, mSceneId);
 
 			Mesh* pmesh = new Mesh(meshPath);
-				  
+
 			MeshRenderer* mr = new MeshRenderer(pmesh, pmat);
 			pObj->AddComponent(mr);
 		}
+	}
+
+	json childs = currentGameObj["childs"];
+	for (int i = 0; i < childs.size(); i++)
+	{
+		GameObject* child = Scene::ParseGameObjInfo(childs[i]);
+		pObj->AddChild(child);
+	}
+
+	return pObj;
+}
+
+void Scene::LoadGameObjs(const json& configJson)
+{
+	unsigned int objCount = (unsigned int)configJson["gameobjs"].size();
+
+   	for (unsigned int i = 0; i < objCount; ++i) 
+	{
+		//get model mesh and material info
+		json currentGameObj = configJson["gameobjs"][i];
+		GameObject* pObj = ParseGameObjInfo(currentGameObj);
+		AddGameObject(pObj);
+	}
+		
 
 		/*
 		string modelPath = currentGameObj["model"];
-		Model* centerModel = new Model(modelPath.c_str(), true);
+		Model* centerModel = new Model(modelPath.c_str(), true); 
 		center Model->CreateBufferData();
 
 		string matName = currentGameObj["material"];
@@ -231,8 +258,8 @@ void Scene::LoadGameObjs(const json& configJson)
 
 				pObj->AddChild(childObj);
 			}
-		}*/
-	}
+		}
+	}*/
 }
 
 

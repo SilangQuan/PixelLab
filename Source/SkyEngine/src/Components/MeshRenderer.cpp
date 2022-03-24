@@ -22,7 +22,7 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceShader)
 {
-	//glCullFace(GL_NONE);
+	//glCullFace(GL_BACK);
 	if (material->GetCullMode() == ECullMode::CM_None)
 	{
 		glCullFace(GL_NONE);
@@ -74,7 +74,7 @@ void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceSh
 		glDrawArrays(GL_TRIANGLES, 0, mesh->vertexCount);
 	}
 
-	glCullFace(GL_BACK);
+	//glCullFace(GL_BACK);
 	//Unbind the Vertex Array
 	glBindVertexArray(0);
 }

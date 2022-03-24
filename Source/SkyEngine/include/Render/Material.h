@@ -66,6 +66,7 @@ struct MaterialDescription final
 	float transparencyFactor = 1.0f;
 	float alphaTest = 0.0f;
 	float metallicFactor = 0.0f;
+	float alphaCutoff = 0.5f;
 	uint32 flags = 0;
 	uint32 cullMode = 2;
 	uint32 fillMode = 2;
@@ -113,6 +114,7 @@ public:
 	//void AddTexture(Texture& texture);
 	void AddTextureVariable(string shaderRefName, Texture* texture, ETextureVariableType tvType = ETextureVariableType::TV_2D, int textureUnit = 0);
 	void AddTextureVariable(TextureVariable* texture);
+	void SetTexture(string shaderRefName, Texture* textureVariable);
 
 	void SetFloat(string shaderRefName, float value);
 	void SetVector3(string shaderRefName, Vector3 value);

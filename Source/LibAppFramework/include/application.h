@@ -101,4 +101,5 @@ private:
 	void BeginFrame();
 	bool CheckMessages();
 	void EndFrame();
+	void ResetRenderState();
 };

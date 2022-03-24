@@ -7,7 +7,7 @@ class Camera
 public: 
 	Camera();
 	Camera(const Vector3& pos, const Vector3& target, const Vector3& up);
-	Camera(const Vector3& _pos, float fov, float aspect, float near, float far);
+	Camera(const Vector3& _target, const Vector3& _pos, float fov, float aspect, float near, float far);
 	~Camera();
 
 	void SetFrustrum(float left, float right, float bottom, float top, float nearValue, float farValue, bool perspective);

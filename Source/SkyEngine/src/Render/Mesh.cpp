@@ -77,8 +77,6 @@ Mesh::Mesh(string binaryMeshPath)
 	//Index buffer
 	glGenBuffers(1, &iboID);
 
-	
-
 
 	glBindVertexArray(vaoID);
 
@@ -90,75 +88,51 @@ Mesh::Mesh(string binaryMeshPath)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, header.indexDataSize, &(indexData[0]), GL_STATIC_DRAW);
 
-
-	//Set layout
-	glEnableVertexAttribArray(Mesh::POSITION_ATTRIBUTE);
+	int attributeIndex = 0;
+	
+	//Set layout: position->normal->color->uv1->uv2
+	glEnableVertexAttribArray(attributeIndex);
 	uint32 strideSize = GetVertexDataSize() * sizeof(GLfloat);
 
 	//Param5 -stride size,every vertex data size
 	//Param6 - data start pos pointer in stride
-	glVertexAttribPointer(Mesh::POSITION_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)0);
+	glVertexAttribPointer(attributeIndex, 3, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)0);
 	
+	++attributeIndex;
 	uint32 startPoint = 3;
 	if (vertexDataLayoutMask & ATTRIBUTE_NORMAL)
 	{
-		glEnableVertexAttribArray(Mesh::NORMAL_ATTRIBUTE);
-		glVertexAttribPointer(Mesh::NORMAL_ATTRIBUTE, 3, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
+		glEnableVertexAttribArray(attributeIndex);
+		glVertexAttribPointer(attributeIndex, 3, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
 		startPoint += 3;
+		++attributeIndex;
 	}
 	if (vertexDataLayoutMask & ATTRIBUTE_COLOR)
 	{
-		glEnableVertexAttribArray(Mesh::COLOR_ATTRIBUTE);
-		glVertexAttribPointer(Mesh::COLOR_ATTRIBUTE, 4, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
+		glEnableVertexAttribArray(attributeIndex);
+		glVertexAttribPointer(attributeIndex, 4, GL_FLOAT, GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
 		startPoint += 4;
+		++attributeIndex;
 	}
 
 	//Enable uvCoord attribute
 	if (vertexDataLayoutMask & ATTRIBUTE_UV_COORD1)
 	{
-		glVertexAttribPointer(Mesh::UV_COORD_ATTRIBUTE,2, GL_FLOAT,GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
-		glEnableVertexAttribArray(Mesh::UV_COORD_ATTRIBUTE);
+		glVertexAttribPointer(attributeIndex,2, GL_FLOAT,GL_FALSE, strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
+		glEnableVertexAttribArray(attributeIndex);
 		startPoint += 2;
+		++attributeIndex;
 	}
 
 	//Enable uv2Coord attribute
 	if (vertexDataLayoutMask & ATTRIBUTE_UV_COORD2)
 	{
-		glVertexAttribPointer(Mesh::UV_COORD_ATTRIBUTE,2, GL_FLOAT,GL_FALSE,strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
-		glEnableVertexAttribArray(Mesh::UV2_COORD_ATTRIBUTE);
+		glVertexAttribPointer(attributeIndex,2, GL_FLOAT,GL_FALSE,strideSize, (GLvoid*)(startPoint * sizeof(GLfloat)));
+		glEnableVertexAttribArray(attributeIndex);
+		++attributeIndex;
 	}
 	glBindVertexArray(0);
 
-	
-
-
-
-		/*
-	GLfloat planeVertices[] = {
-		// Positions          // Normals         // Texture Coords
-		8.0f, -0.5f,  8.0f,  0.0f, 1.0f, 0.0f,  5.0f, 0.0f,
-		-8.0f, -0.5f,  8.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-		-8.0f, -0.5f, -8.0f,  0.0f, 1.0f, 0.0f,  0.0f, 5.0f,
-
-		8.0f, -0.5f,  8.0f,  0.0f, 1.0f, 0.0f,  5.0f, 0.0f,
-		-8.0f, -0.5f, -8.0f,  0.0f, 1.0f, 0.0f,  0.0f, 5.0f,
-		8.0f, -0.5f, -8.0f,  0.0f, 1.0f, 0.0f,  5.0f, 5.0f
-	};
-	// Setup plane VAO
-	glGenVertexArrays(1, &vaoID);
-	glGenBuffers(1, &vboIDs[0]);
-	glBindVertexArray(vaoID);
-	glBindBuffer(GL_ARRAY_BUFFER, vboIDs[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-	glBindVertexArray(0);
-
-	*/
  	fclose(f);
 }
 
@@ -228,6 +202,8 @@ void Mesh::CreateBufferData()
 	//Bind Vertex Array
 	glBindVertexArray(vaoID);
 
+	int attributeIndex = 0;
+
 	//Copy position data into POSITION buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vboIDs[Mesh::POSITION_ATTRIBUTE]);
 	glBufferData(
@@ -237,29 +213,17 @@ void Mesh::CreateBufferData()
 		GL_STATIC_DRAW);
 
 
+
 	glVertexAttribPointer(
-		Mesh::POSITION_ATTRIBUTE,
+		attributeIndex,
 		3, GL_FLOAT,
 		GL_FALSE,
 		0, 0);
 	//Enable position attribute
-	glEnableVertexAttribArray(Mesh::POSITION_ATTRIBUTE);
+	glEnableVertexAttribArray(attributeIndex);
 
-	//Copy uvCoord data into UV_COORD buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vboIDs[Mesh::UV_COORD_ATTRIBUTE]);
-	glBufferData(
-		GL_ARRAY_BUFFER,
-		this->GetUvCoords().size() * sizeof(this->GetUvCoords()[0]),
-		&(this->GetUvCoords()[0]),
-		GL_STATIC_DRAW);
+	++attributeIndex;
 
-	glVertexAttribPointer(
-		Mesh::UV_COORD_ATTRIBUTE,
-		2, GL_FLOAT,
-		GL_FALSE,
-		0, 0);
-	//Enable uvCoord attribute
-	glEnableVertexAttribArray(Mesh::UV_COORD_ATTRIBUTE);
 
 	//Copy normal data into NORMAL buffer
 	if (normals.size() > 0)
@@ -272,13 +236,32 @@ void Mesh::CreateBufferData()
 			GL_STATIC_DRAW);
 
 		glVertexAttribPointer(
-			Mesh::NORMAL_ATTRIBUTE,
+			attributeIndex,
 			3, GL_FLOAT,
 			GL_FALSE,
 			0, 0);
 		//Enable normal attribute
-		glEnableVertexAttribArray(Mesh::NORMAL_ATTRIBUTE);
+		glEnableVertexAttribArray(attributeIndex);
 	}
+	++attributeIndex;
+
+	//Copy uvCoord data into UV_COORD buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vboIDs[Mesh::UV_COORD_ATTRIBUTE]);
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		this->GetUvCoords().size() * sizeof(this->GetUvCoords()[0]),
+		&(this->GetUvCoords()[0]),
+		GL_STATIC_DRAW);
+
+	glVertexAttribPointer(
+		attributeIndex,
+		2, GL_FLOAT,
+		GL_FALSE,
+		0, 0);
+	//Enable uvCoord attribute
+	glEnableVertexAttribArray(attributeIndex);
+	++attributeIndex;
+
 
 	if(this->GetIndices().size() > 0)
 	{
@@ -302,12 +285,12 @@ void Mesh::CreateBufferData()
 			GL_STATIC_DRAW);
 
 		glVertexAttribPointer(
-			Mesh::COLOR_ATTRIBUTE,
+			attributeIndex,
 			4, GL_FLOAT,
 			GL_FALSE,
 			0, 0);
 		//Enable color attribute
-		glEnableVertexAttribArray(Mesh::COLOR_ATTRIBUTE);
+		glEnableVertexAttribArray(attributeIndex);
 	}
 
 
@@ -348,16 +331,16 @@ CubeMesh::CubeMesh()
 		20,22,21,20,23, 22};
 
 
-	int vertexLength = 24;
-	for (int i = 0; i < vertexLength; i++)
+	vertexCount = 24;
+	for (int i = 0; i < vertexCount; i++)
 	{
 		positions.push_back(Vector3(verticesData0[8 * i + 0], verticesData0[8 * i + 1], verticesData0[8 * i + 2]));
 		normals.push_back(Vector3(verticesData0[8 * i + 3], verticesData0[8 * i + 4], verticesData0[8 * i + 5]));
 		uvs.push_back(Vector2(verticesData0[8 * i + 6], verticesData0[8 * i + 7]));
 	}
 
-	int indexCount = 36;
-	for (int i = 0; i < indexCount; i++)
+	indiceCount = 36;
+	for (int i = 0; i < indiceCount; i++)
 	{
 		triangles.push_back(indexes[i]);
 	}
@@ -368,6 +351,8 @@ CubeMesh::CubeMesh()
 
 QuadMesh::QuadMesh()
 {
+	vertexCount = 4;
+	indiceCount = 6;
 	positions.push_back(Vector3(0.5f, 0.5f, -1.0f));
 	positions.push_back(Vector3(0.5f, -0.5f, -1.0f));
 	positions.push_back(Vector3(-0.5f, -0.5f, -1.0f));
@@ -389,11 +374,11 @@ QuadMesh::QuadMesh()
 	uvs.push_back(Vector2(0.0f, 1.0f));
 
 	triangles.push_back(0);
+	triangles.push_back(2);
 	triangles.push_back(1);
-	triangles.push_back(2);
 	triangles.push_back(0);
-	triangles.push_back(2);
 	triangles.push_back(3);
+	triangles.push_back(2);
 
 	CreateBufferData();
 }
@@ -405,11 +390,15 @@ SphereMesh::SphereMesh(int row, int col)
 	int n = col; //col 
 	float width = 8;
 	float height = 6;
-	positions.resize((m + 1) * (n + 1));//the positions of vertices 
+
+	vertexCount = (m + 1) * (n + 1);
+	indiceCount = 6 * m * n;
+
+	positions.resize(vertexCount);//the positions of vertices 
 	//spheres = new GameObject[(m + 1) * (n + 1)];
-	uvs.resize((m + 1) * (n + 1));
+	uvs.resize(vertexCount);
 	//normals = new Vector3[(m + 1) * (n + 1)];
-	triangles.resize(6 * m * n);
+	triangles.resize(indiceCount);
 
 	for (int i = 0; i < positions.size(); i++)
 	{

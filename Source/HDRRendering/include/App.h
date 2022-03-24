@@ -46,6 +46,8 @@ private:
 	ShaderProgram* refractionShader;
 	ShaderProgram* reflectionShader;
 	ShaderProgram* pbrOpaqueShader;
+	ShaderProgram* pbrAlphaTestShader;
+	
 	Camera* camera;
 	PostProcessor* postProcessor;
 	RenderTexture* mHdrRT;
@@ -65,6 +67,5 @@ private:
 	float bloomIntensity = 1;
 
 	bool mEnableMsaa = false;
-
 };
 
