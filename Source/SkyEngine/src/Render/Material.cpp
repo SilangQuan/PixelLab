@@ -182,7 +182,7 @@ void Material::SetFloat(string shaderRefName, float value)
 	}
 	else
 	{
-		qDebug() << "No such shaderRefName " << shaderRefName;
+		qDebug() << name<< " No such shaderRefName " << shaderRefName;
 	}
 }
 void Material::SetVector3(string shaderRefName, Vector3 value)

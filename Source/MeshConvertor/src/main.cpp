@@ -161,11 +161,15 @@ int main(int argc, char *argv[])
 	//string source = "../../BuiltinAssets/model/Bistro_Interior/interior.obj";
 
 	//string source = "../../BuiltinAssets/model/alucy.obj";
+	//string source = "../../BuiltinAssets/model/sphere.obj";
+	//string source = "../../BuiltinAssets/model/Cube.obj";
+	string source = "../../BuiltinAssets/model/Bistro/Bistro.gltf";
+	
 	//string source = "../../BuiltinAssets/model/venusm2.obj";
 	//string source = "../../BuiltinAssets/model/SphereMax.FBX";
 	//string source = "../../BuiltinAssets/model/box.obj";
 	//string source = "../../BuiltinAssets/model/Bistro_Motor2/bistro_motor2.gltf";
-	string source = "../../BuiltinAssets/model/Sponza/sponza.gltf";
+	//string source = "../../BuiltinAssets/model/Sponza/sponza.gltf";
 	//string source = "../../BuiltinAssets/model/DamagedHelmet/DamagedHelmet.gltf";
 	//string source = "../../BuiltinAssets/model/teapot.obj";
 	

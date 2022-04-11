@@ -33,6 +33,12 @@
     <ClInclude Include="include\SGUI.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\FPSCameraController.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OrbitCameraController.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp">
@@ -42,6 +48,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Time.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FPSCameraController.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OrbitCameraController.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

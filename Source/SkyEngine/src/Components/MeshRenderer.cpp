@@ -22,15 +22,15 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceShader)
 {
-	//glCullFace(GL_BACK);
-	if (material->GetCullMode() == ECullMode::CM_None)
+	glCullFace(GL_NONE);
+	/*if (material->GetCullMode() == ECullMode::CM_None)
 	{
 		glCullFace(GL_NONE);
 	}
 	else
 	{
 		glCullFace(material->GetCullMode() == ECullMode::CM_Front ? GL_FRONT : GL_BACK);
-	}
+	}*/
 
 	glDepthMask(material->ZWriteMode == EZWriteMode::WM_ON ? GL_TRUE : GL_FALSE);
 	glDepthFunc(Graphics::GetDepthFunc(material->ZTestMode));

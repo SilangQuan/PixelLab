@@ -98,7 +98,7 @@ bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShad
     PushGroupMarker("GeneratePrefilterMap");
 
     glCullFace(GL_NONE);
-    glFrontFace(GL_CW);
+    glFrontFace(GL_CCW);
 
     mWidth = size;
     mHeight = size;
@@ -109,10 +109,15 @@ bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShad
     Matrix4x4 captureViews[6] = {
            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)),
             Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)),
-            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)),
-            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)),
-            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f)),
-            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f))
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)),
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)),
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f)),
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, -1.0f, 0.0f))
+    };
+
+    Vector3 flips[6] = {
+   Vector3(1.0f, -1.0f, 1.0f), Vector3(1.0f, -1.0f, 1.0f), Vector3(-1.0f, 1.0f, 1.0f),
+    Vector3(-1.0f, 1.0f, 1.0f), Vector3(-1.0f, 1.0f, 1.0f), Vector3(-1.0f, 1.0f, 1.0f)
     };
 
     int numSidesInCube = 6;
@@ -165,47 +170,42 @@ bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShad
     unsigned int VAO, VBO;
     unsigned int numVertices = 36;
     const float boxVertices[108] = {
-       -1.0f, 1.0f, -1.0f,
-       -1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f, 1.0f, -1.0f,
-       -1.0f, 1.0f, -1.0f,
-
-       -1.0f, -1.0f, 1.0f,
-       -1.0f, -1.0f, -1.0f,
-       -1.0f, 1.0f, -1.0f,
-       -1.0f, 1.0f, -1.0f,
-       -1.0f, 1.0f, 1.0f,
-       -1.0f, -1.0f, 1.0f,
-
-       1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-
-       -1.0f, -1.0f, 1.0f,
-       -1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, -1.0f, 1.0f,
-       -1.0f, -1.0f, 1.0f,
-
-       -1.0f, 1.0f, -1.0f,
-       1.0f, 1.0f, -1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       -1.0f, 1.0f, 1.0f,
-       -1.0f, 1.0f, -1.0f,
-
-       -1.0f, -1.0f, -1.0f,
-       -1.0f, -1.0f, 1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       -1.0f, -1.0f, 1.0f,
-       1.0f, -1.0f, 1.0f };
+       -1.0,	-1.0,	1.0,
+1.0,	-1.0,	1.0,
+-1.0,	1.0,	1.0,
+1.0,	1.0,	1.0,
+-1.0,	1.0,	1.0,
+1.0,	-1.0,	1.0,
+1.0,	-1.0,	1.0,
+-1.0,	-1.0,	1.0,
+1.0,	-1.0,	-1.0,
+-1.0,	-1.0,	-1.0,
+1.0,	-1.0,	-1.0,
+-1.0,	-1.0,	1.0,
+1.0,	1.0,	1.0,
+1.0,	-1.0,	1.0,
+1.0,	1.0,	-1.0,
+1.0,	-1.0,	-1.0,
+1.0,	1.0,	-1.0,
+1.0,	-1.0,	1.0,
+-1.0,	1.0,	1.0,
+1.0,	1.0,	1.0,
+-1.0,	1.0,	-1.0,
+1.0,	1.0,	-1.0,
+-1.0,	1.0,	-1.0,
+1.0,	1.0,	1.0,
+-1.0,	-1.0,	1.0,
+-1.0,	1.0,	1.0,
+-1.0,	-1.0,	-1.0,
+-1.0,	1.0,	-1.0,
+-1.0,	-1.0,	-1.0,
+-1.0,	1.0,	1.0,
+-1.0,	-1.0,	-1.0,
+-1.0,	1.0,	-1.0,
+1.0,	-1.0,	-1.0,
+1.0,	1.0,	-1.0,
+1.0,	-1.0,	-1.0,
+-1.0,	1.0,	-1.0, };
 
     //Generate Buffers
     glGenVertexArrays(1, &VAO);
@@ -240,6 +240,7 @@ bool TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShad
         for (unsigned int i = 0; i < numSidesInCube; ++i) 
         {
             prefilterShader->SetUniform("view", captureViews[i]);
+            prefilterShader->SetUniform("flip", flips[i]);
 
             prefilterShader->Bind();
 
@@ -264,7 +265,7 @@ bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveSh
 {
     PushGroupMarker("GenerateConvolutionMap");
     glCullFace(GL_NONE);
-    glFrontFace(GL_CW);
+    glFrontFace(GL_CCW);
    
     mWidth = size;
     mHeight = size;
@@ -280,14 +281,24 @@ bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveSh
     //Matrix4x4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 
     Matrix4x4 captureViews[6] = {
-          Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)),
-           Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)),
-           Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)),
-           Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)),
-           Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f)),
-           Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f))
+           Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)),
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)),
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)),
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)),
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f)),
+            Matrix4x4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, -1.0f, 0.0f))
     };
 
+  //  Vector3 flips[6] = {
+  // Vector3(1.0f, 1.0f, -1.0f), Vector3(1.0f, 1.0f, -1.0f), Vector3(-1.0f, 1.0f, 1.0f),
+  //  Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f)
+  //  };
+
+
+    Vector3 flips[6] = {
+ Vector3(1.0f, -1.0f, 1.0f), Vector3(1.0f, -1.0f, 1.0f), Vector3(-1.0f, 1.0f, 1.0f),
+  Vector3(-1.0f, 1.0f, 1.0f), Vector3(-1.0f, 1.0f, 1.0f), Vector3(-1.0f, 1.0f, 1.0f)
+    };
 
     int numSidesInCube = 6;
     glGenTextures(1, &textureID);
@@ -323,47 +334,42 @@ bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveSh
     unsigned int VAO, VBO;
     unsigned int numVertices = 36;
     const float boxVertices[108] = {
-       -1.0f, 1.0f, -1.0f,
-       -1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f, 1.0f, -1.0f,
-       -1.0f, 1.0f, -1.0f,
-
-       -1.0f, -1.0f, 1.0f,
-       -1.0f, -1.0f, -1.0f,
-       -1.0f, 1.0f, -1.0f,
-       -1.0f, 1.0f, -1.0f,
-       -1.0f, 1.0f, 1.0f,
-       -1.0f, -1.0f, 1.0f,
-
-       1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-
-       -1.0f, -1.0f, 1.0f,
-       -1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, -1.0f, 1.0f,
-       -1.0f, -1.0f, 1.0f,
-
-       -1.0f, 1.0f, -1.0f,
-       1.0f, 1.0f, -1.0f,
-       1.0f, 1.0f, 1.0f,
-       1.0f, 1.0f, 1.0f,
-       -1.0f, 1.0f, 1.0f,
-       -1.0f, 1.0f, -1.0f,
-
-       -1.0f, -1.0f, -1.0f,
-       -1.0f, -1.0f, 1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       -1.0f, -1.0f, 1.0f,
-       1.0f, -1.0f, 1.0f };
+    -1.0,	-1.0,	1.0,
+1.0,	-1.0,	1.0,
+-1.0,	1.0,	1.0,
+1.0,	1.0,	1.0,
+-1.0,	1.0,	1.0,
+1.0,	-1.0,	1.0,
+1.0,	-1.0,	1.0,
+-1.0,	-1.0,	1.0,
+1.0,	-1.0,	-1.0,
+-1.0,	-1.0,	-1.0,
+1.0,	-1.0,	-1.0,
+-1.0,	-1.0,	1.0,
+1.0,	1.0,	1.0,
+1.0,	-1.0,	1.0,
+1.0,	1.0,	-1.0,
+1.0,	-1.0,	-1.0,
+1.0,	1.0,	-1.0,
+1.0,	-1.0,	1.0,
+-1.0,	1.0,	1.0,
+1.0,	1.0,	1.0,
+-1.0,	1.0,	-1.0,
+1.0,	1.0,	-1.0,
+-1.0,	1.0,	-1.0,
+1.0,	1.0,	1.0,
+-1.0,	-1.0,	1.0,
+-1.0,	1.0,	1.0,
+-1.0,	-1.0,	-1.0,
+-1.0,	1.0,	-1.0,
+-1.0,	-1.0,	-1.0,
+-1.0,	1.0,	1.0,
+-1.0,	-1.0,	-1.0,
+-1.0,	1.0,	-1.0,
+1.0,	-1.0,	-1.0,
+1.0,	1.0,	-1.0,
+1.0,	-1.0,	-1.0,
+-1.0,	1.0,	-1.0, };
 
     //Generate Buffers
     glGenVertexArrays(1, &VAO);
@@ -387,6 +393,7 @@ bool TextureCubemap::GenerateConvolutionMap (int size, ShaderProgram* convolveSh
     for (unsigned int i = 0; i < numSidesInCube; ++i) 
     {
         convolveShader->SetUniform("view", captureViews[i]);
+        convolveShader->SetUniform("flip", flips[i]);
 
         convolveShader->Bind();
 

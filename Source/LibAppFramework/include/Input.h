@@ -54,6 +54,17 @@ public:
 	/// Returns the current mouse Y position.
 	int GetMouseY();
 
+
+	int GetRelativeMotionX()
+	{
+		return relativeMotionX;
+	}
+
+	int GetRelativeMotionY()
+	{
+		return relativeMotionY;
+	}
+
 	/// Locks the `InputManager`, preventing it to actually
 	/// refresh input and making all methods returning `false`
 	/// (except for `quitRequested()`.
@@ -101,6 +112,10 @@ private:
 
 	/// Current mouse Y position.
 	int mouseY;
+
+	int relativeMotionX;
+	int relativeMotionY;
+
 
 	/// Saves which keys are currently down.
 	bool keyDown[KEYBOARD_SIZE];

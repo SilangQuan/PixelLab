@@ -71,6 +71,11 @@ public:
 		return sqrt(f);
 	}
 
+	inline static float Mod(float f, float denom )
+	{
+		return fmod(f, denom);
+	}
+
 	template <typename T>  static int Sign(T val) {
 		return (T(0) < val) - (val < T(0));
 	}

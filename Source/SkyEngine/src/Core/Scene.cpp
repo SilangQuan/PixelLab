@@ -96,6 +96,9 @@ void ParseMaterialDescription(const json& matJson, MaterialDescription* descript
 	color = StrSplitToFloats(matJson["roughness"], ",");
 	description->roughness = Vector4(color[0], color[1], color[2], 1);
 
+
+	description->metallicFactor = color[1];
+
 	std::string::size_type sz;
 	if (description->shader.find("alphatest") != std::string::npos) {
 		description->alphaCutoff = std::stof(string(matJson["alphaCutoff"]), &sz); ;

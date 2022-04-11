@@ -1,5 +1,7 @@
 #pragma once
 #include "../../LibAppFramework/include/application.h"
+#include "../../LibAppFramework/include/OrbitCameraController.h"
+#include "../../LibAppFramework/include/FPSCameraController.h"
 
 class PostProcessor;
 
@@ -20,6 +22,10 @@ public:
 
 
 private:
+
+	OrbitCameraController* mOrbitCameraController;
+	FPSCameraController* mFPSCameraController;
+
 	TextureCubemap* skyCubeBarcelona;
 	TextureCubemap* skyCubeTokyo;
 	TextureCubemap* skyCubeCatwalk;
@@ -49,6 +55,7 @@ private:
 	ShaderProgram* pbrAlphaTestShader;
 	
 	Camera* camera;
+	Transform* mCamTrans;
 	PostProcessor* postProcessor;
 	RenderTexture* mHdrRT;
 	RenderTexture* mHdrRTMSAA;

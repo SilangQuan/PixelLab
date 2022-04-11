@@ -12,8 +12,8 @@ public:
 	void AttachToGameObject(GameObject* gameObject);
 	GameObject* GetGameObject() const;
 
-	virtual void start();
-	virtual void update();
+	virtual void Start();
+	virtual void Update();
 	GameObject* gameObject;
 
 protected:

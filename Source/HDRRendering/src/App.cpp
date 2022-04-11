@@ -28,8 +28,8 @@ bool App::CreateWorld()
 	mConvolveShader = new ShaderProgram("../../BuiltinAssets/shader/cubeMapShader.vert", "../../BuiltinAssets/shader/convolveCubemapShader.frag");
 	mPrefilterShader = new ShaderProgram("../../BuiltinAssets/shader/cubeMapShader.vert", "../../BuiltinAssets/shader/preFilteringShader.frag");
 
-	//skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/barcelona");
-	skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/forest");
+	skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/barcelona");
+	//skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/forest");
 	skyCubeTokyo = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/tokyo");
 	skyCubeCatwalk = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/catwalk");
 
@@ -92,7 +92,7 @@ bool App::CreateWorld()
 	exposure = 3;
 
 	//pbrMat = ResourceManager::GetInstance()->FindMaterial("Mat");
-	//pbrMat->AddTextureVariable("irradianceMap", mDiffuseCubeMap, ETextureVariableType::TV_CUBE, 5);
+	//pbrMat->AddTextureVariable("irradianceMap", mDiffuseCubeMap, ETextureV  ariableType::TV_CUBE, 5);
 	//pbrMat->AddTextureVariable("prefilterMap", mSpecCubeMap, ETextureVariableType::TV_CUBE, 6);
 	//pbrMat->AddTextureVariable("brdfLUT", mBrdfLut, ETextureVariableType::TV_2D, 7);
 	
@@ -103,7 +103,9 @@ bool App::CreateWorld()
 	//scene->Init("./Assets/Scenes/HDR_Bistro.json"); 
 	//scene->Init("./Assets/Scenes/HDR_Bistro_RoadLight.json");
 
-	scene->Init("../../Library/Sponza/Sponza.json");
+	//scene->Init("../../Library/Sponza/Sponza.json");
+	scene->Init("../../Library/Bistro/Bistro.json");
+	//scene->Init("../../Library/PBRValidation/PBRValidation.json");
 	//scene->Init("../../Library/HDR_Alucy/HDR_Alucy.json");
 	//scene->Init("../../Library/DamagedHelmet/DamagedHelmet.json");
 	
@@ -112,6 +114,10 @@ bool App::CreateWorld()
 	//scene->Init("./Assets/Scenes/HDR_Sphere.json");
 	//quad = scene->FindByName("Center_child_0");
 	camera = scene->GetActiveCamera();
+	float sens = 20;
+	float speed = 10;
+	mOrbitCameraController = new OrbitCameraController(camera, pInput, sens, GetWindow()->GetHeight(), GetWindow()->GetWidth());
+	mFPSCameraController = new FPSCameraController(camera, pInput, sens, speed, GetWindow()->GetHeight(), GetWindow()->GetWidth());
 
 	scene->Start();
 
@@ -139,6 +145,12 @@ bool App::CreateWorld()
 
 void App::RenderWorld()
 {
+	//BakeIBL();
+	//ForwardSceneRenderer* pForwardRenderer = dynamic_cast<ForwardSceneRenderer*>(pRenderer);
+	//pForwardRenderer->GetRenderContext()->BrdfLut = mBrdfLut;
+	//pForwardRenderer->GetRenderContext()->DiffuseCubeMap = mDiffuseCubeMap;
+	//pForwardRenderer->GetRenderContext()->SpecCubeMap = mSpecCubeMap;
+
 	PushGroupMarker("SceneRender");
 	pRenderer->Render(scene, scene->GetActiveCamera());
 
@@ -202,11 +214,22 @@ static Quaternion QuaternionFromMatrix(Matrix4x4 m)
 
 void App::FrameMove()
 {
+	//if (pInput->GetMouseButton(MOUSE_LEFT))
+	//{
+	//	qDebug() << "Rotation:" << quad->transform.rotation.EulerAngle();
+	//	qDebug() << "Position:" << quad->transform.position;
+	//	quad->transform.Rotate(0,3,0);
+	//	quad->transform.position = quad->transform.rotation * (5 * Vector3::forward);
+	//	quad->transform.SetDirty(true);
+	//}
+
+	//mOrbitCameraController->Update();
+	mFPSCameraController->Update();
 	//float rotSpeed = 10;
 	//quad->transform.Rotate(0, Time::deltaTime * rotSpeed, 0);
 	
 	//BakeIBL();
-
+	/*
 	float sensitivity = 20;
 	if (pInput->GetMouseButton(MOUSE_LEFT))
 	{
@@ -238,7 +261,7 @@ void App::FrameMove()
 		Matrix4x4 rotMatrix = Matrix4x4::LookAt(camera->transform.position, pivot, Vector3::up);
 		camera->viewMatrix = rotMatrix;
 	}
-
+	*/
 	/*
 	if (iblIndex == 0)
 	{
@@ -297,7 +320,6 @@ void App::FrameMove()
 void App::RenderUI()
 {
 	PushGroupMarker("IMGui");
-
 	pImGuiRenderer->BeginFrame(window);
 	int uiWidth = 250;
 	int uiHeight = 300;
@@ -310,7 +332,9 @@ void App::RenderUI()
 		ImVec2(static_cast<float>(uiWidth), static_cast<float>(uiHeight - 20)),
 		ImGuiCond_Always
 	);
+
 	ImGui::Begin("Options", NULL, ImGuiWindowFlags_NoResize);
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 	bool bTestCheckBox = false;
 

@@ -187,14 +187,18 @@
   <ItemGroup>
     <ClInclude Include="include\application.h" />
     <ClInclude Include="include\base.h" />
+    <ClInclude Include="include\FPSCameraController.h" />
     <ClInclude Include="include\Input.h" />
     <ClInclude Include="include\InputDefinition.h" />
+    <ClInclude Include="include\OrbitCameraController.h" />
     <ClInclude Include="include\SGUI.h" />
     <ClInclude Include="include\Time.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp" />
+    <ClCompile Include="src\FPSCameraController.cpp" />
     <ClCompile Include="src\Input.cpp" />
+    <ClCompile Include="src\OrbitCameraController.cpp" />
     <ClCompile Include="src\Time.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

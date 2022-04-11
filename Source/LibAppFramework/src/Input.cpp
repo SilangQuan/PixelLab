@@ -89,6 +89,9 @@ void Input::Update()
 
 			this->mouseX = event.motion.x ;
 			this->mouseY = event.motion.y ;
+
+			relativeMotionX = event.motion.xrel;
+			relativeMotionY = event.motion.yrel;
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:

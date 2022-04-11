@@ -12,7 +12,7 @@ GameObject* Component::GetGameObject() const
 	return gameObject;
 }
 
-void Component::start() {}
-void Component::update() {}
+void Component::Start() {}
+void Component::Update() {}
 
 Component::~Component() {}

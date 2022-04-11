@@ -85,7 +85,7 @@ void GameObject::Start()
 	vector<Component*>::iterator comp;
 	for (comp = components.begin(); comp != components.end(); comp++)
 	{
-		(*comp)->start();
+		(*comp)->Start();
 	}
 
 
@@ -103,7 +103,7 @@ void GameObject::Update()
 	vector<Component*>::iterator comp;
 	for (comp = components.begin(); comp != components.end(); comp++)
 	{
-		(*comp)->update();
+		(*comp)->Update();
 	}
 
 	//Update all of my children
