@@ -40,6 +40,6 @@ void main()
     outColor = vec4(mix(Creflect, Crefract, fresnel)+emission, 1.0);
 
     //Total Reflection
-	//outColor = vec4(Creflect, 1.0f);
+	//outColor = vec4(N, 1.0f);
 
 }

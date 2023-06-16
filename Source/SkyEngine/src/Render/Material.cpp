@@ -1,7 +1,9 @@
 #include "Render/Material.h"
 #include "Render/ShaderProgram.h"
 #include "Render/Texture.h"
+#include "Render/TextureCubemap.h"
 #include "Render/TextureVariable.h"
+#include "Render/RenderContext.h"
 #include "Lighting/Light.h"
 
 const static string CShaderPath = "../../BuiltinAssets/shader/";
@@ -18,14 +20,14 @@ Material::Material(const MaterialDescription& description, string sceneName)
 	name = description.name;
 
 	mShaderProgram = new ShaderProgram(CShaderPath + description.shader +".vert", CShaderPath + description.shader + ".frag");
-	SetVector4("baseColorFactor", description.albedoColor);
-	SetVector4("emissiveFactor", description.emissiveColor);
-	SetFloat("roughnessFactor", description.roughness.x);
-	SetFloat("metallicFactor", description.metallicFactor);
+	SetProperty("baseColorFactor", description.albedoColor);
+	SetProperty("emissiveFactor", description.emissiveColor);
+	SetProperty("roughnessFactor", description.roughness.x);
+	SetProperty("metallicFactor", description.metallicFactor);
 
 	if (mShaderProgram->HasUniform("alphaCutoff"))
 	{
-		SetFloat("alphaCutoff", description.alphaCutoff);
+		SetProperty("alphaCutoff", description.alphaCutoff);
 	}
 
 	//Load from library folder.
@@ -100,11 +102,128 @@ Material::Material(const MaterialDescription& description, string sceneName)
 }
 
 
+Material::Material(MaterialDescription* description, ShaderProgram* shaderProgram, string sceneName)
+{
+	mShaderProgram = shaderProgram;
+	mMatDescription = description;
+
+
+	//Load from library folder.
+	string texPath = CLibraryPath + sceneName + "/Texture/";
+	Texture* texture = NULL;
+	TextureVariable* textureVariable = NULL;
+	uint32 texunit = 0;
+
+	Texture* whiteDummyTex = ResourceManager::GetInstance()->FindTexture("WhiteDummy");
+	Texture* DefaultNormalTex = ResourceManager::GetInstance()->FindTexture("DefaultNormal");
+	Texture* BlackDummyTex = ResourceManager::GetInstance()->FindTexture("BlackDummy");
+
+	texture = description->albedoMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description->albedoMap);
+	textureVariable = new TextureVariable(texture, texunit, "albedoMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description->metallicRoughnessMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description->metallicRoughnessMap);
+	textureVariable = new TextureVariable(texture, texunit, "metallicRoughnessMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description->normalMap.length() == 0 ? DefaultNormalTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description->normalMap);
+	textureVariable = new TextureVariable(texture, texunit, "normalMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description->metallicRoughnessMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description->metallicRoughnessMap);
+	textureVariable = new TextureVariable(texture, texunit, "metallicRoughnessMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description->ambientOcclusionMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description->ambientOcclusionMap);
+	textureVariable = new TextureVariable(texture, texunit, "aoMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description->emissiveMap.length() == 0 ? BlackDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description->emissiveMap);
+	textureVariable = new TextureVariable(texture, texunit, "emissiveMap");
+	mTextures.push_back(textureVariable);
+	texunit += 1;
+
+	texture = description->opacityMap.length() == 0 ? whiteDummyTex : ResourceManager::GetInstance()->TryGetResource<Texture>(texPath + description->opacityMap);
+	textureVariable = new TextureVariable(texture, texunit, "opacityMap");
+	mTextures.push_back(textureVariable);
+
+	textureVariable = new TextureVariable(NULL, ++texunit, "irradianceMap", ETextureVariableType::TV_CUBE);
+	mTextures.push_back(textureVariable);
+
+	textureVariable = new TextureVariable(NULL, ++texunit, "prefilterMap", ETextureVariableType::TV_CUBE);
+	mTextures.push_back(textureVariable);
+
+	textureVariable = new TextureVariable(NULL, ++texunit, "brdfLUT");
+	mTextures.push_back(textureVariable);
+
+
+	CullMode = (ECullMode)description->cullMode;
+	ZTestMode = (EZTestMode)description->zTest;
+	FillMode = (EFillMode)description->fillMode;
+	ZWriteMode = (EZWriteMode)description->zWrite;
+}
+
 void Material::Bind(RenderContext* renderContext)
 {
 	if (mShaderProgram != 0)
 	{
-		mShaderProgram->Bind(renderContext);
+		glUseProgram(mShaderProgram->GetProgramID());
+
+		SetProperty("viewPos", renderContext->viewPos);
+		SetProperty("view", renderContext->viewMatrix);
+		SetProperty("model", renderContext->modelMatrix);
+		SetProperty("projection", renderContext->projectionMatrix);
+		SetProperty("viewProjection", renderContext->viewProjectionMatrix);
+
+		SetProperty("baseColorFactor", mMatDescription->albedoColor);
+		SetProperty("emissiveFactor", mMatDescription->emissiveColor);
+		SetProperty("roughnessFactor", mMatDescription->roughness.x);
+		SetProperty("metallicFactor", mMatDescription->metallicFactor);
+
+		if (mShaderProgram->HasUniform("alphaCutoff"))
+		{
+			SetProperty("alphaCutoff", mMatDescription->alphaCutoff);
+		}
+
+		for (int i = 0; i < mTextures.size(); i++)
+		{
+			if (mShaderProgram->HasUniform(mTextures[i]->GetUniformName()))
+			{
+				mShaderProgram->BindTextureVariable(mTextures[i]);
+			}
+
+			if (mTextures[i]->GetUniformName().compare("irradianceMap") == 0)
+			{
+				if (mShaderProgram->HasUniform("irradianceMap"))
+				{
+					mTextures[i]->SetTexture(renderContext->DiffuseCubeMap);
+					mShaderProgram->BindTextureVariable(mTextures[i]);
+				}
+			}
+
+			if (mTextures[i]->GetUniformName().compare("prefilterMap") == 0)
+			{
+				if (mShaderProgram->HasUniform("prefilterMap"))
+				{
+					mTextures[i]->SetTexture(renderContext->SpecCubeMap);
+					mShaderProgram->BindTextureVariable(mTextures[i]);
+				}
+			}
+
+			if (mTextures[i]->GetUniformName().compare("brdfLUT") == 0)
+			{
+				if (mShaderProgram->HasUniform("brdfLUT"))
+				{
+					mTextures[i]->SetTexture(renderContext->BrdfLut);
+					mShaderProgram->BindTextureVariable(mTextures[i]);
+				}
+			}
+		}
 	}
 }
 
@@ -134,7 +253,19 @@ void Material::SetShader(ShaderProgram* shader)
 	shader = shader;
 }
 
+template<typename T> inline void Material::SetProperty(const string& uniformName, const T& uniformData)
+{
+	if (mShaderProgram->HasUniform(uniformName))
+	{
+		mShaderProgram->SetUniformAndBind(uniformName, uniformData);
+	}
+	else
+	{
+		//qDebug() << "No such shaderRefName " << uniformName;
+	}
+}
 
+/*
 void Material::SetTexture(string shaderRefName, Texture* texture)
 {
 	for (int i = 0; i < mTextures.size(); i++)
@@ -220,7 +351,7 @@ void Material::SetColor(string shaderRefName, Color& c)
 		qDebug() << "No such shaderRefName " << shaderRefName;
 	}
 }
-
+*/
 
 void Material::SetDirectionLight(Light& light)
 {

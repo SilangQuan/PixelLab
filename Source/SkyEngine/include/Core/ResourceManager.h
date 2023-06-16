@@ -78,20 +78,20 @@ public:
 
 	void LoadBuitinShaders();
 
-	Resource *GetResource(const std::string &name);
+	//Resource *GetResource(const std::string &name);
 
 	template <typename T>
 	T *LoadResource(const std::string &filePath)
 	{
 		T* resource = new T(filePath);
-		resources[filePath] = resource;
+		resources[filePath] = dynamic_cast<Resource*>(resource);
 		return resource;
 	}
 
 	template <typename T>
 	T *TryGetResource(const std::string &filePath)
 	{
-		auto iter = resources.find(filePath);
+		auto iter = resources.find(filePath); 
 		if (iter == resources.end())
 		{
 			return LoadResource<T>(filePath);

@@ -89,6 +89,7 @@ class Material
 {
 private:
 	ShaderProgram* mShaderProgram;
+	MaterialDescription* mMatDescription;
 	vector<TextureVariable*> mTextures;
 public:
 	ECullMode CullMode;
@@ -98,6 +99,7 @@ public:
 
 	Material(ShaderProgram* shader);
 	Material(const MaterialDescription& description, string sceneName);
+	Material(MaterialDescription* description, ShaderProgram* shader, string sceneName);
 	virtual ~Material();
 
 	void Bind(RenderContext* renderContext);
@@ -114,13 +116,18 @@ public:
 	//void AddTexture(Texture& texture);
 	void AddTextureVariable(string shaderRefName, Texture* texture, ETextureVariableType tvType = ETextureVariableType::TV_2D, int textureUnit = 0);
 	void AddTextureVariable(TextureVariable* texture);
-	void SetTexture(string shaderRefName, Texture* textureVariable);
 
-	void SetFloat(string shaderRefName, float value);
-	void SetVector3(string shaderRefName, Vector3 value);
-	void SetVector4(string shaderRefName, Vector4 value);
 
-	void SetColor(string shaderRefName, Color& c);
+
+	template<typename T> inline void SetProperty(const string& uniformName, const T& uniformData);
+
+
+	//void SetTexture(string shaderRefName, Texture* textureVariable);
+	//void SetFloat(string shaderRefName, float value);
+	//void SetVector3(string shaderRefName, Vector3 value);
+	//void SetVector4(string shaderRefName, Vector4 value);
+	//
+	//void SetColor(string shaderRefName, Color& c);
 
 	void SetDirectionLight(Light& light);
 	void SetPointLight(vector<Light*>& light);

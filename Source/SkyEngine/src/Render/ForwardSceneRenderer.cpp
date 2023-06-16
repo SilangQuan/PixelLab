@@ -102,12 +102,12 @@ void ForwardSceneRenderer::RenderGameObject(GameObject* gameObject, RenderContex
 	if (rc != 0)
 	{
 		Material* mat = rc->GetMaterial();
-		if (mat != NULL && mat->GetShaderProgram()->HasUniform("brdfLUT"))
-		{
-			mat->SetTexture("irradianceMap", renderContext->DiffuseCubeMap);
-			mat->SetTexture("prefilterMap", renderContext->SpecCubeMap);
-			mat->SetTexture("brdfLUT", renderContext->BrdfLut);
-		}
+		//if (mat != NULL && mat->GetShaderProgram()->HasUniform("brdfLUT"))
+		//{
+		//	mat->SetTexture("irradianceMap", renderContext->DiffuseCubeMap);
+		//	mat->SetTexture("prefilterMap", renderContext->SpecCubeMap);
+		//	mat->SetTexture("brdfLUT", renderContext->BrdfLut);
+		//}
 
 		if (mReplaceShader != nullptr)
 		{

@@ -4,6 +4,7 @@ in vec3 localPos;
 
 uniform samplerCube environmentMap;
 uniform float roughness;
+uniform vec3 flip;
 
 const float PI= 3.14159265359;
 const uint  SAMPLE_COUNT = 1024u;
@@ -19,6 +20,8 @@ void main(){
     //We use the world space vector as a normal to the surface since in a cubemap it will
     //be interpolated over every face and make a unit sphere
     vec3 N = normalize(localPos);
+    N = vec3(N.x * flip.x, N.y * flip.y, N.z * flip.z);
+
     vec3 R = N;
     vec3 V = R;
 
@@ -38,7 +41,7 @@ void main(){
     }
 
     prefilteredColor = prefilteredColor / totalWeight;
-
+    //prefilteredColor = texture(environmentMap, N).rgb * 1;
     Fragcolor = vec4(prefilteredColor, 1.0);
 }
 

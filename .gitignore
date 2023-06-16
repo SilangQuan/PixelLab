@@ -37,11 +37,16 @@ Source/**/*.obj
 *.recipe
 *.ilk
 .vs
+*enc
+
 
 /Source/Debug
 /Source/Release
 /Lib/
+/Library/
 /Temp/
 !/BuiltinAssets/
 *.user
 .vs
+
+BuiltinAssets/model/Bistro/*

@@ -1,0 +1,91 @@
+20220306
+Dono：
+1、Mesh 类清理 GLShader 类清理 Done
+2、Mesh 计算AABB Done
+3、Mathf  Vector类型引用关系 Done
+4、支持OBJ 模型顶点颜色 Done
+
+Todo
+1、OBJ、gltf 转二进制
+2、材质json生成
+3、场景组织，新增Scene Loader ，测试加载HDR Rendering
+
+20220306
+Done:
+
+1、OBJ、gltf 转二进制 OK
+2、材质json生成
+3、场景组织，新增Scene Loader ，测试加载HDR Rendering
+
+ToDo
+1、相机逻辑，加载，控制
+2、Debug.draw
+3、Bouding box 可视化
+4、Easy profiler
+
+
+20220318
+Done
+1、GLTF格式Sponza 场景导入Blender，进行网格拆分，归一化，再导出GLTF，导入Unity，序列化场景文件。
+2、Assimp 导出 flag 测试
+
+
+ToDo
+1、gltf 材质导出无metallic Roughness 贴图信息
+2、导入Sponza 到HDR Rendering 场景
+3、简化Bistro，并导出
+
+4、相机逻辑，加载，控制
+5、Debug.draw
+6、Bouding box 可视化
+7、Easy profiler
+8、清理MeshConvert 工具，上传
+9、重构Uniform引用关系，现在uniform 里面都拷贝了一份Material里面的数据
+所有数据存放到Material中，ShaderProgram中不保存数据
+
+20220320
+
+Done
+
+1、gltf 材质导出无metallic Roughness 贴图信息
+2、导入Sponza 到HDR Rendering 场景
+3、fix首帧渲染错误
+4、fix 正反面问题
+
+几个关于背面裁剪的坑
+1、imgui会重置cull状态
+2、正面和背面cull用glFrontFace，如果关闭cull需要 glDisable(GL_CULL_FACE);  
+3、assimp导入gltf文件需要加上aiProcess_FlipUVs | aiProcess_FlipWindingOrder，否则UV错误，三角形的顶点顺序也会出错
+
+20220321
+1、支持alpha test
+2、导入forest hdri
+3、资源管理处理文档
+4、整理代码，上传
+
+Todo：
+1.CSM
+2. profiler
+
+20220328
+重构orbit Camera
+
+ToDo
+FPS camera
+csm
+加载bistro
+Forward+
+
+20220331
+1、定位sponza场景cube上下颠倒的问题
+spec ibl生成错误，改生成用的view matrix
+
+20220403
+1、解决cubemap生成颠倒问题
+
+todo：
+1、metalness和roughness factor
+
+
+
+

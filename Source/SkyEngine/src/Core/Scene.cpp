@@ -143,7 +143,10 @@ GameObject* Scene::ParseGameObjInfo(const json& currentGameObj)
 
 			MaterialDescription* description = new MaterialDescription();
 			ParseMaterialDescription(materialJson, description);
-			Material* pmat = new Material(*description, mSceneId);
+
+			ShaderProgram* shader = ResourceManager::GetInstance()->FindShader(description->shader);
+			
+			Material* pmat = new Material(description, shader, mSceneId);
 
 			Mesh* pmesh = new Mesh(meshPath);
 

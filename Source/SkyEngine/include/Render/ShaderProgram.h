@@ -27,11 +27,17 @@ public:
 	template<typename T> inline void AddUniform(const string& uniformName, const T& uniformData);
 	template<typename T> inline void SetUniform(const string& uniformName, const T& uniformData);
 	template<typename T> inline void SetUniformHandle(const string& uniformName, const T* uniformDataHandle);
+
+	template<typename T> inline void SetUniformAndBind(const string& uniformName, const T& uniformData);
+
+	void BindTextureVariable(TextureVariable* texture);
 	//template<typename T> inline void SetTestUniform(const string& uniformName, const T& uniformData);
 	template<typename T> inline UniformVariable<T>* TryGetUniform(const string& uniformName);
 
 	void Bind(RenderContext* renderContext);
 	void Bind();
+
+
 	void Use();
 	void Dispatch(unsigned int x, unsigned int y, unsigned int z) const;
 	GLuint GetProgramID() const;
@@ -48,7 +54,6 @@ public:
 	UniformVariable<Vector3>* viewPosUniform;
 	UniformVariable<Matrix4x4>* projectionUniform;
 	UniformVariable<Matrix4x4>* viewProjectionUniform;
-
 
 
 protected:
@@ -140,6 +145,51 @@ void ShaderProgram::SetUniformHandle(const string& uniformName, const T* uniform
 		uniform->setDataHandle(uniformDataHandle);
 	}
 }
+
+
+
+
+template<typename T>
+void ShaderProgram::SetUniformAndBind(const string& uniformName, const T& uniformData)
+{
+	IUniform* iuniform = this->GetUniform(uniformName);
+
+	if (iuniform == 0)
+	{
+		string message = " Error:This ShaderProgram :";
+		message += mFilePath;
+		message += " does not have an IUniform with name '";
+		message += uniformName;
+		message += "'.";
+		qDebug() << message;
+		return;
+	}
+
+	UniformVariable<T>* uniform = NULL;
+	try {
+		//uniform = dynamic_cast<UniformVariable<T>*>(iuniform);
+		uniform = static_cast<UniformVariable<T>*>(iuniform);
+	}
+	catch (exception& e)
+	{
+		cout << e.what() << endl;
+	}
+
+
+	if (uniform == NULL)
+	{
+		string message = "Invalid type conversion for UniformVariable<T> with name '";
+		message += uniformName;
+		message += "'.";
+		qDebug() << message;
+	}
+	else
+	{
+		uniform->setData(uniformData);
+		uniform->bind();
+	}
+}
+
 
 template<typename T>
 void ShaderProgram::SetUniform(const string& uniformName, const T& uniformData)

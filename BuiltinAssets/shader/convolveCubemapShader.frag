@@ -6,6 +6,9 @@ in vec3 localPos;
 
 uniform samplerCube environmentMap;
 
+uniform vec3 flip;
+
+
 const float PI= 3.14159265359;
 
 void main()
@@ -14,6 +17,7 @@ void main()
     //We use the world space vector as a normal to the surface since in a cubemap it will
     //be interpolated over every face and make a unit sphere
     vec3 N = normalize(localPos);
+    N = vec3(N.x * flip.x, N.y * flip.y, N.z * flip.z);
 
     vec3 irradiance = vec3(0.0);
 
@@ -25,6 +29,11 @@ void main()
     float delta = 0.025;
     float nSamples = 0.0;
 
+    
+    //float delta = 1;
+    //float nSamples = 0.0;
+    //float phi = PI;
+    //float theta = 0.25 * PI;
     
     for(float phi = 0.0; phi < 2.0 * PI; phi +=delta){
         for(float theta = 0.0; theta < 0.5 * PI; theta +=delta){

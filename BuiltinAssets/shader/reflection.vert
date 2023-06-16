@@ -22,6 +22,7 @@ void main()
 
 	vec4 P = model * vec4(position, 1.0);
     vec3 N = normalize(mat3(model) * normal);
+    //vec3 N = normalize(normal);
     vec3 I = P.xyz - viewPos;
     wPosition = P;
     wNormal = N;

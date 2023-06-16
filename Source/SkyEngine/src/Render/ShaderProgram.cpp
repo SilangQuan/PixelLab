@@ -411,3 +411,32 @@ void ShaderProgram::SetPointLightsUniform(vector<Light>& light)
 		glUniform1f(glGetUniformLocation(m_programID, "pointLights[0].quadratic"), lightIter->quadratic);
 	}
 }
+
+void ShaderProgram::BindTextureVariable(TextureVariable* texture)
+{
+	IUniform* iuniform = this->GetUniform(texture->GetUniformName());
+
+	if (iuniform == 0)
+	{
+		string message = " Error:This ShaderProgram :";
+		message += mFilePath;
+		message += " does not have an IUniform with name '";
+		message += texture->GetUniformName();
+		message += "'.";
+		qDebug() << message;
+		return;
+	}
+
+	if (iuniform == NULL)
+	{
+		string message = "Invalid type conversion for UniformVariable<T> with name '";
+		message += texture->GetUniformName();
+		message += "'.";
+		qDebug() << message;
+	}
+	else
+	{
+		glUniform1i(iuniform->getLocation(), texture->GetTextureUnit());
+		texture->bind();
+	}
+}

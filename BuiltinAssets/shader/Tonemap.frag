@@ -37,7 +37,11 @@ void main()
     hdrColor += texture(bloomBuffer, TexCoords).rgb;
     vec3 color;
 
-    color = filmicTonemapping(exposure * hdrColor);
+   //color = filmicTonemapping(exposure * hdrColor);
+
+   color = vec3(1.0) - exp(-hdrColor * exposure);
+
+
 
     color.r = pow(color.r, gamma);
     color.g = pow(color.g, gamma);

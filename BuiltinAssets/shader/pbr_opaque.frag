@@ -54,6 +54,7 @@ struct PBRInfo
 	float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])
 	vec3 diffuseColor;            // color contribution from diffuse lighting
 	vec3 specularColor;           // color contribution from specular lighting
+	vec3 albedo;
 };
 
 
@@ -125,6 +126,10 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 // ----------------------------------------------------------------------------
 
 
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness){
+    float val = 1.0 - cosTheta;
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * (val*val*val*val*val); //Faster than pow
+}
 
 // Calculation of the lighting contribution from an optional Image Based Light source.
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
@@ -135,24 +140,37 @@ vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
 
 	float lod = (pbrInputs.perceptualRoughness * maxMip);
 	// retrieve a scale and bias to F0. See [1], Figure 3
-	vec3 brdf = (texture(brdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;
+
+	vec3  kS = fresnelSchlickRoughness(max(pbrInputs.NdotV, 0.0), pbrInputs.specularColor, pbrInputs.perceptualRoughness);
+    vec3  kD = 1.0 - kS;
+    kD *= 1.0 - pbrInputs.metalness;
+
+	vec3 brdf = (texture(brdfLUT, vec2(pbrInputs.NdotV, pbrInputs.perceptualRoughness))).rgb;
 	vec3 diffuseLight = texture(irradianceMap, n).rgb;
 
 	vec3 specularLight = textureLod(prefilterMap, reflection, lod).rgb;
 
-	vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;
-	vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);
+	vec3 diffuse = kD * diffuseLight * pbrInputs.albedo;
+	vec3 specular = specularLight * (kS * brdf.x + brdf.y);
 
 	// For presentation, this allows us to disable IBL terms
 	// For presentation, this allows us to disable IBL terms
 	//diffuse *= uboParams.scaleIBLAmbient;
 	//specular *= uboParams.scaleIBLAmbient;
 
+	//return vec3(pbrInputs.specularColor * brdf.x + brdf.y);
+	//return vec3(pbrInputs.NdotV,0,0);
+	
+	//return vec3(brdf.x, brdf.y,0);
+	///return vec3(pbrInputs.perceptualRoughness, 0,0);
+	//return diffuse;
 	return diffuse + specular;
+	//return texture(prefilterMap, wNormal).rgb + 0.00001 * brdf;
+	//return texture(irradianceMap, wNormal).rgb + 0.00001 * brdf;
 }
 
 // Basic Lambertian diffuse
-// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
+// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog6
 // See also [1], Equation 1
 vec3 diffuse(PBRInfo pbrInputs)
 {
@@ -162,7 +180,7 @@ vec3 diffuse(PBRInfo pbrInputs)
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
 vec3 specularReflection(PBRInfo pbrInputs)
-{
+{  
 	return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);
 }
 
@@ -196,10 +214,15 @@ float microfacetDistribution(PBRInfo pbrInputs)
 
 void main()
 {		
-    vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2)) * baseColorFactor.rgb;
-    vec3 emissive = pow(texture(emissiveMap, TexCoords).rgb, vec3(2.2)) * emissiveFactor.rgb;
+    //vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2)) * baseColorFactor.rgb;
+    //vec3 emissive = pow(texture(emissiveMap, TexCoords).rgb, vec3(2.2)) * emissiveFactor.rgb;
+	vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(1)) * baseColorFactor.rgb;
+    vec3 emissive = pow(texture(emissiveMap, TexCoords).rgb, vec3(1)) * emissiveFactor.rgb;
     vec3 mrValue = texture(metallicRoughnessMap, TexCoords).rgb;
-    float metallic  = mrValue.r * metallicFactor;
+    //float metallic  = mrValue.r * metallicFactor;
+    //float roughness = (1-mrValue.g) * roughnessFactor;
+
+	float metallic  = mrValue.b * metallicFactor;
     float roughness = mrValue.g * roughnessFactor;
     float ao        = texture(aoMap, TexCoords).r;
 
@@ -252,7 +275,8 @@ void main()
 		specularEnvironmentR90,
 		alphaRoughness,
 		diffuseColor,
-		specularColor
+		specularColor,
+		albedo
 	);
     
     // Calculate the shading terms for the microfacet specular shading model
@@ -271,7 +295,8 @@ void main()
 
 
     //FragColor = vec4(ao,0,0, 1.0);
-    FragColor = vec4(prefilterSpec, 1.0);
-    FragColor = vec4(color, 1.0);
+    //FragColor = vec4(prefilterSpec, 1.0);
+	FragColor= vec4(color,  1.0);
+    //FragColor = vec4(roughness,0,0,  1.0);
     //FragColor = vec4(irradiance, 1.0);
 }
