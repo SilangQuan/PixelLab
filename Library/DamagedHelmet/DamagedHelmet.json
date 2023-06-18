@@ -1,0 +1,53 @@
+{
+    "sceneID": "DamagedHelmet",
+    "skybox": {"source": "../../BuiltinAssets/texture/skyboxes/barcelona"
+    },
+    "camera":{
+		"left":-1.778,
+		"right":1.778,
+		"bottom":-1,
+		"top":1,
+        "nearPlane": 1.0,
+        "farPlane": 2000.0,
+        "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -4.0
+          },
+        "target": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+    }, 
+	"gameobjs": 
+	[{
+		"name": "Center",
+		"position": {
+            "x": 0.0,
+            "y": 0.5,
+            "z": 0.0
+          },
+		"rotation":{
+            "x": 90.0,
+            "y": 150.0,
+            "z": -4.0
+          },
+		"scaling" :{
+            "x": 2.5,
+            "y": 2.5,
+            "z": 2.5
+          },
+		"components":[
+			{
+				"name": "MeshRenderer",
+				"properties":
+				{
+					"mesh":"Mesh/mesh_helmet_LP_13930damagedHelmet.mesh",
+					"material":"Material/Material_MR.material"
+				}
+			}
+		],
+         "childs": []
+	}]
+}

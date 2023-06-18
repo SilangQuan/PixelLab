@@ -1,0 +1,51 @@
+{
+    "sceneID": "HDR_Alucy",
+    "skybox": {"source": "../../BuiltinAssets/texture/skyboxes/barcelona"
+    },
+    "camera":{
+		"fov":60,
+		"aspect":1.778,
+        "nearPlane": 1.0,
+        "farPlane": 2000.0,
+        "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -6.0
+          },
+        "target": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+    }, 
+	"gameobjs": 
+	[{
+		"name": "Center",
+		"position": {
+            "x": 0.0,
+            "y": -2.6,
+            "z": 0.0
+          },
+		"rotation":{
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+		"scaling" :{
+            "x": 0.012,
+            "y": 0.012,
+            "z": 0.012
+          },
+		"components":[
+			{
+				"name": "MeshRenderer",
+				"properties":
+				{
+					"mesh":"Mesh/lucy.mesh",
+					"material":"Material/reflection.material"
+				}
+			}
+		],
+         "childs": []
+	}]
+}

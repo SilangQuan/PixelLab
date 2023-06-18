@@ -1,0 +1,142 @@
+{
+    "sceneID": "PBRValidation",
+    "skybox": {"source": "../../BuiltinAssets/texture/skyboxes/barcelona"
+    },
+    "camera":{
+		"fov":60,
+		"aspect":1.778,
+        "nearPlane": 1.0,
+        "farPlane": 2000.0,
+        "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -6.0
+          },
+        "target": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+    }, 
+	"gameobjs": 
+	[{
+		"name": "Obj0",
+		"position": {
+            "x": 0.0,
+            "y": 2.6,
+            "z": 0.0
+          },
+		"rotation":{
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+		"scaling" :{
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+		"components":[
+			{
+				"name": "MeshRenderer",
+				"properties":
+				{
+					"mesh":"Mesh/sphere.mesh",
+					"material":"Material/pbr.material"
+				}
+			}
+		],
+         "childs": []
+	},
+	{
+		"name": "Obj3",
+		"position": {
+            "x": 2.0,
+            "y": 2.6,
+            "z": 0.0
+          },
+		"rotation":{
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+		"scaling" :{
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+		"components":[
+			{
+				"name": "MeshRenderer",
+				"properties":
+				{
+					"mesh":"Mesh/sphere.mesh",
+					"material":"Material/pbr_rough.material"
+				}
+			}
+		],
+         "childs": []
+	},
+	{
+		"name": "Obj1",
+		"position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+		"rotation":{
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+		"scaling" :{
+            "x": 0.12,
+            "y": 0.12,
+            "z": 0.12
+          },
+		"components":[
+			{
+				"name": "MeshRenderer",
+				"properties":
+				{
+					"mesh":"Mesh/teapot.mesh",
+					"material":"Material/pbr.material"
+				}
+			}
+		],
+         "childs": []
+	},
+	{
+		"name": "Obj2",
+		"position": {
+            "x": 2.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+		"rotation":{
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+		"scaling" :{
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+		"components":[
+			{
+				"name": "MeshRenderer",
+				"properties":
+				{
+					"mesh":"Mesh/cube.mesh",
+					"material":"Material/pbr.material"
+				}
+			}
+		],
+         "childs": []
+	}
+	
+	
+	
+	]
+}

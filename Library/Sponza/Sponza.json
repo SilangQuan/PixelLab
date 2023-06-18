@@ -1,0 +1,786 @@
+{
+    "sceneID": "Sponza",
+    "skybox": {"source": "../../BuiltinAssets/texture/skyboxes/forest"
+    },
+    "camera":{
+		"fov":60,
+		"aspect":1.778,
+        "nearPlane": 0.3,
+        "farPlane": 1000.0,
+		"position": {
+			"x": -6.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+        "target": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+    }, 
+	"gameobjs": 
+	[
+    {
+      "name": "ArtWork",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "scaling": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "components": null,
+      "childs": [
+        {
+          "name": "Bar",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Bar.mesh",
+                "material": "Material/Material_13.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Chain",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Chain.mesh",
+                "material": "Material/Material_20.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Cloth",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Cloth.mesh",
+                "material": "Material/Material_14.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Cloth2",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.016.mesh",
+                "material": "Material/Material_15.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Cloth3",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.017.mesh",
+                "material": "Material/Material_16.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Cloth4",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.019.mesh",
+                "material": "Material/Material_18.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Cloth5",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.020.mesh",
+                "material": "Material/Material_19.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Cloth6",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.018.mesh",
+                "material": "Material/Material_17.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Door",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.011.mesh",
+                "material": "Material/Material_11.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Flowers",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.002.mesh",
+                "material": "Material/Material_3.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Grass",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.001.mesh",
+                "material": "Material/Material_0.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "InnerRoof",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.007.mesh",
+                "material": "Material/Material_7.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "LionHead",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.024.mesh",
+                "material": "Material/Material_23.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "LionHeadHolder",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.004.mesh",
+                "material": "Material/Material_4.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Parterre",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.023.mesh",
+                "material": "Material/Material_22.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Pillar",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.008.mesh",
+                "material": "Material/Material_8.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Pillar2",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.010.mesh",
+                "material": "Material/Material_10.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Pillar3",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.012.mesh",
+                "material": "Material/Material_12.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Roof",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.mesh",
+                "material": "Material/Material_24.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "SmallParterre",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.003.mesh",
+                "material": "Material/Material_1.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Torch",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.022.mesh",
+                "material": "Material/Material_21.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Wall",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.005.mesh",
+                "material": "Material/Material_5.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Wall2",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.006.mesh",
+                "material": "Material/Material_6.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Wall3",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.009.mesh",
+                "material": "Material/Material_9.material"
+              }
+            }
+          ],
+          "childs": []
+        },
+        {
+          "name": "Window",
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": [
+            {
+              "name": "MeshRenderer",
+              "properties": {
+                "mesh": "Mesh/Mesh_0.013.mesh",
+                "material": "Material/Material_2.material"
+              }
+            }
+          ],
+          "childs": []
+        }
+      ]
+    },
+    {
+      "name": "Lighting",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "scaling": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "components": null,
+      "childs": [
+        {
+          "name": "Directional Light",
+          "position": {
+            "x": 1.81174552,
+            "y": 2.53034878,
+            "z": -0.599281669
+          },
+          "rotation": {
+            "x": 79.46787,
+            "y": 330.000031,
+            "z": 2.33543087E-05
+          },
+          "scaling": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "components": null,
+          "childs": []
+        }
+      ]
+    }
+	]
+}

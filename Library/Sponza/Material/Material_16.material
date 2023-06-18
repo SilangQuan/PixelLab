@@ -1,0 +1,18 @@
+{
+    "name": "Material_16",
+    "shader": "pbr_opaque",
+    "albedoMap": "2185409758123873465.jpg",
+    "emissiveMap": "",
+    "metallicRoughnessMap": "7815564343179553343.jpg",
+    "normalMap": "332936164838540657.jpg",
+    "opacityMap": "",
+    "ambientOcclusionMap": "",
+    "emissiveColor": "0.000000,0.000000,0.000000",
+    "albedoColor": "0.588000,0.588000,0.588000",
+    "roughness": "1.000000,1.000000,1.000000",
+    "flags": "0",
+    "cullMode": "2",
+    "fillMode": "2",
+    "zTest": "4",
+    "zWrite": "0"
+}

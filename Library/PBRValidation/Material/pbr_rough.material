@@ -1,0 +1,18 @@
+{
+    "name": "pbr",
+	"shader":"pbr_opaque",
+    "albedoMap": "",
+    "emissiveMap": "",
+    "metallicRoughnessMap": "",
+    "normalMap": "",
+    "opacityMap": "",
+    "ambientOcclusionMap": "",
+    "emissiveColor": "0.000000,0.000000,0.000000,1.000000",
+    "albedoColor": "1.000000,1.000000,1.000000,1.000000",
+    "roughness": "0.0,1.0,0.5,0.5",
+    "flags": "0",
+	"cullMode": "2",
+	"fillMode":"2",
+	"zTest":"4",
+	"zWrite":"0"
+}

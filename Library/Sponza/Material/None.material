@@ -1,0 +1,17 @@
+{
+    "name": "None",
+    "albedoMap": "",
+    "emissiveMap": "",
+    "metallicRoughnessMap": "",
+    "normalMap": "",
+    "opacityMap": "",
+    "ambientOcclusionMap": "",
+    "emissiveColor": "0.000000,0.000000,0.000000",
+    "albedoColor": "0.800000,0.800000,0.800000",
+    "roughness": "1.000000,1.000000,0.000000",
+    "flags": "0",
+    "cullMode": "2",
+    "fillMode": "2",
+    "zTest": "4",
+    "zWrite": "0"
+}
