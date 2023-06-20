@@ -1,12 +1,15 @@
 #pragma once
-#include "Base.h"
+#include "EngineBase.h"
+#include "Render/SceneView.h"
 
+#include <vector>
 //0-position;1-normal;2-color;3-uv;4-uv2;
 #define ATTRIBUTE_POSITION            1   // 2^0, bit 0
 #define ATTRIBUTE_NORMAL				2  // 2^1, bit 1
 #define ATTRIBUTE_COLOR				4  // 2^2, bit 2
 #define ATTRIBUTE_UV_COORD1          8  // 2^3, bit 3
 #define ATTRIBUTE_UV_COORD2         16  // 2^4, bit 4
+
 
 struct MeshFileHeader
 {
@@ -39,12 +42,12 @@ public:
 		NUM_VERTEX_ATTRIBUTES
 	};
 
-	vector<Vector3> positions;
-	vector<Vector3> normals;
-	vector<Color> colors;
-	vector<Vector2> uvs;
-	vector<Vector2> uv2s;
-	vector<uint32> triangles;
+	std::vector<Vector3> positions;
+	std::vector<Vector3> normals;
+	std::vector<Color> colors;
+	std::vector<Vector2> uvs;
+	std::vector<Vector2> uv2s;
+	std::vector<uint32> triangles;
 	string name;
 	BoundingBox bounds;
 	
@@ -61,16 +64,16 @@ protected:
 	uint32 iboID;
 
 public:
-	Mesh(vector<Vector3> positions, vector<Vector3> normals, vector<uint32> triangles);
+	Mesh(std::vector<Vector3> positions, std::vector<Vector3> normals, std::vector<uint32> triangles);
 	Mesh(string binaryMeshPath);
 	Mesh();
 	virtual ~Mesh() {}
 
-	inline vector<Vector3>& GetPositions() { return positions; }
-	inline vector<Vector3>& GetNormals() { return normals; }
-	inline vector<Vector2>& GetUvCoords() { return uvs; }
-	inline vector<Color>& GetColors() { return colors; }
-	inline vector<uint32>& GetIndices() { return triangles; }
+	inline std::vector<Vector3>& GetPositions() { return positions; }
+	inline std::vector<Vector3>& GetNormals() { return normals; }
+	inline std::vector<Vector2>& GetUvCoords() { return uvs; }
+	inline std::vector<Color>& GetColors() { return colors; }
+	inline std::vector<uint32>& GetIndices() { return triangles; }
 
 	inline uint32 GetVAO() const { return vaoID; }
 	inline uint32 GetVBO(uint32 index) const { return vboIDs[index]; }

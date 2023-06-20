@@ -9,9 +9,11 @@ class Input;
 class Time;
 class ImGuiRenderer;
 
+enum RenderingPath;
+
 struct CreationFlags
 {
-	string	title;
+	std::string	title;
 	int	width;
 	int height;
 	bool	isWindowed;
@@ -92,7 +94,7 @@ protected:
 	Scene		*pScene;
 	SdlWindow* window;
 
-	Time* time;
+	STime* time;
 
 private:
 	LARGE_INTEGER	ticksPerSecond, startTime, lastTime;

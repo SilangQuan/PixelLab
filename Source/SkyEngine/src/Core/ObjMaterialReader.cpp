@@ -1,4 +1,12 @@
 #include "Core/ObjMaterialReader.h"
+#include <string>  
+#include <vector>  
+#include <map>
+#include <iostream>  
+#include <fstream>  
+#include <sstream>
+#include <assert.h>
+
 namespace tinyobj
 {
 	bool MaterialFileReader::operator()(const std::string &matId,

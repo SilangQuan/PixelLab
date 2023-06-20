@@ -1,12 +1,6 @@
 #pragma once
 
-#include <string>  
-#include <vector>  
-#include <map>
-#include <iostream>  
-#include <fstream>  
-#include <sstream>
-#include <assert.h>
+
 #include "ObjParseHelper.h"
 
 namespace tinyobj

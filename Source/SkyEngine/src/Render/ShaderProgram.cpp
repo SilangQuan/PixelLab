@@ -1,5 +1,7 @@
 #include "Render/ShaderProgram.h"
 #include "Render/RenderContext.h"
+#include "Core/ResourceManager.h"
+
 
 bool EndsWith(std::string const& fullString, std::string const& ending) {
 	if (fullString.length() >= ending.length()) {
@@ -156,12 +158,12 @@ uint32 ShaderProgram::GetNumUniforms() const
 }
 
 //A linear search to find an IUniform with a particular name. Returns m_uniforms.size() if none found
-uint32 ShaderProgram::FindUniform(const string& uniformName) const
+uint32 ShaderProgram::FindUniform(const std::string& uniformName) const
 {
 	uint32 index;
 	for (index = 0; index < m_uniforms.size(); index++)
 	{
-		const string &currentName = m_uniforms[index]->getName();
+		const std::string &currentName = m_uniforms[index]->getName();
 		if (currentName.compare(uniformName) == 0)
 		{
 			return index;
@@ -170,12 +172,12 @@ uint32 ShaderProgram::FindUniform(const string& uniformName) const
 	return index;
 }
 
-bool ShaderProgram::HasUniform(const string& uniformName) const
+bool ShaderProgram::HasUniform(const std::string& uniformName) const
 {
 	return this->FindUniform(uniformName) != GetNumUniforms();
 }
 
-IUniform* ShaderProgram::GetUniform(const string& uniformName)
+IUniform* ShaderProgram::GetUniform(const std::string& uniformName)
 {
 	/*auto iter = uniformsMap.find(uniformName);
 	if (iter != uniformsMap.end())

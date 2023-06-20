@@ -2,7 +2,8 @@
 
 
 #include "../../3rdParty/include/SDL/SDL_image.h"
-#include "Base.h"
+#include "EngineBase.h"
+#include "Core/Resource.h"
 
 enum ETextureFiltering
 {
@@ -26,9 +27,9 @@ public:
 	~Texture();
 	Texture();
 	Texture(const std::string &file);
-	Texture(const std::string &file, string type);
+	Texture(const std::string &file, std::string type);
 
-	bool Init(const string* path);
+	bool Init(const std::string* path);
 	bool Init(int width, int height, GLuint format);
 /*	void Bind(GLenum TextureUnit = 0);*/
 

@@ -1,4 +1,7 @@
 #include "Core/ObjLoader.h"
+#include <sstream>
+#include <fstream>
+
 namespace tinyobj
 {
 	

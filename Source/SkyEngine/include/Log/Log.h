@@ -4,8 +4,9 @@
 #define qWarning MessageLogger(__FILE__, __FUNCTION__, __LINE__).warning
 #define qCritical MessageLogger(__FILE__, __FUNCTION__, __LINE__).critical
 #define qFatal MessageLogger(__FILE__, __FUNCTION__, __LINE__).fatal
-#include "Debug.h"
 #include "MessageLogContext.h"
+
+class Debug;
 
 class MessageLogger
 {

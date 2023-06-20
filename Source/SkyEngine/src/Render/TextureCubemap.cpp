@@ -62,7 +62,7 @@ bool TextureCubemap::LoadSixFaceCube()
 
 	for (unsigned int i = 0; i < faces.size(); i++)
 	{
-        string fullpath = filePath+faces[i];
+        std::string fullpath = filePath+faces[i];
         //unsigned char* data = stbi_loadf(fullpath.c_str(), &width, &height, &nrChannels, 0);
         float* data = stbi_loadf(fullpath.c_str(), &width, &height, &nrChannels, 0);
         if (data)

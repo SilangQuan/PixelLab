@@ -19,6 +19,6 @@ public:
 	}
 
 private:
-	friend class MessageLogger;
-	friend class Debug;
+	//friend class MessageLogger;
+	//friend class Debug;
 };

@@ -3,6 +3,8 @@
 #include "Render/Mesh.h"
 #include "Core/ObjLoader.h"
 #include "Render/Graphics.h"
+#include "Core/ResourceManager.h"
+
 
 
 #define TINYGLTF_IMPLEMENTATION
@@ -209,7 +211,7 @@ Mesh Model::ProcessMesh(tinyobj::ObjMesh* mesh, vector<tinyobj::ObjMaterial>& ma
 }
 
 
-Texture* LoadTexture(string dir, string name)
+Texture* LoadTexture(string dir, std::string name)
 {
 	// If texture hasn't been loaded already, load it
 	string path = dir  + name.c_str();
@@ -518,7 +520,7 @@ void Model::ProcessGltfNode(tinygltf::Scene* scene, tinygltf::Model* gltfModel)
 	}
 }
 
-void Model::LoadModelByGltf(const string& path, bool binary)
+void Model::LoadModelByGltf(const std::string& path, bool binary)
 {
 	tinygltf::Model gltfModel;
 	tinygltf::TinyGLTF gltfContext;
@@ -912,7 +914,7 @@ void Model::ProcessNodeByAssimp(aiNode* node, const aiScene* scene)
 	}
 }
 
-vector<TextureVariable*> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
+vector<TextureVariable*> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
 {
 	vector<TextureVariable*> tmpTextures;
 	/*

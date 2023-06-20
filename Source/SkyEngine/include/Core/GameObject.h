@@ -1,6 +1,8 @@
 #pragma once
-#include "Base.h"
+#include "EngineBase.h"
+#include"Components/Transform.h"
 class Component;
+
 class GameObject
 {
 	uint32 id;

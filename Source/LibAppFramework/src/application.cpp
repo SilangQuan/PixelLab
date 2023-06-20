@@ -43,7 +43,7 @@ bool Application::CreateSubSystems(const CreationFlags &creationFlags)
 {
 	pInput = new Input(this);
 	// NOTE: should handle possible failing! maybe bad_alloc...
-	time = new Time();
+	time = new STime();
 	time->Start();
 
 	if (!pInput->Initialize())

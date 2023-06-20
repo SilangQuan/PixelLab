@@ -1,5 +1,5 @@
 #pragma once
-#include "Base.h"
+#include "EngineBase.h"
 class ShaderProgram;
 class TextureVariable;
 class Texture;

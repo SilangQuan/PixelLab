@@ -1,5 +1,8 @@
 #include "Math/Vector3.h"
 
+#include <assert.h>
+#include <iostream>
+
 Vector3 Vector3::up(0, 1, 0);
 Vector3 Vector3::down(0,-1,0);
 Vector3 Vector3::back(0, 0, -1);
@@ -36,6 +39,13 @@ Vector3::~Vector3()
 	//dtor
 }
 
+/*
+friend std::ostream& Vector3::operator<<(std::ostream& output, const Vector3& v)
+{
+	output << "(" << v.x << "," << v.y << "," << v.z << ")" << "\n";
+	return output;
+}
+*/
 bool Vector3::HasNaNs() const
 {
 	return isnan(x) || isnan(y) || isnan(z);

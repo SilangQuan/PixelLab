@@ -1,6 +1,7 @@
 #include "Core/Scene.h"
 #include "Core/Camera.h"
 #include "Core/GameObject.h"
+#include "Core/ResourceManager.h"
 #include "Render/Model.h"
 #include "Render/ShaderProgram.h"
 #include "Components/MeshRenderer.h"
@@ -112,7 +113,7 @@ void ParseMaterialDescription(const json& matJson, MaterialDescription* descript
 
 string Scene::GetScenePath()
 {
-	return "../../Library/" + mSceneId + "/";
+	return "../../../Library/" + mSceneId + "/";
 }
 
 GameObject* Scene::ParseGameObjInfo(const json& currentGameObj)

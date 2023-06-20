@@ -1,7 +1,5 @@
 #pragma once
 
-#include <assert.h>
-#include <iostream>
 #include "Mathf.h"
 
 
@@ -54,11 +52,7 @@ public:
 	//Returns true if vectors different.
 	bool operator!=(Vector3 &v) const;
 
-	friend std::ostream& operator<<(std::ostream& output, const Vector3& v)
-	{
-		output << "(" << v.x << "," << v.y << "," << v.z << ")" << "\n";
-		return output;
-	}
+	//friend std::ostream& operator<<(std::ostream& output, const Vector3& v);
 
 	//Static Functions
 	//Calculate angle between two vectors.

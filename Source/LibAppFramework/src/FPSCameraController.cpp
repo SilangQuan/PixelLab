@@ -29,8 +29,8 @@ void FPSCameraController::Update()
 {
 	if (mInput->GetMouseButton(MOUSE_LEFT))
 	{
-		qDebug() << "DeltaX: " << mInput->GetMouseDeltaX();
-		qDebug() << "DeltaY: " << mInput->GetMouseDeltaY();
+		//qDebug() << "DeltaX: " << mInput->GetMouseDeltaX();
+		//qDebug() << "DeltaY: " << mInput->GetMouseDeltaY();
 
 		// step 1 : Calculate the amount of rotation given the mouse movement.
 		float deltaAngleX = (2 * M_PI / mWindowHeight); // a movement from left to right = 2*PI = 360 deg
@@ -54,30 +54,30 @@ void FPSCameraController::Update()
 		//float cosAngle = dot(app->m_camera.GetViewDir(), app->m_upVector);
 		//if (cosAngle * sgn(yAngle) > 0.99f)
 		//	yAngle = 0;
-		qDebug() << "xAngle: " << xAngle;
-		qDebug() << "mCamera rotation: " << mCamera->transform.rotation.EulerAngle();
+		//qDebug() << "xAngle: " << xAngle;
+		//qDebug() << "mCamera rotation: " << mCamera->transform.rotation.EulerAngle();
 		//mCamera->transform.rotation = mCamera->transform.rotation * Quaternion::Euler(yAngle, xAngle, 0);
 		mCamera->transform.rotation = Quaternion::Euler(mRotY, mRotX, 0);
 	}
 
 	if (mInput->GetKey(KeyCode::KEY_W))
 	{
-		mCamera->transform.position += mCamera->transform.GetForward() * Time::deltaTime * mMoveSpeed;
+		mCamera->transform.position += mCamera->transform.GetForward() * STime::deltaTime * mMoveSpeed;
 	}
 
 	if (mInput->GetKey(KeyCode::KEY_S))
 	{
-		mCamera->transform.position -= mCamera->transform.GetForward() * Time::deltaTime * mMoveSpeed;
+		mCamera->transform.position -= mCamera->transform.GetForward() * STime::deltaTime * mMoveSpeed;
 	}
 
 	if (mInput->GetKey(KeyCode::KEY_A))
 	{
-		mCamera->transform.position -= mCamera->transform.GetRight() * Time::deltaTime * mMoveSpeed;
+		mCamera->transform.position -= mCamera->transform.GetRight() * STime::deltaTime * mMoveSpeed;
 	}
 
 	if (mInput->GetKey(KeyCode::KEY_D))
 	{
-		mCamera->transform.position += mCamera->transform.GetRight() * Time::deltaTime * mMoveSpeed;
+		mCamera->transform.position += mCamera->transform.GetRight() * STime::deltaTime * mMoveSpeed;
 	}
 
 	mCamera->transform.SetDirty(true);

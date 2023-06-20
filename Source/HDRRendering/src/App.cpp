@@ -1,16 +1,4 @@
-#ifdef _WIN64
-#ifdef _DEBUG
-#pragma comment( lib, "..\\..\\Lib\\x64\\Debug\\AppFramework.lib" )
-#else
-#pragma comment( lib, "..\\..\\Lib\\x64\\Release\\AppFramework.lib" )
-#endif
-#else
-#ifdef _DEBUG
-#pragma comment( lib, "..\\..\\Lib\\Win32\\Debug\\AppFramework.lib" )
-#else
-#pragma comment( lib, "..\\..\\Lib\\Win32\\Release\\AppFramework.lib" )
-#endif
-#endif
+#pragma comment( lib, "..\\..\\Build\\lib\\Debug\\LibAppFramework.lib" )
 
 #include "../include/App.h"
 #include "../../SkyEngine/include/SkyEngine.h"
@@ -104,9 +92,9 @@ bool App::CreateWorld()
 	//scene->Init("./Assets/Scenes/HDR_Bistro_RoadLight.json");
 
 	//scene->Init("../../Library/Sponza/Sponza.json");
-	scene->Init("../../Library/Bistro/Bistro.json");
+	//scene->Init("../../Library/Bistro/Bistro.json");
 	//scene->Init("../../Library/PBRValidation/PBRValidation.json");
-	//scene->Init("../../Library/HDR_Alucy/HDR_Alucy.json");
+	scene->Init("../../../Library/HDR_Alucy/HDR_Alucy.json");
 	//scene->Init("../../Library/DamagedHelmet/DamagedHelmet.json");
 	
 	quad = scene->GetRoot()->GetChild(0);

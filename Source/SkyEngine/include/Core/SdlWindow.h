@@ -1,5 +1,5 @@
 #pragma once
-#include "../../SkyEngine/include/Base.h"
+#include "EngineBase.h"
 
 #include "../../3rdParty/include/SDL/SDL.h"
 #include "../../3rdParty/include/SDL/SDL_vulkan.h"

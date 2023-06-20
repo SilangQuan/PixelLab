@@ -1,6 +1,6 @@
 #pragma once
 #include "../../3rdParty/include/SDL/SDL_image.h"
-#include "Base.h"
+#include "EngineBase.h"
 
 /********************************
 Class:		Texture
@@ -13,12 +13,12 @@ class TextureVariable
 public:
 	TextureVariable();
 	~TextureVariable();
-	TextureVariable(Texture* texture, GLenum textureUnit, string uniformRefname, ETextureVariableType type = TV_2D);
+	TextureVariable(Texture* texture, GLenum textureUnit, std::string uniformRefname, ETextureVariableType type = TV_2D);
 
 	void SetTextureUnit(GLenum textureUnit);
 	GLenum GetTextureUnit() const;
 	GLuint GetTextureID() const;
-	string GetUniformName() const;
+	std::string GetUniformName() const;
 	Texture* GetTexture();
 	void SetTexture(Texture* inTexture) { texture = inTexture; }
 	const void bind();

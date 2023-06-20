@@ -1,4 +1,24 @@
-#pragma comment( lib, "..\\..\\Lib\\Win32\\Debug\\AppFramework.lib" )
+
+#pragma comment( lib, "..\\..\\Build\\lib\\Debug\\LibAppFramework.lib" )
+/*
+#ifdef _WIN64
+
+#ifdef _DEBUG
+#pragma comment( lib, "..\\..\\Build\\lib\\LibAppFramework.lib" )
+#else
+#pragma comment( lib, "..\\..\\Build\\lib\\LibAppFramework.lib" )
+#endif
+
+#else
+
+#ifdef _DEBUG
+#pragma comment( lib, "..\\..\\Build\\lib\\LibAppFramework.lib" )
+#else
+#pragma comment( lib, "..\\..\\Build\\lib\\LibAppFramework.lib" )
+#endif
+
+#endif
+*/
 
 #include "../include/App.h"
 #include "../../SkyEngine/include/SkyEngine.h"

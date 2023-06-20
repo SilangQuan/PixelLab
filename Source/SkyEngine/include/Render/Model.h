@@ -1,5 +1,5 @@
 #pragma once
-#include "../Base.h"
+#include "EngineBase.h"
 #include "../Core/ObjLoader.h"
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
@@ -7,7 +7,7 @@
 #include "assimp/pbrmaterial.h"
 #include "assimp/postprocess.h"
 #include "Render/Material.h"
-
+#include "Components/Transform.h"
 
 
 
@@ -94,7 +94,7 @@ private:
 
 	void ProcessAIMaterials(const aiScene* scene);
 
-	void LoadModelByGltf(const string& path, bool binary);
+	void LoadModelByGltf(const std::string& path, bool binary);
 
 	void ProcessGltfNode(tinygltf::Scene* scene, tinygltf::Model* gltfModel);
 	void ProcessGltfMesh(tinygltf::Model* gltfModel);
@@ -107,7 +107,7 @@ private:
 
 	// Checks all material textures of a given type and loads the textures if they're not loaded yet.
 	// The required info is returned as a Texture struct.
-	vector<TextureVariable*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
+	vector<TextureVariable*> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 
 	//TextureVariable* LoadTexture(string name);
 };

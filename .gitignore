@@ -42,6 +42,7 @@ Source/**/*.obj
 
 /Source/Debug
 /Source/Release
+/Source/Build
 /Lib/
 /Temp/
 !/BuiltinAssets/

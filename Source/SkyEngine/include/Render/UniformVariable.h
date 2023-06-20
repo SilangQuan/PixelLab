@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base.h"
+#include "EngineBase.h"
 #include "TextureVariable.h"
 
 class IUniform

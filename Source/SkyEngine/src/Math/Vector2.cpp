@@ -1,4 +1,8 @@
 #include "Math/Vector2.h"
+
+#include <assert.h>
+#include <iostream>
+
 Vector2::Vector2()
 {
 	x = y = 0.0f;

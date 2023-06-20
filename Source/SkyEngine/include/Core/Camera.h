@@ -1,5 +1,6 @@
 #pragma once
-#include "Base.h"
+#include "EngineBase.h"
+#include"Components/Transform.h"
 class Renderer;
 
 class Camera

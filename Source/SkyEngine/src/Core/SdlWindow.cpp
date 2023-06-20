@@ -210,7 +210,6 @@ bool SdlWindow::InitGL()
 
 	maincontext = SDL_GL_CreateContext(mainwindow);
 
-
 	int r, g, b;
 	SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &r);
 	SDL_GL_GetAttribute(SDL_GL_GREEN_SIZE, &g);
@@ -219,18 +218,26 @@ bool SdlWindow::InitGL()
 	printf("Red size: %d, Green size: %d, Blue size: %d\n", r, g, b);
 	//Reset View
 	glViewport(0, 0, (GLint)width, (GLint)height);
+
+
+	
+
 	//Choose the Matrix mode
-	glMatrixMode(GL_PROJECTION);
+	//glMatrixMode(GL_PROJECTION);
 	//reset projection
-	glLoadIdentity();
+	//glLoadIdentity();
+
+
+
 	//set perspection
-	gluPerspective(45.0, (GLfloat)width / (GLfloat)height, 0.1, 1000.0);
+	//gluPerspective(45.0, (GLfloat)width / (GLfloat)height, 0.1, 1000.0);
 	//choose Matrix mode
-	glMatrixMode(GL_MODELVIEW);
+	//glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 	//glEnable(GL_DITHER);
-	glLoadIdentity();
+	//glLoadIdentity();
+
 
 	if (glewInit() != GLEW_OK)
 	{
@@ -242,20 +249,35 @@ bool SdlWindow::InitGL()
 	/* This makes our buffer swap syncronized with the monitor's vertical refresh */
 	SDL_GL_SetSwapInterval(0);
 
+
+
 	qDebug() << "----------Renderer Initialize----------";
 
+
 	/* Enable smooth shading */
-	glShadeModel(GL_SMOOTH);
+	//glShadeModel(GL_SMOOTH);
 	/* Set the background black */
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	/* Depth buffer setup */
 	glClearDepth(1.0f);
+
+
+
+
+
+
 	/* Enables Depth Testing */
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	/* The Type Of Depth Test To Do */
 	glDepthFunc(GL_LEQUAL);
 	/* Really Nice Perspective Calculations */
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+	GLenum err1 = glGetError();
+	if (err1 != GL_NO_ERROR) {
+		printf("1111OpenGL error Renderer Init Error\n");
+	}
+
 	//glFrontFace(GL_CCW);
 	//glFrontFace(GL_CW);
 	glEnable(GL_CULL_FACE);
@@ -268,6 +290,7 @@ bool SdlWindow::InitGL()
 	if (err != GL_NO_ERROR) {
 		printf("OpenGL error Renderer Init Error\n");
 	}
+
 
 	const GLubyte* renderer = glGetString(GL_RENDERER);
 	const GLubyte* vendor = glGetString(GL_VENDOR);

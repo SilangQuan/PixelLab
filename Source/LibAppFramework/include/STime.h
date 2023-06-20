@@ -1,15 +1,14 @@
 #pragma once
-#include "application.h"
 
-class Time
+class STime
 {
 public:
 	static float deltaTime;
 	static float time;
 	static float fps;
 
-	Time();
-	~Time();
+	STime();
+	~STime();
 	void Start();
 	void Stop();
 	void Restart();

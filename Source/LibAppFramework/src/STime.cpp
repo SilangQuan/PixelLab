@@ -1,38 +1,38 @@
-#include "../include/Time.h"
+#include "../include/STime.h"
 #include "../../3rdParty/include/SDL/SDL.h"
-float Time::deltaTime = 0;
-float Time::time = 0;
-float Time::fps = 0;
+float STime::deltaTime = 0;
+float STime::time = 0;
+float STime::fps = 0;
 
 float inv1000 = 1.0f / 1000;
-Time::Time()
+STime::STime()
 {
 	frameCountInOneSecond = 0;
 }
 
-Time::~Time()
+STime::~STime()
 {
 	
 }
 
-void Time::Start()
+void STime::Start()
 {
 	startMark = SDL_GetTicks() * inv1000;
 	lastFpsMark = startMark;
 	lastUpdateMark = SDL_GetTicks()* inv1000;
 }
 
-void Time::Stop()
+void STime::Stop()
 {
 	
 }
 
-void Time::Restart()
+void STime::Restart()
 {
 	
 }
 
-void Time::Update()
+void STime::Update()
 {
 	lastUpdateMark = time;
 	time = SDL_GetTicks() * inv1000 - startMark;

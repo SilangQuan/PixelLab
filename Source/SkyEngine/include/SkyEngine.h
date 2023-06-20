@@ -1,5 +1,5 @@
 #pragma once
-#include "Base.h"
+#include "EngineBase.h"
 #include "Render/Shader.h"
 #include "Render/Texture.h"
 #include "Render/TextureCubemap.h"
@@ -16,6 +16,7 @@
 #include "Core/SdlWindow.h"
 #include "Core/Color.h"
 #include "Core/Camera.h"
+#include "Core/ResourceManager.h"
 #include "Components/MeshRenderer.h"
 #include "Components/Transform.h"
 #include "Lighting/Light.h"

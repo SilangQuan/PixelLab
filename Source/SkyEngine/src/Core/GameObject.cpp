@@ -1,6 +1,6 @@
 #include"Core/GameObject.h"
 #include"Components/Component.h"
-#include"Components/Transform.h"
+
 
 GameObject::GameObject()
 	: transform(),

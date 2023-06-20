@@ -49,6 +49,12 @@ public:
 		stream->logType = r.stream->logType;
 	}
 
+	inline Debug(std::string* s, LogType logType, MessageLogContext context) : stream(new Stream(s))
+	{
+		stream->logType = logType;
+		MessageLogContext& ctxt = stream->context;
+		ctxt.copy(context);
+	}
 
 	~Debug();
 	inline Debug &operator<<(bool t) { stream->ss<<(t ? "true" : "false"); return maybeSpace(); }

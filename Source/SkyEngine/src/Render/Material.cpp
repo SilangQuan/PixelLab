@@ -5,9 +5,10 @@
 #include "Render/TextureVariable.h"
 #include "Render/RenderContext.h"
 #include "Lighting/Light.h"
+#include "Core/ResourceManager.h"
 
-const static string CShaderPath = "../../BuiltinAssets/shader/";
-const static string CLibraryPath = "../../Library/";
+const static std::string CShaderPath = "../../../BuiltinAssets/shader/";
+const static std::string CLibraryPath = "../../../Library/";
 
 
 Material::Material(ShaderProgram* _shaderProgram):CullMode(ECullMode::CM_Back),FillMode(EFillMode::FM_Solid),ZWriteMode(EZWriteMode::WM_ON),ZTestMode(EZTestMode::TM_LEQUAL)
@@ -15,7 +16,7 @@ Material::Material(ShaderProgram* _shaderProgram):CullMode(ECullMode::CM_Back),F
 	mShaderProgram = new ShaderProgram(*_shaderProgram);
 }
 
-Material::Material(const MaterialDescription& description, string sceneName)
+Material::Material(const MaterialDescription& description, std::string sceneName)
 {
 	name = description.name;
 

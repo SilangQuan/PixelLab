@@ -1,8 +1,6 @@
 #pragma once
-#include "Base.h"
-#include <fstream>
-#include <sstream>
-#include <iostream>
+#include "EngineBase.h"
+#include "Core/Resource.h"
 
 class Shader : public Resource
 {
@@ -18,17 +16,17 @@ public:
 		NUM_SHADER_TYPES
 	};
 	Shader(const std::string &file);
-	Shader(const string& filePath, ShaderType type);
+	Shader(const std::string& filePath, ShaderType type);
 	~Shader();
 
 	GLuint shaderID;
 	ShaderType type;
-	string shaderName;
+	std::string shaderName;
 	
-	void Init(const string& filePath);
+	void Init(const std::string& filePath);
 	void Create();
-	static string LoadShaderSource(const string& filePath);
-	void CompileShaderFromSource(const string& source);
+	static std::string LoadShaderSource(const std::string& filePath);
+	void CompileShaderFromSource(const std::string& source);
 	void Destroy();
 
 	inline bool EndsWith(std::string const & value, std::string const & ending)
