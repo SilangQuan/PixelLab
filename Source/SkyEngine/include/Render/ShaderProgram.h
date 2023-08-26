@@ -4,7 +4,7 @@
 #include "Lighting/Light.h"
 #include "UniformVariable.h"
 class RenderContext;
-
+class RenderDevice;
 /*
 class ViewInfo
 {
@@ -15,6 +15,15 @@ public:
 	Vector4 ScreenSizeAndInv;
 };*/
 
+class GPUProgramParam
+{
+protected:
+	virtual ~GPUProgramParam() {}
+public:
+	virtual GPUProgramParam* GetRealParam() = 0;
+};
+
+
 class ShaderProgram
 {
 
@@ -22,25 +31,34 @@ public:
 	ShaderProgram(const std::string& vsFile, const std::string& fsFile);
 	ShaderProgram(const std::string& csFile);
 	ShaderProgram(ShaderProgram& shaderProgram);
+	ShaderProgram();
+
+
 	virtual ~ShaderProgram();
 
 	template<typename T> inline void AddUniform(const string& uniformName, const T& uniformData);
 	template<typename T> inline void SetUniform(const string& uniformName, const T& uniformData);
 	template<typename T> inline void SetUniformHandle(const string& uniformName, const T* uniformDataHandle);
 
-	template<typename T> inline void SetUniformAndBind(const string& uniformName, const T& uniformData);
+	template<typename T> inline void SetUniformAndBind(const RenderDevice* device, const string& uniformName, const T& uniformData);
+
+	Shader* addShader(Shader* shader);
+	Shader* GetShader(Shader::ShaderType type);
+
 
 	void BindTextureVariable(TextureVariable* texture);
 	//template<typename T> inline void SetTestUniform(const string& uniformName, const T& uniformData);
 	template<typename T> inline UniformVariable<T>* TryGetUniform(const string& uniformName);
 
-	void Bind(RenderContext* renderContext);
-	void Bind();
+	void Bind(const RenderDevice* device, const RenderContext* renderContext);
+	void Bind(const RenderDevice* device);
 
 
 	void Use();
 	void Dispatch(unsigned int x, unsigned int y, unsigned int z) const;
-	GLuint GetProgramID() const;
+	uint32 GetProgramID() const;
+	void SetProgramID(uint32 id);
+	
 	uint32 GetNumUniforms() const;
 	uint32 FindUniform(const string& uniformName) const;
 	bool HasUniform(const string& uniformName) const;
@@ -54,22 +72,21 @@ public:
 	UniformVariable<Vector3>* viewPosUniform;
 	UniformVariable<Matrix4x4>* projectionUniform;
 	UniformVariable<Matrix4x4>* viewProjectionUniform;
-
+	template<typename T> inline void AddUniform(const string& uniformName);
+	void DetectViewInfoUniforms();
 
 protected:
 	virtual void init(const std::string& vsFile, const std::string& fsFile);
 	void init(const std::string& csFile);
 
-	Shader* addShader(Shader* shader);
 	void create();
 	void link();
 	void validate();
 	void detectUniforms();
-	template<typename T> inline void AddUniform(const string& uniformName);
 	void destroy();
 
 private:
-	GLuint m_programID;
+	uint32 m_programID;
 	Shader* shaders[Shader::NUM_SHADER_TYPES]; //ShaderProgram has ownership of its shaders
 	map<const string, IUniform*> uniformsMap;
 	vector<IUniform*> m_uniforms;	//ShaderProgram does not have ownership of its UniformVariables
@@ -87,25 +104,6 @@ private:
 
 
 template<typename T>
-void ShaderProgram::AddUniform(const string& uniformName)
-{
-	UniformVariable<T>* uniform = new UniformVariable<T>(uniformName);
-	uniform->attachToShader(this->GetProgramID());
-	m_uniforms.push_back(uniform);
-	uniformsMap.insert(make_pair(uniformName, uniform));
-}
-
-template<typename T>
-void ShaderProgram::AddUniform(const string& uniformName, const T& uniformData)
-{
-	UniformVariable<T>* uniform = new UniformVariable<T>(uniformName);
-	uniform->attachToShader(this->GetProgramID());
-	uniform->setData(uniformData);
-
-	m_uniforms.push_back(uniform);
-	uniformsMap.insert(make_pair(uniformName, uniform));
-}
-template<typename T> 
 void ShaderProgram::SetUniformHandle(const string& uniformName, const T* uniformDataHandle)
 {
 	IUniform* iuniform = this->GetUniform(uniformName);
@@ -147,10 +145,8 @@ void ShaderProgram::SetUniformHandle(const string& uniformName, const T* uniform
 }
 
 
-
-
 template<typename T>
-void ShaderProgram::SetUniformAndBind(const string& uniformName, const T& uniformData)
+void ShaderProgram::SetUniformAndBind(const RenderDevice* device, const string& uniformName, const T& uniformData)
 {
 	IUniform* iuniform = this->GetUniform(uniformName);
 
@@ -186,9 +182,30 @@ void ShaderProgram::SetUniformAndBind(const string& uniformName, const T& unifor
 	else
 	{
 		uniform->setData(uniformData);
-		uniform->bind();
+		uniform->bind(device);
 	}
 }
+
+template<typename T>
+void ShaderProgram::AddUniform(const string& uniformName)
+{
+	UniformVariable<T>* uniform = new UniformVariable<T>(uniformName);
+	uniform->attachToShader(this->GetProgramID());
+	m_uniforms.push_back(uniform);
+	uniformsMap.insert(make_pair(uniformName, uniform));
+}
+
+template<typename T>
+void ShaderProgram::AddUniform(const string& uniformName, const T& uniformData)
+{
+	UniformVariable<T>* uniform = new UniformVariable<T>(uniformName);
+	uniform->attachToShader(this->GetProgramID());
+	uniform->setData(uniformData);
+
+	m_uniforms.push_back(uniform);
+	uniformsMap.insert(make_pair(uniformName, uniform));
+}
+
 
 
 template<typename T>
@@ -203,7 +220,7 @@ void ShaderProgram::SetUniform(const string& uniformName, const T& uniformData)
 		message += " does not have an IUniform with name '";
 		message += uniformName;
 		message += "'.";
-		qDebug()<<message;
+		qDebug() << message;
 		return;
 	}
 
@@ -216,7 +233,7 @@ void ShaderProgram::SetUniform(const string& uniformName, const T& uniformData)
 	{
 		cout << e.what() << endl;
 	}
-	
+
 
 	if (uniform == NULL)
 	{

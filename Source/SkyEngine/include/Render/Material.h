@@ -6,6 +6,7 @@ class Texture;
 class Light;
 class Camera;
 class RenderContext;
+class RenderDevice;
 
 enum AlphaMode { ALPHAMODE_OPAQUE, ALPHAMODE_MASK, ALPHAMODE_BLEND };
 enum EPbrWorkflow
@@ -102,8 +103,8 @@ public:
 	Material(MaterialDescription* description, ShaderProgram* shader, string sceneName);
 	virtual ~Material();
 
-	void Bind(RenderContext* renderContext);
-	void Bind();
+	void Bind(const RenderDevice* device, const RenderContext* renderContext);
+	void Bind(const RenderDevice* device);
 
 	void SetCullMode(ECullMode mode);
 	void SetFillMode(EFillMode mode);
@@ -117,9 +118,7 @@ public:
 	void AddTextureVariable(string shaderRefName, Texture* texture, ETextureVariableType tvType = ETextureVariableType::TV_2D, int textureUnit = 0);
 	void AddTextureVariable(TextureVariable* texture);
 
-
-
-	template<typename T> inline void SetProperty(const string& uniformName, const T& uniformData);
+	template<typename T> inline void SetProperty(const RenderDevice* device, const string& uniformName, const T& uniformData);
 
 
 	//void SetTexture(string shaderRefName, Texture* textureVariable);

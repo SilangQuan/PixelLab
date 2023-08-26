@@ -9,11 +9,15 @@ add_subdirectory(SkyEngine)
 add_subdirectory(LibAppFramework)
 add_subdirectory(ShaderTest)
 add_subdirectory(HDRRendering)
+add_subdirectory(IBLTools)
+add_subdirectory(MultithreadedRendering)
 
 # 设置依赖关系
 add_dependencies(LibAppFramework SkyEngine)
 add_dependencies(ShaderTest SkyEngine LibAppFramework)
 add_dependencies(HDRRendering SkyEngine LibAppFramework)
+add_dependencies(IBLTools SkyEngine LibAppFramework)
+add_dependencies(MultithreadedRendering SkyEngine LibAppFramework)
 
 file(GLOB DLLS_TO_COPY 
 "3rdParty/libs/SDL/x64/*.dll"

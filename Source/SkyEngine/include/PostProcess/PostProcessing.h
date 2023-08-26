@@ -53,6 +53,7 @@ public:
     void AddPostProcessingPasses(const PostProcessingInputsForward& Inputs);
     void InitRenderData();
     void AddPass(ShaderProgram* prog, RenderTexture* target);
+    void AddPass(ShaderProgram* prog, uint32 fboID, int x, int y, int width, int height);
     void BlitToBackBuffer(RenderTexture* rt, GLuint backBufferFBO, int width, int height);
     void DrawQuard();
 
@@ -69,9 +70,11 @@ private:
     ShaderProgram* mForwardPlusDebugShader;
     ShaderProgram* mDepthDebugShader;
 
-    Texture mBlackDummy;
-    Texture mWhiteDummy;
+    Texture* mBlackDummy;
+    Texture* mWhiteDummy;
     unsigned int VAO;
+
+    RenderDevice* mRenderDevice;
 };
 
 

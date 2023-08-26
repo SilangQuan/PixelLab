@@ -1,6 +1,7 @@
 #include "Render/ShaderProgram.h"
 #include "Render/RenderContext.h"
 #include "Core/ResourceManager.h"
+#include "Render/RenderDevice.h"
 
 
 bool EndsWith(std::string const& fullString, std::string const& ending) {
@@ -59,6 +60,14 @@ ShaderProgram::ShaderProgram(const std::string& csFile)
 	this->init(csFile);
 }
 
+ShaderProgram::ShaderProgram() : m_programID(-1), m_uniforms()
+{
+	for (uint32 i = 0; i < Shader::NUM_SHADER_TYPES; i++)
+	{
+		shaders[i] = 0;
+	}
+}
+
 ShaderProgram::ShaderProgram(ShaderProgram& shaderProgram)
 {
 	m_programID = glCreateProgram();
@@ -91,7 +100,7 @@ void ShaderProgram::Dispatch(unsigned int x, unsigned int y, unsigned int z) con
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
-void ShaderProgram::Bind(RenderContext* renderContext)
+void ShaderProgram::Bind(const RenderDevice* device, const RenderContext* renderContext)
 {
 	CURRENT_SHADER = this;
 
@@ -127,13 +136,13 @@ void ShaderProgram::Bind(RenderContext* renderContext)
 	vector<IUniform*>::iterator i;
 	for (i = m_uniforms.begin(); i != m_uniforms.end(); i++)
 	{
-		(*i)->bind();
+		(*i)->bind(device);
 	}
 }
 
 
 //Used for deferred rendering
-void ShaderProgram::Bind()
+void ShaderProgram::Bind(const RenderDevice* device)
 {
 	CURRENT_SHADER = this;
 	//Do not Use here
@@ -143,14 +152,20 @@ void ShaderProgram::Bind()
 	vector<IUniform*>::iterator i;
 	for (i = m_uniforms.begin(); i != m_uniforms.end(); i++)
 	{
-		(*i)->bind();
+		(*i)->bind(device);
 	}
 }
 
-GLuint ShaderProgram::GetProgramID() const
+uint32 ShaderProgram::GetProgramID() const
 {
 	return m_programID;
 }
+
+void ShaderProgram::SetProgramID(uint32 id)
+{
+	m_programID = id;
+}
+
 
 uint32 ShaderProgram::GetNumUniforms() const
 {
@@ -240,6 +255,12 @@ Shader* ShaderProgram::addShader(Shader* shader)
 
 	return shader;
 }
+
+Shader* ShaderProgram::GetShader(Shader::ShaderType type)
+{
+	return shaders[type];
+}
+
 
 void ShaderProgram::create()
 {
@@ -414,6 +435,16 @@ void ShaderProgram::SetPointLightsUniform(vector<Light>& light)
 	}
 }
 
+
+void ShaderProgram::DetectViewInfoUniforms()
+{
+	viewPosUniform = TryGetUniform<Vector3>("viewPos");
+	viewUniform = TryGetUniform<Matrix4x4>("view");
+	modelUniform = TryGetUniform<Matrix4x4>("model");
+	projectionUniform = TryGetUniform<Matrix4x4>("projection");
+	viewProjectionUniform = TryGetUniform<Matrix4x4>("viewProjection");
+}
+
 void ShaderProgram::BindTextureVariable(TextureVariable* texture)
 {
 	IUniform* iuniform = this->GetUniform(texture->GetUniformName());
@@ -438,6 +469,11 @@ void ShaderProgram::BindTextureVariable(TextureVariable* texture)
 	}
 	else
 	{
+		//RenderDevice* renderDevice = GetRenderDevice();
+
+		//renderDevice->BindShaderProgramParam(iuniform->getLocation(), texture);
+
+		
 		glUniform1i(iuniform->getLocation(), texture->GetTextureUnit());
 		texture->bind();
 	}

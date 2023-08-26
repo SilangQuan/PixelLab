@@ -35,13 +35,13 @@ private:
 	ShaderProgram* mConvolveShader;
 	ShaderProgram* mPrefilterShader;
 	//Diffuse IBL
-	TextureCubemap* mSpecCubeMap;
+	TextureCubemap* mSpecCubeMap = nullptr;
 	//Specular IBL
-	TextureCubemap* mDiffuseCubeMap;
+	TextureCubemap* mDiffuseCubeMap = nullptr;
 
-	Texture* mBrdfLut;
+	Texture* mBrdfLut = nullptr;
 
-	Scene* scene;
+	Scene* mScene;
 	GameObject* quad;
 	GameObject* light;
 	Material* mat;

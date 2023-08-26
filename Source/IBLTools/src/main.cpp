@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../include/BRDFGenerator.hpp"
+#include "../include/IBLBaker.hpp"
 
 void show_menu() {
 	puts("======================================");
@@ -31,15 +32,22 @@ int main(int argc, char *argv[])
 	{
 		if (!strcmp(argv[1], "-lut"))
 		{
+			//./main -lut -s 256 -n 1024 -t 16
 			puts("Start GenerateBRDFLUT....Waiting...");
 			GenerateBRDFLUT(argc, argv);
 		}
 		else if (!strcmp(argv[1], "-Irradiance"))
 		{
+			//./main -Irradiance -f ./BuiltinAssets/texture/skyboxes/barcelona -s 256
+			puts("Start Generate Irradiance map....Waiting...");
+			GenerateConvolutionMap(argc, argv);
+
 		}
 		else if (!strcmp(argv[1], "-Radiance"))
 		{
-
+			//./main -Irradiance -f ./BuiltinAssets/texture/skyboxes/barcelona -s 256
+			puts("Start Generate Radiance map....Waiting...");
+			GeneratePrefilterMap(argc, argv);
 		}
 	}
 	return 1;

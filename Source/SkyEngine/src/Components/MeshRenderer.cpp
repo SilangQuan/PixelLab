@@ -8,12 +8,14 @@
 #include "Core/Camera.h"
 #include "Lighting/LightManager.h"
 #include "Render/Graphics.h"
+#include "Render/RenderDevice.h"
 
 MeshRenderer::MeshRenderer(Mesh* _mesh, Material* _material)
 {
 	mesh = _mesh;
 	material = _material;
 }
+
 MeshRenderer::~MeshRenderer()
 {
 	
@@ -22,18 +24,12 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceShader)
 {
-	glCullFace(GL_NONE);
-	/*if (material->GetCullMode() == ECullMode::CM_None)
-	{
-		glCullFace(GL_NONE);
-	}
-	else
-	{
-		glCullFace(material->GetCullMode() == ECullMode::CM_Front ? GL_FRONT : GL_BACK);
-	}*/
+	RenderDevice* renderDevice = GetRenderDevice();
 
-	glDepthMask(material->ZWriteMode == EZWriteMode::WM_ON ? GL_TRUE : GL_FALSE);
-	glDepthFunc(Graphics::GetDepthFunc(material->ZTestMode));
+	renderDevice->SetCullFace(material->GetCullMode());
+
+	renderDevice->SetDepthMask(material->ZWriteMode);
+	renderDevice->SetDepthFunc(material->ZTestMode);
 
 	renderContext->modelMatrix = GetGameObject()->GetTransform()->GetLocalToWorldMatrix();
 
@@ -41,11 +37,11 @@ void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceSh
 	if (replaceShader != nullptr)
 	{
 		shaderProgram = replaceShader;
-		shaderProgram->Bind(renderContext);
+		shaderProgram->Bind(renderDevice, renderContext);
 	}
 	else
 	{
-		material->Bind(renderContext);
+		material->Bind(renderDevice, renderContext);
 	}
 
 	if (renderContext->bEnableTileShading)
@@ -55,31 +51,23 @@ void MeshRenderer::Render(RenderContext* renderContext, ShaderProgram* replaceSh
 		glUniform1i(glGetUniformLocation(shaderProgram->GetProgramID(), "workgroup_x"), renderContext->WorkGroupsX);
 		glUniform1i(glGetUniformLocation(shaderProgram->GetProgramID(), "workgroup_y"), renderContext->WorkGroupsY);
 	}
-
+	
 	//Bind the Vertex Array
-	GLuint vao = mesh->GetVAO();
-	glBindVertexArray(vao);
+	renderDevice->BindVAO(mesh->GetVAO());
 
-	//DrawElements
 	if(mesh->indiceCount > 0)
 	{
-		glDrawElements(
-			GL_TRIANGLES,
-			mesh->indiceCount,
-			GL_UNSIGNED_INT,
-			0);
+		renderDevice->DrawElements(mesh->indiceCount);
 	}
 	else
 	{
-		glDrawArrays(GL_TRIANGLES, 0, mesh->vertexCount);
+		renderDevice->DrawArrays(mesh->vertexCount);
 	}
 
-	//glCullFace(GL_BACK);
-	//Unbind the Vertex Array
-	glBindVertexArray(0);
+	renderDevice->BindVAO(0);
 }
 
-Mesh*  MeshRenderer::GetMesh()
+Mesh* MeshRenderer::GetMesh()
 {
 	return mesh;
 }

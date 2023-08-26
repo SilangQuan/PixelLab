@@ -23,7 +23,8 @@ struct BoundingBox
 	BoundingBox(const Vector3& min, const Vector3& max) : min_(Vector3::Min(min, max)), max_(Vector3::Max(min, max)) {}
 	BoundingBox(const Vector3* points, size_t numPoints)
 	{
-		Vector3 vmin(std::numeric_limits<float>::max());
+		
+		Vector3 vmin(Mathf::Infinity);
 		Vector3 vmax(std::numeric_limits<float>::lowest());
 
 		for (size_t i = 0; i != numPoints; i++)

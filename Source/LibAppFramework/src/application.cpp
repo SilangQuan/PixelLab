@@ -77,8 +77,10 @@ bool Application::CreateSubSystems(const CreationFlags &creationFlags)
 		return false;
 	}
 
+	RenderDevice* renderDevice = GetRenderDevice();
+
 	pImGuiRenderer = new ImGuiRenderer();
-	pImGuiRenderer->Init(window);
+	pImGuiRenderer->Init(renderDevice);
 
 	return true;
 }
@@ -92,25 +94,13 @@ bool Application::Initialize(const CreationFlags &creationFlags)
 
 	window = new SdlWindow(creationFlags.title, creationFlags.width, creationFlags.height, creationFlags.graphicsAPI);
 
-	if (creationFlags.graphicsAPI == GraphicsAPI::OpenGL)
-	{
-		if (!window->InitGL())
-			return false;
-	}
-	else if (creationFlags.graphicsAPI == GraphicsAPI::Vulkan)
-	{
-		if (!window->InitVulkan())
-			return false;
-	}
+	CreateClientDevice(creationFlags.graphicsAPI, RenderThreadMode::ThreadModeDirect, window);
 
 	// Initialize the timer ---------------------------------------------------
-
 	if (!QueryPerformanceFrequency(&ticksPerSecond))
 		return false;
 
 	return CreateSubSystems(creationFlags); 
-
-
 }
 
 int Application::Run()
@@ -125,9 +115,6 @@ int Application::Run()
 
 		RenderWorld();
 		RenderUI();
-
-		Present();
-	
 
 		EndFrame();
 	}
@@ -159,17 +146,14 @@ void Application::BeginFrame()
 
 }
 
-void Application::Present()
-{
-	window->Present();
-}
-
 void Application::RenderUI()
 {
+	RenderDevice* renderDevice = GetRenderDevice();
+
 	if(window->GetCurGraphicsAPI() == GraphicsAPI::OpenGL)
 		PushGroupMarker("IMGui");
 
-	pImGuiRenderer->BeginFrame(window);
+	pImGuiRenderer->BeginFrame(renderDevice);
 	int uiWidth = 200;
 	int uiHeight = 300;
 
@@ -190,11 +174,10 @@ void Application::RenderUI()
 	//const GLubyte* vendor = glGetString​(GL_VENDOR); // Returns the vendor
 	ImGui::End();
 	
-	pImGuiRenderer->EndFrame(window);
+	pImGuiRenderer->EndFrame(renderDevice);
 	
 	if (window->GetCurGraphicsAPI() == GraphicsAPI::OpenGL)
 		PopGroupMarker();
-
 }
 
 bool Application::CheckMessages()
@@ -204,7 +187,9 @@ bool Application::CheckMessages()
 
 void Application::EndFrame()
 {
-	SDL_GL_SwapWindow(window->GetSDLWindow());
+	RenderDevice* renderDevice = GetRenderDevice();
+
+	renderDevice->Present();
 
 
 	LARGE_INTEGER iCurrentTime;

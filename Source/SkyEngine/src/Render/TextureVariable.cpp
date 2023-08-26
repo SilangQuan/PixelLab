@@ -3,7 +3,7 @@
 
 TextureVariable::TextureVariable()
 {
-
+	texture = nullptr;
 }
 
 TextureVariable::TextureVariable(Texture* _texture, GLenum _textureUnit, string _uniformRefname, ETextureVariableType inType)

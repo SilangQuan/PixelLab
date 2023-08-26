@@ -22,6 +22,8 @@
 
 #include "Log/Debug.h"
 #include "Log/Log.h"
+#include <assert.h>
+#include "Core/Assertion.h"
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 using namespace std;
@@ -89,19 +91,35 @@ enum GraphicsAPI
 	DX12
 };
 
+enum RenderThreadMode
+{
+	ThreadModeDirect,
+	ThreadModeThreaded
+};
+
 enum DepthType {
 	NoDepth,
 	Depth16,
 	Depth24S8,
 	Depth32
 };
+
 enum ColorType {
+	RGB,
+	RGBA,
 	RGB565,
 	RGB888,
 	RGBA8888,
 	RGB16F,
 	RGBA16F,
+	RGB32F,
 	R11G11B10,
+};
+
+enum ETextureDataType
+{
+	TDY_Float,
+	TDY_UnsignedByte,
 };
 
 enum EModelType
@@ -129,6 +147,12 @@ enum ECullMode
 	ECullMode_Num,
 };
 
+enum EFrontFace
+{
+	FF_CW,
+	FF_CCW
+};
+
 enum EZTestMode
 {
 	TM_ALWAYS,
@@ -150,6 +174,26 @@ enum EZWriteMode
 	EZWriteMode_Num,
 };
 
+enum ETextureWrapMode
+{
+	WM_Repeat,
+	WM_Clamp,
+	WM_Mirror,
+	WM_MirrorOnce,
+	ETextureWrapMode_Num,
+};
+
+enum ETextureSampleFilter
+{
+	SF_Nearest,
+	SF_Linear,
+	SF_Nearest_Mip_Nearest,
+	SF_Nearest_Mip_Linear,
+	SF_Linear_Mip_Nearest,
+	SF_Linear_Mip_Linear,
+	ETextureSampleFilter_Num,
+};
+
 enum ETextureVariableType
 {
 	TV_2D,
@@ -165,6 +209,9 @@ enum ETextureVariableType
 
 #define ARRAYSIZE(_ARR)          ((int)(sizeof(_ARR) / sizeof(*(_ARR))))     // Size of a static C-style array. Don't use on pointers!
 
+
+
+#define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a)/sizeof(a[0]))
 
 
 

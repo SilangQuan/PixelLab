@@ -8,6 +8,7 @@ class SkyEngine;
 class RenderContext;
 class RenderTexture;
 class ShaderProgram;
+class RenderDevice;
 
 class ForwardSceneRenderer : public SceneRendererBase
 {
@@ -29,8 +30,9 @@ public:
 	RenderContext* GetRenderContext() { return renderContext; };
 
 private:
-	SkyEngine* engine;
-	RenderContext* renderContext;
-	RenderTexture* mRenderTarget;
-	ShaderProgram* mReplaceShader;
+	SkyEngine* engine = nullptr;
+	RenderContext* renderContext = nullptr;
+	RenderTexture* mRenderTarget = nullptr;
+	ShaderProgram* mReplaceShader = nullptr;
+	RenderDevice* mRenderDevice = nullptr;
 };

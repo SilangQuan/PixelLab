@@ -2,27 +2,26 @@
 
 #include "EngineBase.h"
 #include "TextureVariable.h"
+class RenderDevice;
 
 class IUniform
 {
 protected:
 	string m_uniformName;
-	GLuint m_uniformLocation;
+	uint32 m_uniformLocation;
 
 public:
 	IUniform(string uniformName) : m_uniformName(uniformName), m_uniformLocation(-1) {}
 	virtual ~IUniform() {}
 
-	const virtual void bind() = 0;
+	const virtual void bind(const RenderDevice* device) = 0;
 
-	//inline void attachToShader(GLuint programID);
 
 	inline const string& getName() const { return m_uniformName; }
-	inline GLuint getLocation() const { return m_uniformLocation; }
+	inline uint32 getLocation() const { return m_uniformLocation; }
 
 	//For IUniform
-
-	inline void attachToShader(GLuint programID)
+	inline void attachToShader(uint32 programID)
 	{
 		m_uniformLocation = glGetUniformLocation(programID, m_uniformName.c_str());
 	}
@@ -35,31 +34,18 @@ class UniformVariable : public IUniform
 {
 	T m_uniformData;
 
-	//Just for texture variables
-	const T* uniformDataHandle;
-
 public:
-	UniformVariable(string uniformName) : IUniform(uniformName), m_uniformData() {}
+	UniformVariable(string uniformName) : IUniform(uniformName), m_uniformData(){}
 	virtual ~UniformVariable() {}
 
-	inline void setDataHandle(const T* handle);
 	inline void setData(const T& data);
 	inline T& getData();
 
-	const virtual void bind();
+	const virtual void bind(const RenderDevice* device);
 
 	bool hasBeenSettle;
 };
 
-/*
-//A specialization for UniformVariable<Texture>
-template<>
-class UniformVariable<TextureVariable> : public UniformVariable<TextureVariable*>
-{
-public:
-	UniformVariable(const string& uniformName) : UniformVariable<TextureVariable*>(uniformName) {}
-};
-*/
 
 template<typename T>
 void UniformVariable<T>::setData(const T& data)
@@ -69,14 +55,6 @@ void UniformVariable<T>::setData(const T& data)
 }
 
 template<typename T>
-void UniformVariable<T>::setDataHandle(const T* handle)
-{
-	hasBeenSettle = true;
-	uniformDataHandle = handle;
-}
-
-
-template<typename T>
 T& UniformVariable<T>::getData()
 {
 	return m_uniformData;
@@ -84,16 +62,16 @@ T& UniformVariable<T>::getData()
 
 //Template Instantiations for bind() (instantiations only, see .cpp for definitions)
 
-template<> const void UniformVariable<int>::bind();
-template<> const void UniformVariable<float>::bind();
-template<> const void UniformVariable<double>::bind();
-template<> const void UniformVariable<unsigned int>::bind();
-template<> const void UniformVariable<bool>::bind();
-template<> const void UniformVariable<Vector2>::bind();
-template<> const void UniformVariable<Vector3>::bind();
-template<> const void UniformVariable<Vector4>::bind();
-template<> const void UniformVariable<Color>::bind();
-template<> const void UniformVariable<Matrix2>::bind();
-template<> const void UniformVariable<Matrix3>::bind();
-template<> const void UniformVariable<Matrix4x4>::bind();
-template<> const void UniformVariable<TextureVariable>::bind();
+template<> const void UniformVariable<int>::bind(const RenderDevice* device);
+template<> const void UniformVariable<float>::bind(const RenderDevice* device);
+template<> const void UniformVariable<double>::bind(const RenderDevice* device);
+template<> const void UniformVariable<unsigned int>::bind(const RenderDevice* device);
+template<> const void UniformVariable<bool>::bind(const RenderDevice* device);
+template<> const void UniformVariable<Vector2>::bind(const RenderDevice* device);
+template<> const void UniformVariable<Vector3>::bind(const RenderDevice* device);
+template<> const void UniformVariable<Vector4>::bind(const RenderDevice* device);
+template<> const void UniformVariable<Color>::bind(const RenderDevice* device);
+template<> const void UniformVariable<Matrix2>::bind(const RenderDevice* device);
+template<> const void UniformVariable<Matrix3>::bind(const RenderDevice* device);
+template<> const void UniformVariable<Matrix4x4>::bind(const RenderDevice* device);
+template<> const void UniformVariable<TextureVariable>::bind(const RenderDevice* device);

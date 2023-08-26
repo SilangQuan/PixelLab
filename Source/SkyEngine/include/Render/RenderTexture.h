@@ -11,8 +11,6 @@ public:
 
 	void SetDepth(unsigned int DepthBufferId);
 
-	void ActivateFB();
-	//void DeactivateFB();
 	void Bind() { glBindTexture(GL_TEXTURE_2D, mColorBufferId); }
 	void Release() { glBindTexture(GL_TEXTURE_2D, 0); }
 	static bool ms_useFiltering;
@@ -20,6 +18,7 @@ public:
 	GLuint GetTextureID() override { return mColorBufferId; }
 
 	GLuint GetDepthID() { return mDepthBufferId; }
+	uint32 GetFrameBufferID() { return mFboId; }
 
 	void BindForRead() { glBindFramebuffer(GL_READ_FRAMEBUFFER, mFboId); }
 	
@@ -33,4 +32,6 @@ private:
 
 	unsigned int mDepthBufferId;
 	unsigned int mColorBufferId;
+
+	friend class RenderDeviceGL;
 };

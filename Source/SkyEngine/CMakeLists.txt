@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 file(GLOB ALL_SRC
 	"include/Render/*.h"
+	"include/Render/Threaded/*.h"
 	"include/PostProcess/*.h"
 	"include/Math/*.h"
 	"include/Log/*.h"
@@ -21,7 +22,10 @@ file(GLOB ALL_SRC
     "src/Math/*.cpp"
     "src/PostProcess/*.cpp"
     "src/Render/*.cpp"
+	"src/Render/Threaded/*.cpp"
 )
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ALL_SRC})
 
 # 添加源代码目录，也可以添加多个源代码目录
 add_library(SkyEngine STATIC  ${ALL_SRC})

@@ -28,6 +28,44 @@ struct MeshFileHeader
 	uint32 vertexDataSize;
 };
 
+class VBO
+{
+protected:
+	virtual ~VBO() {}
+public:
+	virtual VBO* GetRealVBO() = 0;
+
+};
+
+struct VBOData
+{
+	struct Vertex
+	{
+		Vector3 pos;
+		Vector3 normal;
+		Vector2 uv;
+	};
+	VBOData(unsigned int verticesCount_, unsigned int indicesCount_)
+		:verticesCount(verticesCount_), indicesCount(indicesCount_)
+	{
+		_buffer = new char[verticesCount * sizeof(Vertex) + indicesCount * sizeof(unsigned short)];
+		vertices = (Vertex*)_buffer;
+		indices = (unsigned short*)(_buffer + verticesCount * sizeof(Vertex));
+	}
+	~VBOData()
+	{
+		delete[] _buffer;
+	}
+	Vertex* vertices;
+	unsigned short* indices;
+	unsigned int verticesCount;
+	unsigned int indicesCount;
+	typedef std::shared_ptr<VBOData> Ptr;
+
+private:
+	char* _buffer;
+};
+
 
 class Mesh
 {

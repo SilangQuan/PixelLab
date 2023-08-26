@@ -311,6 +311,8 @@ void DeferredSceneRenderer::PointLightPass(Camera* camera)
 
 void DeferredSceneRenderer::RenderGameObjectGeo(GameObject* gameObject, RenderContext* renderContext)
 {
+	RenderDevice* renderDevice = GetRenderDevice();
+
 	//Get a RenderingComponent from gameObject and invoke render() on it
 	MeshRenderer* rc = gameObject->GetComponent<MeshRenderer>();
 
@@ -318,7 +320,7 @@ void DeferredSceneRenderer::RenderGameObjectGeo(GameObject* gameObject, RenderCo
 	{
 		renderContext->modelMatrix = gameObject->GetTransform()->GetLocalToWorldMatrix();
 		//rc->GetMaterial()->Bind();
-		rc->GetMaterial()->Bind(renderContext);
+		rc->GetMaterial()->Bind(renderDevice, renderContext);
 		//glUniformMatrix4fv(glGetUniformLocation(mGeometryPass->GetProgramID(), "model"), 1, GL_FALSE, (GLfloat *)renderContext->modelMatrix.get());
 
 		GLuint vao = rc->GetMesh()->GetVAO();

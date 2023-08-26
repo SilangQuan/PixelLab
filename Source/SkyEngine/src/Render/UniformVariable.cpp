@@ -2,112 +2,82 @@
 #include "Render/UniformVariable.h"
 #include "Render/TextureVariable.h"
 #include "Render/Texture.h"
+#include "Render/RenderDevice.h"
 
 template<>
-const void UniformVariable<int>::bind()
+const void UniformVariable<int>::bind(const RenderDevice* device)
 {
-	glUniform1i(m_uniformLocation, m_uniformData);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<float>::bind()
+const void UniformVariable<float>::bind(const RenderDevice* device)
 {
-	glUniform1f(m_uniformLocation, m_uniformData);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<double>::bind()
+const void UniformVariable<double>::bind(const RenderDevice* device)
 {
-	glUniform1d(m_uniformLocation, m_uniformData);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<unsigned int>::bind()
+const void UniformVariable<unsigned int>::bind(const RenderDevice* device)
 {
-	glUniform1ui(m_uniformLocation, m_uniformData);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<bool>::bind()
+const void UniformVariable<bool>::bind(const RenderDevice* device)
 {
-	glUniform1i(m_uniformLocation, m_uniformData);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<Vector2>::bind()
+const void UniformVariable<Vector2>::bind(const RenderDevice* device)
 {
-	glUniform2f(m_uniformLocation,
-		m_uniformData.x,
-		m_uniformData.y);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<Vector3>::bind()
+const void UniformVariable<Vector3>::bind(const RenderDevice* device)
 {
-	glUniform3f(m_uniformLocation,
-		m_uniformData.x,
-		m_uniformData.y,
-		m_uniformData.z);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<Vector4>::bind()
+const void UniformVariable<Vector4>::bind(const RenderDevice* device)
 {
-	glUniform4f(m_uniformLocation,
-		m_uniformData.x,
-		m_uniformData.y,
-		m_uniformData.z,
-		m_uniformData.w);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<Color>::bind()
+const void UniformVariable<Color>::bind(const RenderDevice* device)
 {
-	glUniform4f(m_uniformLocation,
-		m_uniformData.r,
-		m_uniformData.g,
-		m_uniformData.b,
-		m_uniformData.a);
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<Matrix2>::bind()
+const void UniformVariable<Matrix2>::bind(const RenderDevice* device)
 {
-	glUniformMatrix2fv(m_uniformLocation,
-		1, false,
-		&(m_uniformData[0]));
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<Matrix3>::bind()
+const void UniformVariable<Matrix3>::bind(const RenderDevice* device)
 {
-	glUniformMatrix3fv(m_uniformLocation,
-		1, false,
-		&(m_uniformData[0]));
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<Matrix4x4>::bind()
+const void UniformVariable<Matrix4x4>::bind(const RenderDevice* device)
 {
-	glUniformMatrix4fv(m_uniformLocation,
-		1, false,
-		&(m_uniformData[0]));
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }
 
 template<>
-const void UniformVariable<TextureVariable>::bind()
+const void UniformVariable<TextureVariable>::bind(const RenderDevice* device)
 {
-	if (hasBeenSettle)
-	{
-		if (uniformDataHandle != NULL)
-		{
-			glUniform1i(m_uniformLocation, uniformDataHandle->GetTextureUnit());
-			const_cast<TextureVariable*>(uniformDataHandle)->bind();
-		}
-		else
-		{
-			glUniform1i(m_uniformLocation, m_uniformData.GetTextureUnit());
-			m_uniformData.bind();
-		}
-	}
+	device->BindShaderProgramParam(m_uniformLocation, m_uniformData);
 }

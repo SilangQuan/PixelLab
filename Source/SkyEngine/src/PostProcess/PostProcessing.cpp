@@ -1,67 +1,62 @@
 #include "PostProcess/PostProcessing.h"
 #include "Render/ShaderProgram.h"
+#include "Render/RenderDevice.h"
 
-PostProcessor::PostProcessor():
-    mBlackDummy("../../BuiltinAssets/texture/BlackDummy.png"),
-    mWhiteDummy("../../BuiltinAssets/texture/WhiteDummy.png")
+PostProcessor::PostProcessor()
 {
+    mWhiteDummy = ResourceManager::GetInstance()->FindTexture("WhiteDummy");
+    mBlackDummy = ResourceManager::GetInstance()->FindTexture("BlackDummy");
 
+    mRenderDevice = GetRenderDevice();
 }
 
 void PostProcessor::InitRenderData()
 {
-	mToneMappingShader = new ShaderProgram("../../BuiltinAssets/shader/Tonemap.vert", "../../BuiltinAssets/shader/Tonemap.frag");
-    mBloomThresholdShader = new ShaderProgram("../../BuiltinAssets/shader/BloomThreshold.vert", "../../BuiltinAssets/shader/BloomThreshold.frag");
-    mGaussianBlurShader = new ShaderProgram("../../BuiltinAssets/shader/GaussianBlur.vert", "../../BuiltinAssets/shader/GaussianBlur.frag");
-    mBloomMergeShader = new ShaderProgram("../../BuiltinAssets/shader/BloomMerge.vert", "../../BuiltinAssets/shader/BloomMerge.frag");
-    mDownsampleShader = new ShaderProgram("../../BuiltinAssets/shader/Downsample.vert", "../../BuiltinAssets/shader/Downsample.frag");
-    mSimpleBlitShader = new ShaderProgram("../../BuiltinAssets/shader/Tonemap.vert", "../../BuiltinAssets/shader/SimpleBlit.frag");
-        
-    mForwardPlusDebugShader = new ShaderProgram("../../BuiltinAssets/shader/ScreenQuad.vert", "../../BuiltinAssets/shader/ForwardPlusDebug.frag");
-    mDepthDebugShader = new ShaderProgram("../../BuiltinAssets/shader/ScreenQuad.vert", "../../BuiltinAssets/shader/DepthDebug.frag");
-   
-    // configure VAO/VBO
-    unsigned int VBO;
-    float vertices[] = {
-        // pos        // tex
-        -1.0f, -1.0f, 0.0f, 0.0f,
-         1.0f,  1.0f, 1.0f, 1.0f,
-        -1.0f,  1.0f, 0.0f, 1.0f,
+    mToneMappingShader = ResourceManager::GetInstance()->LoadShader("Tonemap");
+    mBloomThresholdShader = ResourceManager::GetInstance()->LoadShader("BloomThreshold");
+    mGaussianBlurShader = ResourceManager::GetInstance()->LoadShader("GaussianBlur");
+    mBloomMergeShader = ResourceManager::GetInstance()->LoadShader("BloomMerge");
+    mDownsampleShader = ResourceManager::GetInstance()->LoadShader("Downsample");
+    mSimpleBlitShader = ResourceManager::GetInstance()->LoadShader("Tonemap", "SimpleBlit");
 
-        -1.0f, -1.0f, 0.0f, 0.0f,
-         1.0f, -1.0f, 1.0f, 0.0f,
-         1.0f,  1.0f, 1.0f, 1.0f
-    };
-    glGenVertexArrays(1, &this->VAO);
-    glGenBuffers(1, &VBO);
+    mForwardPlusDebugShader = ResourceManager::GetInstance()->LoadShader("ScreenQuad", "ForwardPlusDebug");
+    mDepthDebugShader = ResourceManager::GetInstance()->LoadShader("ScreenQuad", "DepthDebug");
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindVertexArray(this->VAO);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindVertexArray(0);
+    this->VAO = mRenderDevice->GenFullscreenQuadVAO();
 }
 
-
-void PostProcessor::AddPass(ShaderProgram* prog, RenderTexture* target)
+void PostProcessor::AddPass(ShaderProgram* prog, uint32 fboID, int x, int y, int width, int height)
 {
-    target->ActivateFB();
-    prog->Use();
+    mRenderDevice->BindFrameBuffer(fboID);
+    mRenderDevice->SetViewPort(x, y, width, height);
+    mRenderDevice->UseGPUProgram(prog);
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    prog->Bind();
+    mRenderDevice->SetClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    mRenderDevice->Clear();
+
+    prog->Bind(mRenderDevice);
+
+    DrawQuard();
+}
+
+void PostProcessor::AddPass(ShaderProgram* prog, RenderTexture* target)
+{
+    mRenderDevice->BindFrameBuffer(target->GetFrameBufferID());
+    mRenderDevice->SetViewPort(0, 0, target->GetWidth(), target->GetHeight());
+    mRenderDevice->UseGPUProgram(prog);
+
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
+    
+    mRenderDevice->SetClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    mRenderDevice->Clear();
+
+    prog->Bind(mRenderDevice);
 
     DrawQuard();
 }
@@ -71,15 +66,15 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
 {
     if (Inputs.EnableForwardPlusDebug)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, Inputs.BackBufferFBO);
-        glViewport(0, 0, Inputs.Width, Inputs.Height);
+        mRenderDevice->BindFrameBuffer(Inputs.BackBufferFBO);
+        mRenderDevice->SetViewPort(0, 0, Inputs.Width, Inputs.Height);
 
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_NONE);
 
-        mForwardPlusDebugShader->Use();
+        mRenderDevice->UseGPUProgram(mForwardPlusDebugShader);
 
         glUniform1i(glGetUniformLocation(mForwardPlusDebugShader->GetProgramID(), "workgroup_x"), Inputs.WorkGroupX);
         glUniform1i(glGetUniformLocation(mForwardPlusDebugShader->GetProgramID(), "workgroup_y"), Inputs.WorkGroupY);
@@ -91,15 +86,16 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
     }
     else if (Inputs.EnableDepthDebug)
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, Inputs.BackBufferFBO);
-        glViewport(0, 0, Inputs.Width, Inputs.Height);
+        mRenderDevice->BindFrameBuffer(Inputs.BackBufferFBO);
+        mRenderDevice->SetViewPort(0, 0, Inputs.Width, Inputs.Height);
 
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glCullFace(GL_NONE);
 
-        mDepthDebugShader->Use();
+        mRenderDevice->UseGPUProgram(mDepthDebugShader);
+
 
         glUniform1i(glGetUniformLocation(mDepthDebugShader->GetProgramID(), "DepthRT"), 0);
 
@@ -130,7 +126,10 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
 
         TextureVariable sceneColorRT(Inputs.SceneColorTex, 0, "sceneColorRT", TV_2D);
 
-        mBloomThresholdShader->SetUniformHandle("sceneColorRT", &sceneColorRT);
+        mBloomThresholdShader->SetUniform("sceneColorRT", sceneColorRT);
+
+        //mDownsampleShader->SetUniform("sourceRT", &bloomThresholdVariable);
+
         mBloomThresholdShader->SetUniform("bloomThreshold", Inputs.BloomThreshold);
         mBloomThresholdShader->SetUniform("bloomIntensity", Inputs.BloomIntensity);
 
@@ -205,41 +204,16 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
     }
 
     //Uber Post
-    //TextureVariable sceneColorTex(Inputs.SceneColorTex, 0, "hdrBuffer", TV_2D);
-    //mToneMappingShader->SetUniform("exposure", Inputs.Exposure);
-    //mToneMappingShader->SetUniform("hdrBuffer", sceneColorTex);
-    //AddPass(mToneMappingShader, &(Inputs.BackBufferFBO));
+    mRenderDevice->UseGPUProgram(mToneMappingShader);
+    TextureVariable sceneColor(Inputs.SceneColorTex, 0, "sceneColor", TV_2D);
+    mToneMappingShader->SetUniform("hdrBuffer", sceneColor);
+    TextureVariable bloomTex(Inputs.BloomActive ? &bloomResult: mBlackDummy, 1, "bloomResult", TV_2D);
+    mToneMappingShader->SetUniform("bloomBuffer", bloomTex);
+    mToneMappingShader->SetUniform("exposure", Inputs.Exposure);
+    
+    mToneMappingShader->Bind(mRenderDevice);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, Inputs.BackBufferFBO);
-	glViewport(0, 0, Inputs.Width, Inputs.Height);
-
-    glDisable(GL_DEPTH_TEST);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glCullFace(GL_NONE);
-
-    mToneMappingShader->Use();
-
-    glUniform1i(glGetUniformLocation(mToneMappingShader->GetProgramID(), "hdrBuffer"), 0);
-    glUniform1i(glGetUniformLocation(mToneMappingShader->GetProgramID(), "bloomBuffer"), 1);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Inputs.SceneColorTex->GetTextureID());
-
-    glActiveTexture(GL_TEXTURE1);
-    if (Inputs.BloomActive)
-    {
-        glBindTexture(GL_TEXTURE_2D, bloomResult.GetTextureID());
-    }
-    else
-    {
-        glBindTexture(GL_TEXTURE_2D, mBlackDummy.GetTextureID());
-    }
-
-	glUniform1f(glGetUniformLocation(mToneMappingShader->GetProgramID(), "exposure"), Inputs.Exposure);
-
-    DrawQuard();
-
+    AddPass(mToneMappingShader, Inputs.BackBufferFBO, 0, 0, Inputs.Width, Inputs.Height);
 
     //Reset render state
     glEnable(GL_CULL_FACE);
@@ -250,15 +224,23 @@ void PostProcessor::AddPostProcessingPasses(const PostProcessingInputsForward& I
 
 void PostProcessor::BlitToBackBuffer(RenderTexture* rt, GLuint backBufferFBO, int width, int height)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, backBufferFBO);
-    glViewport(0, 0, width, height);
+    TextureVariable source(rt, 0, "sourceRT", TV_2D);
+    mSimpleBlitShader->SetUniform("sourceRT", source);
+    mSimpleBlitShader->Bind(mRenderDevice);
+
+    AddPass(mToneMappingShader, backBufferFBO, 0, 0, width, height);
+
+    /*
+    mRenderDevice->BindFrameBuffer(backBufferFBO);
+    mRenderDevice->SetViewPort(0, 0, width, height);
 
     glDisable(GL_DEPTH_TEST);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_NONE);
 
-    mSimpleBlitShader->Use();
+    mRenderDevice->UseGPUProgram(mSimpleBlitShader);
+
     glUniform1i(glGetUniformLocation(mSimpleBlitShader->GetProgramID(), "sourceRT"), 0);
 
     glActiveTexture(GL_TEXTURE0);
@@ -266,12 +248,12 @@ void PostProcessor::BlitToBackBuffer(RenderTexture* rt, GLuint backBufferFBO, in
 
     DrawQuard();
     glCullFace(GL_BACK);
-
+    */
 }
 
 void PostProcessor::DrawQuard()
 {
-    glBindVertexArray(this->VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
+    mRenderDevice->BindVAO(VAO);
+    mRenderDevice->DrawArrays(6);
+    mRenderDevice->BindVAO(0);
 }

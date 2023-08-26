@@ -39,7 +39,6 @@ public:
 	virtual void RenderWorld() = 0;		// draw objects
 
 	virtual void RenderUI();
-	virtual void Present();
 	
 
 protected:

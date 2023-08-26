@@ -2,6 +2,7 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 //#include "imgui_impl_vulkan.h"
+class RenderDevice;
 
 class SdlWindow;
 
@@ -12,9 +13,9 @@ public:
 	ImGuiRenderer();
 	~ImGuiRenderer();
 
-	void BeginFrame(SdlWindow* window);
-	void EndFrame(SdlWindow* window);
+	void BeginFrame(RenderDevice* device);
+	void EndFrame(RenderDevice* device);
 
-	void Init(SdlWindow* window);
+	void Init(RenderDevice* device);
 
 };

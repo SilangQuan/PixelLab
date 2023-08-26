@@ -11,6 +11,7 @@
 #include "Render/Model.h"
 #include "Render/Material.h"
 #include "Render/ShaderProgram.h"
+#include "Render/RenderDevice.h"
 #include "Core/Scene.h"
 #include "Core/GameObject.h"
 #include "Core/SdlWindow.h"

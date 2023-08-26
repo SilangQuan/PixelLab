@@ -6,6 +6,7 @@ class Material;
 class ShaderProgram;
 class Texture;
 class Resource;
+class TextureCubemap;
 
 // =================================================================================================
 // Resource
@@ -37,11 +38,31 @@ struct ResourceTypes
 // =================================================================================================
 
 
+const static std::string CShaderPath = "../../../BuiltinAssets/shader/";
+const static std::string CLibraryPath = "../../../Library/";
+const static std::string CBuiltinAssetsPath = "../../../BuiltinAssets/";
+
+
 class ResourceManager
 {
 public:
 	ResourceManager();
 	~ResourceManager();
+	
+	const static std::string& GetLibraryPath()
+	{
+		return CLibraryPath;
+	}
+
+	const static std::string& GetShaderPath()
+	{
+		return CShaderPath;
+	}
+
+	const static std::string& GetBuiltinAssetsPath()
+	{
+		return CBuiltinAssetsPath;
+	}
 
 	static ResourceManager* GetInstance()
 	{
@@ -50,7 +71,14 @@ public:
 		return instance;
 	}
 
+	ShaderProgram* LoadShader(std::string filename);
+	ShaderProgram* LoadShader(std::string vsfilename, std::string psfilename);
+
 	void LoadBuitinShaders();
+	void LoadBuiltinTexs();
+
+	Texture* LoadTex(std::string filename);
+	TextureCubemap* LoadTexCube(std::string filepath);
 
 	//Resource *GetResource(const std::string &name);
 
@@ -117,7 +145,7 @@ public:
 		auto iter = mShaderResources.find(name);
 		if (iter == mShaderResources.end())
 		{
-			qDebug() << "Error:Can't load material with name " << name;
+			qDebug() << "Error:Can't load shader with name " << name;
 			return NULL;
 		}
 		else

@@ -149,13 +149,13 @@ bool App::CreateWorld()
 	};
 
 	GLuint indices[] = {
-		0, 1, 3,
-		1, 2, 3
+		0,  3,1,
+		1,  3,2
 	};
 
 	GLfloat secondTriangle[] = {
-		0.0f, -0.5f, -1.0,  // Left
 		0.9f, -0.5f, -1.0,  // Right
+		0.0f, -0.5f, -1.0,  // Left
 		0.45f, 0.5f, -1.0   // Top 
 	};
 
@@ -200,19 +200,20 @@ bool App::CreateWorld()
 
 void App::RenderWorld()
 {
+	glCullFace(GL_NONE);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDepthFunc(GL_ALWAYS);
 
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glUseProgram(shaderProgram);
 	glBindVertexArray(VAOs[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glUseProgram(shaderProgram2);
 	glBindVertexArray(VAOs[1]);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -231,9 +232,3 @@ void App::FrameMove()
 {
 
 }
-
-/*
-bool App::Initialize()
-{
-	return true;
-}*/

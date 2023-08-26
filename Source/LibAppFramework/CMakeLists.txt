@@ -7,6 +7,7 @@ file(GLOB ALL_SRC
     "src/*.cpp"
 )
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ALL_SRC})
 # 添加源代码目录，也可以添加多个源代码目录
 add_library(LibAppFramework STATIC  ${ALL_SRC})
 

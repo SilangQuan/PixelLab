@@ -6,8 +6,9 @@
 
 ForwardSceneRenderer::ForwardSceneRenderer()
 {
-	engine = NULL;
+	engine = nullptr;
 	renderContext = new RenderContext();
+	mReplaceShader = nullptr;
 }
 
 ForwardSceneRenderer::~ForwardSceneRenderer()
@@ -19,6 +20,8 @@ bool ForwardSceneRenderer::Initialize(int width, int height)
 {
 	renderContext->windowWidth = width;
 	renderContext->windowHeight = height;
+
+	mRenderDevice = GetRenderDevice();
 	return true;
 }
 
@@ -29,19 +32,7 @@ void ForwardSceneRenderer::ResizeGL(int width, int height)
 	{
 		height = 1;
 	}
-	//Reset View
-	glViewport(0, 0, (GLint)width, (GLint)height);
-	//Choose the Matrix mode
-	glMatrixMode(GL_PROJECTION);
-	//reset projection
-	glLoadIdentity();
-	//set perspection
-	gluPerspective(45.0, (GLfloat)width / (GLfloat)height, 0.1, 1000.0);
-	//choose Matrix mode
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
-	glLoadIdentity();
+	mRenderDevice->ResizeWindow(width, height);
 }
 
 void ForwardSceneRenderer::DrawMesh(Mesh* mesh, Matrix4x4* modelMatrix, Material* mat, Camera* cam)
@@ -78,11 +69,17 @@ void ForwardSceneRenderer::Render(Scene* scene, Camera* camera)
 	//glFrontFace(GL_CCW);
 	if (mRenderTarget != NULL)
 	{
-		mRenderTarget->ActivateFB();
+		mRenderDevice->BindFrameBuffer(mRenderTarget->GetFrameBufferID());
+		mRenderDevice->SetViewPort(0, 0, mRenderTarget->GetWidth(), mRenderTarget->GetHeight());
+	}
+	else
+	{
+		mRenderDevice->BindFrameBuffer(0);
+		mRenderDevice->SetViewPort(0, 0, renderContext->windowWidth, renderContext->windowHeight);
 	}
 
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	mRenderDevice->SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	mRenderDevice->Clear();
 
 	if (scene != NULL)
 	{
@@ -102,12 +99,6 @@ void ForwardSceneRenderer::RenderGameObject(GameObject* gameObject, RenderContex
 	if (rc != 0)
 	{
 		Material* mat = rc->GetMaterial();
-		//if (mat != NULL && mat->GetShaderProgram()->HasUniform("brdfLUT"))
-		//{
-		//	mat->SetTexture("irradianceMap", renderContext->DiffuseCubeMap);
-		//	mat->SetTexture("prefilterMap", renderContext->SpecCubeMap);
-		//	mat->SetTexture("brdfLUT", renderContext->BrdfLut);
-		//}
 
 		if (mReplaceShader != nullptr)
 		{

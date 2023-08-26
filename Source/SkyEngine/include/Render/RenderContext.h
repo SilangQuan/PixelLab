@@ -9,7 +9,14 @@ class RenderContext
 {
 
 public:
-	RenderContext() {};
+	RenderContext() {
+		bEnableTileShading = false;
+		bEnableClusterShading = false;
+		SpecCubeMap = nullptr;
+		DiffuseCubeMap = nullptr;
+		BrdfLut = nullptr;
+	};
+
 	int windowWidth;
 	int windowHeight;
 	Vector3 viewPos;

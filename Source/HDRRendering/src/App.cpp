@@ -8,22 +8,30 @@ bool App::CreateWorld()
 {
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	refractionShader = new ShaderProgram("../../BuiltinAssets/shader/refraction.vert", "../../BuiltinAssets/shader/refraction.frag");
-	reflectionShader = new ShaderProgram("../../BuiltinAssets/shader/reflection.vert", "../../BuiltinAssets/shader/reflection.frag");
-	pbrOpaqueShader = new ShaderProgram("../../BuiltinAssets/shader/pbr_opaque.vert", "../../BuiltinAssets/shader/pbr_opaque.frag");
-	pbrAlphaTestShader = new ShaderProgram("../../BuiltinAssets/shader/pbr_opaque.vert", "../../BuiltinAssets/shader/pbr_opaque_alphatest.frag");
+	refractionShader = ResourceManager::GetInstance()->LoadShader("refraction");
+	reflectionShader = ResourceManager::GetInstance()->LoadShader("reflection");
 	
-	mConvolveShader = new ShaderProgram("../../BuiltinAssets/shader/cubeMapShader.vert", "../../BuiltinAssets/shader/convolveCubemapShader.frag");
-	mPrefilterShader = new ShaderProgram("../../BuiltinAssets/shader/cubeMapShader.vert", "../../BuiltinAssets/shader/preFilteringShader.frag");
+	//refractionShader = new ShaderProgram(ResourceManager::GetShaderPath() + "refraction.vert", ResourceManager::GetShaderPath() + "refraction.frag");
+	//reflectionShader = new ShaderProgram(ResourceManager::GetShaderPath() + "reflection.vert", ResourceManager::GetShaderPath() + "reflection.frag");
+	pbrOpaqueShader = new ShaderProgram(ResourceManager::GetShaderPath() + "pbr_opaque.vert", ResourceManager::GetShaderPath() + "pbr_opaque.frag");
+	pbrAlphaTestShader = new ShaderProgram(ResourceManager::GetShaderPath() + "pbr_opaque.vert", ResourceManager::GetShaderPath() + "pbr_opaque_alphatest.frag");
+	
+	mConvolveShader = new ShaderProgram(ResourceManager::GetShaderPath() + "cubeMapShader.vert", ResourceManager::GetShaderPath() + "convolveCubemapShader.frag");
+	mPrefilterShader = new ShaderProgram(ResourceManager::GetShaderPath() + "cubeMapShader.vert", ResourceManager::GetShaderPath() + "preFilteringShader.frag");
 
-	skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/barcelona");
-	//skyCubeBarcelona = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/forest");
-	skyCubeTokyo = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/tokyo");
-	skyCubeCatwalk = new TextureCubemap("../../BuiltinAssets/texture/skyboxes/catwalk");
+	//skyCubeBarcelona = new TextureCubemap(ResourceManager::GetBuiltinAssetsPath() + "texture/skyboxes/barcelona");
+	//skyCubeTokyo = new TextureCubemap(ResourceManager::GetBuiltinAssetsPath() + "texture/skyboxes/tokyo");
+	//skyCubeCatwalk = new TextureCubemap(ResourceManager::GetBuiltinAssetsPath() + "texture/skyboxes/catwalk");
 
-	mBrdfLut = ResourceManager::GetInstance()->TryGetResource<Texture>("../../BuiltinAssets/texture/BrdfLUT.hdr");
+	skyCubeBarcelona = ResourceManager::GetInstance()->LoadTexCube(ResourceManager::GetBuiltinAssetsPath() + "texture/skyboxes/barcelona");
+	skyCubeTokyo = ResourceManager::GetInstance()->LoadTexCube(ResourceManager::GetBuiltinAssetsPath() + "texture/skyboxes/tokyo");
+	skyCubeCatwalk = ResourceManager::GetInstance()->LoadTexCube(ResourceManager::GetBuiltinAssetsPath() + "texture/skyboxes/catwalk");
+
+	//mBrdfLut = ResourceManager::GetInstance()->TryGetResource<Texture>(ResourceManager::GetBuiltinAssetsPath() + "texture/BrdfLUT.hdr");
+	mBrdfLut = ResourceManager::GetInstance()->LoadTex(ResourceManager::GetBuiltinAssetsPath() + "texture/BrdfLUT.hdr");
 
 	ResourceManager::GetInstance()->LoadBuitinShaders();
+	ResourceManager::GetInstance()->LoadBuiltinTexs();
 
 	mat = new Material(refractionShader);
 	mat->name = "refraction";
@@ -70,7 +78,7 @@ bool App::CreateWorld()
 
 
 	skyBoxMesh = new CubeMesh();
-	skyBoxShader = new ShaderProgram("../../BuiltinAssets/shader/skyboxShader.vert", "../../BuiltinAssets/shader/skyboxShader.frag");
+	skyBoxShader = new ShaderProgram(ResourceManager::GetShaderPath() + "skyboxShader.vert", ResourceManager::GetShaderPath() + "skyboxShader.frag");
 	skyBoxMat = new Material(skyBoxShader);
 	skyBoxMat->SetCullMode(ECullMode::CM_None);
 	//skyBoxMat->ZWriteMode = EZWriteMode::WM_OFF;
@@ -85,29 +93,29 @@ bool App::CreateWorld()
 	//pbrMat->AddTextureVariable("brdfLUT", mBrdfLut, ETextureVariableType::TV_2D, 7);
 	
 
-	scene = new Scene();
-	//scene->Init("./Assets/Scenes/HDR_DamagedHelmet.json");
+	mScene = new Scene();
+	//scene->Init(ResourceManager::GetLibraryPath() +"DamagedHelmet/DamagedHelmet.json");
 	//scene->Init("./Assets/Scenes/HDR_Bistro_Motor.json");
 	//scene->Init("./Assets/Scenes/HDR_Bistro.json"); 
 	//scene->Init("./Assets/Scenes/HDR_Bistro_RoadLight.json");
 
-	//scene->Init("../../Library/Sponza/Sponza.json");
+	mScene->Init("../../../Library/Sponza/Sponza.json");
 	//scene->Init("../../Library/Bistro/Bistro.json");
 	//scene->Init("../../Library/PBRValidation/PBRValidation.json");
-	scene->Init("../../../Library/HDR_Alucy/HDR_Alucy.json");
+	//scene->Init(ResourceManager::GetLibraryPath() +"HDR_Alucy/HDR_Alucy.json");
 	//scene->Init("../../Library/DamagedHelmet/DamagedHelmet.json");
 	
-	quad = scene->GetRoot()->GetChild(0);
+	quad = mScene->GetRoot()->GetChild(0);
 
 	//scene->Init("./Assets/Scenes/HDR_Sphere.json");
 	//quad = scene->FindByName("Center_child_0");
-	camera = scene->GetActiveCamera();
+	camera = mScene->GetActiveCamera();
 	float sens = 20;
 	float speed = 10;
 	mOrbitCameraController = new OrbitCameraController(camera, pInput, sens, GetWindow()->GetHeight(), GetWindow()->GetWidth());
 	mFPSCameraController = new FPSCameraController(camera, pInput, sens, speed, GetWindow()->GetHeight(), GetWindow()->GetWidth());
 
-	scene->Start();
+	mScene->Start();
 
 	BakeIBL();
 
@@ -140,7 +148,7 @@ void App::RenderWorld()
 	//pForwardRenderer->GetRenderContext()->SpecCubeMap = mSpecCubeMap;
 
 	PushGroupMarker("SceneRender");
-	pRenderer->Render(scene, scene->GetActiveCamera());
+	pRenderer->Render(mScene, mScene->GetActiveCamera());
 
 	Matrix4x4 transMatrix(1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -202,54 +210,12 @@ static Quaternion QuaternionFromMatrix(Matrix4x4 m)
 
 void App::FrameMove()
 {
-	//if (pInput->GetMouseButton(MOUSE_LEFT))
-	//{
-	//	qDebug() << "Rotation:" << quad->transform.rotation.EulerAngle();
-	//	qDebug() << "Position:" << quad->transform.position;
-	//	quad->transform.Rotate(0,3,0);
-	//	quad->transform.position = quad->transform.rotation * (5 * Vector3::forward);
-	//	quad->transform.SetDirty(true);
-	//}
+	mOrbitCameraController->Update();
+	//mFPSCameraController->Update();
 
-	//mOrbitCameraController->Update();
-	mFPSCameraController->Update();
-	//float rotSpeed = 10;
-	//quad->transform.Rotate(0, Time::deltaTime * rotSpeed, 0);
-	
 	//BakeIBL();
 	/*
-	float sensitivity = 20;
-	if (pInput->GetMouseButton(MOUSE_LEFT))
-	{
-		// step 1 : Calculate the amount of rotation given the mouse movement.
-		float deltaAngleX = (2 * M_PI / GetWindow()->GetWidth()); // a movement from left to right = 2*PI = 360 deg
-		float deltaAngleY = (M_PI / GetWindow()->GetHeight());  // a movement from top to bottom = PI = 180 deg
-		float xAngle = pInput->GetMouseDeltaX() * deltaAngleX * sensitivity;
-		float yAngle = pInput->GetMouseDeltaY() * deltaAngleY * sensitivity;
 
-		// Extra step to handle the problem when the camera direction is the same as the up vector
-		//float cosAngle = dot(app->m_camera.GetViewDir(), app->m_upVector);
-		//if (cosAngle * sgn(yAngle) > 0.99f)
-		//	yAngle = 0;
-
-		// step 2: Rotate the camera around the pivot point on the first axis.
-		Vector3 pivot = Vector3::zero;
-		Matrix4x4 rotationMatrixX;
-		rotationMatrixX.rotateY(xAngle);
-		//rotationMatrixX = glm::rotate(rotationMatrixX, xAngle, app->m_upVector);
-		Vector3 newPos = (rotationMatrixX * (camera->transform.position - pivot)) + pivot;
-		camera->transform.position = newPos;
-
-		//// step 3: Rotate the camera around the pivot point on the second axis.
-		Matrix4x4 rotationMatrixY;
-		rotationMatrixY.rotate(yAngle, camera->transform.GetRight());
-		newPos = (rotationMatrixY * (camera->transform.position - pivot)) + pivot;
-		camera->transform.position = newPos;
-
-		Matrix4x4 rotMatrix = Matrix4x4::LookAt(camera->transform.position, pivot, Vector3::up);
-		camera->viewMatrix = rotMatrix;
-	}
-	*/
 	/*
 	if (iblIndex == 0)
 	{
@@ -307,8 +273,10 @@ void App::FrameMove()
 
 void App::RenderUI()
 {
+	RenderDevice* renderDevice = GetRenderDevice();
+
 	PushGroupMarker("IMGui");
-	pImGuiRenderer->BeginFrame(window);
+	pImGuiRenderer->BeginFrame(renderDevice);
 	int uiWidth = 250;
 	int uiHeight = 300;
 
@@ -352,22 +320,21 @@ void App::RenderUI()
 	ImGui::NewLine();
 	
 	ImGui::End();
-	pImGuiRenderer->EndFrame(window);
+	pImGuiRenderer->EndFrame(renderDevice);
 	PopGroupMarker();
 }
 
 void App::DestroyWorld()
 {
-
+	SAFE_DELETE(mSpecCubeMap);
+	SAFE_DELETE(mDiffuseCubeMap);
 }
 
 void App::BakeIBL()
 {
-	mSpecCubeMap = new TextureCubemap();
-	mDiffuseCubeMap = new TextureCubemap();
-
+	mDiffuseCubeMap = TextureCubemap::GenerateConvolutionMap(64, mConvolveShader, skyCubeBarcelona);
+	mSpecCubeMap = TextureCubemap::GeneratePrefilterMap(256, mPrefilterShader, skyCubeBarcelona);
 	mSpecCubeMap->setName("SpecCube");
 	mDiffuseCubeMap->setName("DiffuseCube");
-	mDiffuseCubeMap->GenerateConvolutionMap(64, mConvolveShader, skyCubeBarcelona);
-	mSpecCubeMap->GeneratePrefilterMap(256, mPrefilterShader, skyCubeBarcelona);
+
 }

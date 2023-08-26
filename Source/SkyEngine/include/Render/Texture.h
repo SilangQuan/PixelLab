@@ -21,51 +21,64 @@ Class:		Texture
 Purpose:	Wraps OpenGL texture object and performs their loading.
 ********************************/
 
+
+struct TextureInfo
+{
+public:
+	ColorType ColorType = ColorType::RGB;
+	ETextureDataType DataType = ETextureDataType::TDY_UnsignedByte;
+	ETextureWrapMode WrapH = ETextureWrapMode::WM_Repeat;
+	ETextureWrapMode WrapV = ETextureWrapMode::WM_Repeat;
+	ETextureSampleFilter MagnifiFilter = ETextureSampleFilter::SF_Linear;
+	ETextureSampleFilter MinifiFilter = ETextureSampleFilter::SF_Linear_Mip_Linear;
+	bool GenerateMipMap = true;
+	int Width, Height, Bpp; // Texture width, height, and bytes per pixel
+};
+
 class Texture : public Resource
 {
 public:
 	~Texture();
 	Texture();
 	Texture(const std::string &file);
-	Texture(const std::string &file, std::string type);
 
 	bool Init(const std::string* path);
-	bool Init(int width, int height, GLuint format);
-/*	void Bind(GLenum TextureUnit = 0);*/
 
-	void SetFiltering(int magnification, int minification);
-	void SetWrap(int wrapS, int wrapT);
+	void SetFiltering(ETextureSampleFilter magnification, ETextureSampleFilter minification);
+	void SetWrapMode(ETextureWrapMode wrapS, ETextureWrapMode wrapT);
 	void SetMipMapActive(bool enable);
 	//void SetSamplerParameter(GLenum parameter, GLenum value);
 
 	int GetWidth();
 	int GetHeight();
+
+	void SetWidth(int width) { mWidth = width; };
+	void SetHeight(int height) { mHeight = height; };
+
 	int GetBPP();
 	std::string GetPath();
-	void SetPath(std::string& path);
-	void SetPath(const char * path);
 
-
-	void DeleteTexture();
 	bool HasLoaded();
 
-	std::string type;
-
-	virtual GLuint GetTextureID();
-	//void Bind();
+	virtual uint32 GetTextureID();
+	virtual void SetTextureID(uint32 id) { textureID = id; };
 
 protected:
 	SDL_Surface* surface;
-	int mWidth, mHeight, bpp; // Texture width, height, and bytes per pixel
 
 	std::string filePath;
-	GLuint textureID;
+	uint32 textureID;
 
 	int mode;
 	bool isLoaded;
-	int wrapHorizontal;
-	int wrapVertical;
-	int magnifiFilter;
-	int minifiFilter;
-	bool generateMipMap;
+
+
+	ETextureWrapMode mWrapH = ETextureWrapMode::WM_Repeat;
+	ETextureWrapMode mWrapV = ETextureWrapMode::WM_Repeat;
+	ETextureSampleFilter mMagnifiFilter = ETextureSampleFilter::SF_Linear;
+	ETextureSampleFilter mMinifiFilter = ETextureSampleFilter::SF_Linear_Mip_Linear;
+	bool mGenerateMipMap = true;
+	int mWidth, mHeight, mBpp; // Texture width, height, and bytes per pixel
+
+	friend class RenderDeviceGL;
 };

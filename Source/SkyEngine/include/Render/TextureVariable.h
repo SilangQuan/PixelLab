@@ -28,4 +28,6 @@ private:
 	Texture* texture;
 	std::string uniformRefname;
 	ETextureVariableType type;
+
+	friend class RenderDeviceGL;
 };

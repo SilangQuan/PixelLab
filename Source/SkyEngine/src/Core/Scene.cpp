@@ -113,7 +113,7 @@ void ParseMaterialDescription(const json& matJson, MaterialDescription* descript
 
 string Scene::GetScenePath()
 {
-	return "../../../Library/" + mSceneId + "/";
+	return ResourceManager::GetLibraryPath() + mSceneId + "/";
 }
 
 GameObject* Scene::ParseGameObjInfo(const json& currentGameObj)
