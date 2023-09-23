@@ -12,9 +12,8 @@ public:
 	static TextureCubemap* GeneratePrefilterMap(int size, ShaderProgram* prefilterShader, TextureCubemap* originCube);
 	static TextureCubemap* GenerateConvolutionMap(int size, ShaderProgram* convolveShader, TextureCubemap* originCube);
 
+	int GetSize() { return mSize; };
+	void SetSize(int size) { mSize = size; };
 private:
-	//Useful in the Specular IBL component
-	//unsigned int maxMipLevels;
-	//unsigned int frameBufferID;
-	//unsigned int depthBuffer;
+	int mSize;
 };

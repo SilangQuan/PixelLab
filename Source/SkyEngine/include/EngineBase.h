@@ -215,7 +215,6 @@ enum ETextureVariableType
 
 
 
-
 class Base
 {
 protected:

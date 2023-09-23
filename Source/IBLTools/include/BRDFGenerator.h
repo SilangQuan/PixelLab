@@ -1,0 +1,1 @@
+void GenerateBRDFLUT(int argc, char** argv);

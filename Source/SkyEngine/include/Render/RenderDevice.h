@@ -33,10 +33,16 @@ public:
 	virtual void Clear() = 0;
 	virtual GraphicsAPI GetCurGraphicsAPI() = 0;
 	virtual SdlWindow* GetWindow() = 0;
+
+	virtual void GenGPUTexture(Texture* tex) = 0;
+
 	virtual Texture* CreateTexture2D(const TextureInfo& Info, void* data) = 0;
+
 	virtual void DeleteTexture2D(Texture* texture) = 0;
 
 	virtual TextureCubemap* CreateTextureCube(const TextureInfo& Info, void* data[]) = 0;
+	virtual void UpdateTextureCubeMip(TextureCubemap* tex, void* data[], int mip) = 0;
+
 
 	virtual bool InitRenderTexture(RenderTexture* rt, int width, int height, ColorType color, DepthType depth, int msaaSamples = 0) = 0;
 	virtual bool InitDepthOnlyRenderTexture(RenderTexture* rt, int inWidth, int inHeight, DepthType depth) = 0;
@@ -89,6 +95,8 @@ public:
 	virtual void DrawArrays(uint32 indiceCount) = 0;
 };
 
+
+int GetGLColorType(ColorType type);
 
 class RenderDeviceGL : public RenderDevice
 {
@@ -193,6 +201,10 @@ public:
 
 	virtual Texture* CreateTexture2D(const TextureInfo& Info, void* data);
 	virtual TextureCubemap* CreateTextureCube(const TextureInfo& Info, void* data[]);
+	virtual void UpdateTextureCubeMip(TextureCubemap* tex, void* data[], int mip);
+
+	virtual void GenGPUTexture(Texture* tex);
+
 	virtual void DeleteTexture2D(Texture* texture);
 	virtual void UseTexture2D(Texture* texture, unsigned int index);
 	virtual void SetClearColor(float r, float g, float b, float alpha);

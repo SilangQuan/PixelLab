@@ -57,19 +57,22 @@ public:
 
 	int GetBPP();
 	std::string GetPath();
+	ColorType GetColorType() { return mColorType; };
+	void SetColorType(ColorType type) { mColorType = type; };
 
 	bool HasLoaded();
 
 	virtual uint32 GetTextureID();
 	virtual void SetTextureID(uint32 id) { textureID = id; };
 
+	bool HasMips() { return mGenerateMipMap; };
 protected:
 	SDL_Surface* surface;
 
 	std::string filePath;
 	uint32 textureID;
 
-	int mode;
+	ColorType mColorType;
 	bool isLoaded;
 
 

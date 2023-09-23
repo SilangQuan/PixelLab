@@ -1,0 +1,23 @@
+{
+    "sceneID": "HDR_DamagedHelmet",
+    "skybox": {"source": "../../BuiltinAssets/texture/skyboxes/barcelona"
+    },
+    "camera":{
+		"left":-1.778,
+		"right":1.778,
+		"bottom":-1,
+		"top":1,
+        "nearPlane": 1.0,
+        "farPlane": 1000.0,
+        "position": [0.0, 0.0, -1.0],
+        "target": [0.0, 0.0, 0.0]
+    },
+	"gameobjs": [{
+	"name": "Center",
+	"position": [200.0, -150.0, 0.0],
+	"rotation": [0.0, 0.0, 0.0],
+	"scaling" : [1.0, 1.0, 1.0],
+	"model":"../../BuiltinAssets/model/Bistro_RoadLight/Bistro_RoadLight.gltf",
+	"material":"refraction"
+	}]
+}

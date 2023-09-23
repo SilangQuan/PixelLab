@@ -6,8 +6,8 @@ RenderTexture::RenderTexture() :
 	mFboId(0),
 	mColorBufferId(0),
 	mDepthBufferId(0),
-	mColorFormat(0),
-	mDepthFormat(0)
+	mColorFormat(ColorType::RGB16F),
+	mDepthFormat(DepthType::Depth24S8)
 {
 }
 

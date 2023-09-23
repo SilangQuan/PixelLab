@@ -10,6 +10,7 @@ add_subdirectory(LibAppFramework)
 add_subdirectory(ShaderTest)
 add_subdirectory(HDRRendering)
 add_subdirectory(IBLTools)
+add_subdirectory(IBLValidation)
 add_subdirectory(MultithreadedRendering)
 
 # 设置依赖关系

@@ -65,6 +65,37 @@ inline void CheckOpenGLError(const char* stmt, const char* fname, int line)
 	}
 }
 
+int GetGLColorType(ColorType type)
+{
+	switch (type)
+	{
+	case RGB:
+		return GL_RGB;
+		break;
+	case RGBA:
+		break;
+	case RGB565:
+		break;
+	case RGB888:
+		break;
+	case RGBA8888:
+		break;
+	case RGB16F:
+		return GL_RGB16F;
+		break;
+	case RGBA16F:
+		return GL_RGBA16F;
+		break;
+	case RGB32F:
+		return GL_RGB32F;
+		break;
+	case R11G11B10:
+		break;
+	default:
+		break;
+	}
+}
+
 
 RenderDeviceGL::RenderDeviceGL(SdlWindow* mainwindow)
 {
@@ -156,6 +187,12 @@ void RenderDeviceGL::Clear()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void RenderDeviceGL::GenGPUTexture(Texture* tex)
+{
+	glGenTextures(1, &tex->textureID);
+}
+
+
 Texture* RenderDeviceGL::CreateTexture2D(const TextureInfo& Info, void* data)
 {
 	Texture* tex = new Texture();
@@ -173,14 +210,23 @@ Texture* RenderDeviceGL::CreateTexture2D(const TextureInfo& Info, void* data)
 	if (Info.DataType == ETextureDataType::TDY_Float)
 	{
 		if (Info.ColorType == RGB32F)
+		{
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, Info.Width, Info.Height, 0, GL_RGB, GL_FLOAT, data);
+			tex->mColorType = ColorType::RGB32F;
+		}
 	}
 	else if(Info.DataType == ETextureDataType::TDY_UnsignedByte)
 	{
 		if (Info.ColorType == RGB)
+		{
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Info.Width, Info.Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			tex->mColorType = ColorType::RGB;
+		}
 		else
+		{
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Info.Width, Info.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			tex->mColorType = ColorType::RGBA;
+		}
 	}
 
 	if (Info.GenerateMipMap)
@@ -199,9 +245,32 @@ Texture* RenderDeviceGL::CreateTexture2D(const TextureInfo& Info, void* data)
 }
 
 
+
+void RenderDeviceGL::UpdateTextureCubeMip(TextureCubemap* tex, void* data[], int mip)
+{
+	glBindTexture(GL_TEXTURE_CUBE_MAP, tex->GetTextureID());
+	int faceCount = 6;
+	for (unsigned int i = 0; i < faceCount; i++)
+	{
+		if (data[i])
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, mip, GetGLColorType(tex->GetColorType()), tex->GetWidth(), tex->GetHeight(), 0, GL_RGB, GL_FLOAT, data[i]);
+		}
+	}
+
+}
+
 TextureCubemap* RenderDeviceGL::CreateTextureCube(const TextureInfo& Info, void* data[])
 {
 	TextureCubemap* tex = new TextureCubemap();
+	tex->mWidth = Info.Width;
+	tex->mHeight = Info.Height;
+	tex->mBpp = Info.Bpp;
+	tex->mWrapH = Info.WrapH;
+	tex->mWrapV = Info.WrapV;
+	tex->mMagnifiFilter = Info.MagnifiFilter;
+	tex->mMinifiFilter = Info.MinifiFilter;
+	tex->SetColorType(Info.ColorType);
 
 	glGenTextures(1, &tex->textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, tex->textureID);
@@ -210,7 +279,7 @@ TextureCubemap* RenderDeviceGL::CreateTextureCube(const TextureInfo& Info, void*
 	{
 		if (data[i])
 		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, Info.Width, Info.Height, 0, GL_RGB, GL_FLOAT, data[i]);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GetGLColorType(Info.ColorType), Info.Width, Info.Height, 0, GL_RGB, GL_FLOAT, data[i]);
 		}
 	}
 
@@ -576,33 +645,39 @@ bool RenderDeviceGL::InitRenderTexture(RenderTexture* rt, int inWidth, int inHei
 	glBindFramebuffer(GL_FRAMEBUFFER, rt->mFboId);
 	err = glGetError();
 
+	rt->mColorFormat = color;
+	rt->mDepthFormat = depth;
+
+	uint32 colorFormat;
+	uint32 depthFormat;
+
 	if (color >= RGB16F) {
 		// Create the HDR render target
 		switch (color) {
-		case RGB16F: rt->mColorFormat = GL_RGB16F;   break;
-		case RGBA16F: rt->mColorFormat = GL_RGBA16F; break;
-		case R11G11B10: rt->mColorFormat = GL_R11F_G11F_B10F; break;
+		case RGB16F: colorFormat = GL_RGB16F;   break;
+		case RGBA16F: colorFormat = GL_RGBA16F; break;
+		case R11G11B10: colorFormat = GL_R11F_G11F_B10F; break;
 
-		default:  rt->mColorFormat = GL_R11F_G11F_B10F;break;
+		default:  colorFormat = GL_R11F_G11F_B10F;break;
 			break;
 		}
 	}
 	else {
 		// Create the LDR render target
 		switch (color) {
-		case RGB565: rt->mColorFormat = GL_RGB565; break;
-		case RGBA8888: rt->mColorFormat = GL_RGBA; break;
+		case RGB565: colorFormat = GL_RGB565; break;
+		case RGBA8888: colorFormat = GL_RGBA; break;
 		default:
-		case RGB888: rt->mColorFormat = GL_RGB; break;
+		case RGB888: colorFormat = GL_RGB; break;
 		}
 	}
 
 	if (depth != NoDepth) {
 		switch (depth) {
-		case Depth32: rt->mDepthFormat = GL_DEPTH_COMPONENT32; break;
-		case Depth24S8: rt->mDepthFormat = GL_DEPTH24_STENCIL8; break;
+		case Depth32: depthFormat = GL_DEPTH_COMPONENT32; break;
+		case Depth24S8: depthFormat = GL_DEPTH24_STENCIL8; break;
 		default:
-		case Depth16: rt->mDepthFormat = GL_DEPTH_COMPONENT16; break;
+		case Depth16: depthFormat = GL_DEPTH_COMPONENT16; break;
 		}
 	}
 
@@ -614,7 +689,7 @@ bool RenderDeviceGL::InitRenderTexture(RenderTexture* rt, int inWidth, int inHei
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, rt->ms_useFiltering ? GL_LINEAR : GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexStorage2D(GL_TEXTURE_2D, 1, rt->mColorFormat, rt->mWidth, rt->mHeight);
+		glTexStorage2D(GL_TEXTURE_2D, 1, colorFormat, rt->mWidth, rt->mHeight);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, rt->mColorBufferId, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
@@ -625,7 +700,7 @@ bool RenderDeviceGL::InitRenderTexture(RenderTexture* rt, int inWidth, int inHei
 		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, rt->ms_useFiltering ? GL_LINEAR : GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaaSamples, rt->mColorFormat, rt->mWidth, rt->mHeight, GL_TRUE);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaaSamples, colorFormat, rt->mWidth, rt->mHeight, GL_TRUE);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, rt->mColorBufferId, 0);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 	}
@@ -638,11 +713,11 @@ bool RenderDeviceGL::InitRenderTexture(RenderTexture* rt, int inWidth, int inHei
 
 		if (msaaSamples == 0)
 		{
-			glRenderbufferStorage(GL_RENDERBUFFER, rt->mDepthFormat, rt->mWidth, rt->mHeight);
+			glRenderbufferStorage(GL_RENDERBUFFER, depthFormat, rt->mWidth, rt->mHeight);
 		}
 		else
 		{
-			glRenderbufferStorageMultisample(GL_RENDERBUFFER, msaaSamples, rt->mDepthFormat, rt->mWidth, rt->mHeight);
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, msaaSamples, depthFormat, rt->mWidth, rt->mHeight);
 		}
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 

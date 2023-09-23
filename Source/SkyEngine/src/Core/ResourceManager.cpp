@@ -2,6 +2,10 @@
 #include "Core/ResourceManager.h"
 #include "Core/Resource.h"
 #include "../../SkyEngine/include/SkyEngine.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb/stb_image_write.h"
 #include "stb/stb_image.h"
 
 using namespace std;
@@ -87,7 +91,7 @@ TextureCubemap* ResourceManager::LoadTexCube(std::string filepath)
 	RenderDevice* renderDevice = GetRenderDevice();
 	TextureCubemap* cubemap = nullptr;
 	TextureInfo tInfo;
-
+	tInfo.ColorType = ColorType::RGB16F;
 	int nrChannels;
 	vector<std::string> faces
 	{

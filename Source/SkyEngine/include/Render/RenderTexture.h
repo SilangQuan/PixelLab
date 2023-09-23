@@ -24,9 +24,12 @@ public:
 	
 	void BindForWrite() { glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFboId); }
 
+	ColorType GetColorFormat() { return mColorFormat; }
+	DepthType GetDepthFormat() { return mDepthFormat; }
+
 private:
-	unsigned int mColorFormat;
-	unsigned int mDepthFormat;
+	ColorType mColorFormat;
+	DepthType mDepthFormat;
 	unsigned int m_type;
 	unsigned int mFboId;
 

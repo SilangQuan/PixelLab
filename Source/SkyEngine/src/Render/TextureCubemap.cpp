@@ -2,12 +2,6 @@
 #include "Render/ShaderProgram.h"
 #include "Render/RenderTexture.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
-#include "stb/stb_image.h"
-#include "stb/stb_image_write.h"
-
 TextureCubemap::TextureCubemap()
 {
     isLoaded = false;
@@ -23,7 +17,7 @@ TextureCubemap::~TextureCubemap()
 TextureCubemap* TextureCubemap::GeneratePrefilterMap(int size, ShaderProgram* prefilterShader, TextureCubemap* originCube)
 {
     TextureCubemap* texCube = new TextureCubemap();
-
+    texCube->mColorType = ColorType::RGB16F;
     RenderDevice* renderDevice = GetRenderDevice();
 
     PushGroupMarker("GeneratePrefilterMap");
@@ -192,6 +186,7 @@ TextureCubemap* TextureCubemap::GenerateConvolutionMap(int size, ShaderProgram* 
     TextureCubemap* texCube = new TextureCubemap();
     PushGroupMarker("GenerateConvolutionMap");
     RenderDevice* renderDevice = GetRenderDevice();
+    texCube->mColorType = ColorType::RGB16F;
 
     renderDevice->SetCullFace(ECullMode::CM_None);
     renderDevice->SetFrontFace(EFrontFace::FF_CCW);

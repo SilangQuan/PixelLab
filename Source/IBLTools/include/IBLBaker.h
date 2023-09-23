@@ -1,0 +1,1 @@
+void GenerateReflectionData(int prefiltersize, std::string sourceCube);
